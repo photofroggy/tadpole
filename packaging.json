@@ -1,0 +1,34 @@
+{
+    "clean": "./dist",
+    "yuic": [
+        "-jar",
+        "/usr/local/bin/yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar",
+        "--line-break",
+        "1000"
+    ],
+    "packs": [
+        {
+            "dest": "dist/tadpole.js",
+            "mini": "dist/tadpole.min.js",
+            "files": [
+                "src/base.js",
+                "src/top.js",
+                "src/menu.js",
+                "src/control.js",
+                "src/book.js",
+                "src/channel.js"
+            ]
+        },
+        {
+            "sass": true,
+            "options": [
+                "--style",
+                "expanded"
+            ],
+            "dest": "dist/tadpole.css",
+            "mini": "dist/tadpole.min.css",
+            "files": "css/tadpole.scss"
+        }
+    ],
+    "post": ["./mvlh"]
+}
