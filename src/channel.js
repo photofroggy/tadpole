@@ -74,10 +74,39 @@ tadpole.Channel.prototype.log = function( content ) {
 
     var date = new Date();
     var ts = formatTime('{HH}:{mm}:{ss}', date);
+    var ms = date.getTime();
     
-    this.logview.append('<li id="'+date+'"><span class="content">'+
-        content+'</span><span class="timestamp">'+ts+
-        '</span></li>');
+    this.logview.append(
+        '<li id="'+ms+'"><span class="timestamp">'+ts+
+        '</span><span class="content">'+content+'</span></li>'
+    );
+    
+    return this.logview.find('li#'+ms);
+
+};
+
+
+/**
+ * Someone joined the channel.
+ * @method join
+ * @param user {String} Person joining
+ */
+tadpole.Channel.prototype.join = function( user ) {
+
+    this.log('<p class="background"><strong class="event join">** '+user+' joined *</strong></p>');
+
+};
+
+
+/**
+ * Someone left the channel.
+ * @method part
+ * @param user {String} Person joining
+ * @param [reason=''] {String} Reason for leaving
+ */
+tadpole.Channel.prototype.part = function( user, reason ) {
+
+    this.log('<p class="background"><strong class="event part">** '+user+' left *</strong> '+ reason +'</p>');
 
 };
 
@@ -90,7 +119,35 @@ tadpole.Channel.prototype.log = function( content ) {
  */
 tadpole.Channel.prototype.message = function( user, message ) {
 
-    this.log('<h2>'+user+'</h2><p>'+message+'</p>');
+    var mb = this.log('<h2 class="username">'+user+'</h2><p>'+message+'</p>');
+    console.log(mb);
+
+};
+
+
+/**
+ * Display a chat action message.
+ * @method action
+ * @param user {String} Username of the person who sent the message
+ * @param message {String} Message to display
+ */
+tadpole.Channel.prototype.action = function( user, message ) {
+
+    this.log('<p><em><strong class="username">* '+user+'</strong> '+message+'</em></p>');
+
+};
+
+
+/**
+ * Someone got kicked from the channel.
+ * @method kick
+ * @param user {String} Person kicked
+ * @param by {String} Person who kicked
+ * @param [reason=''] {String} Reason for the kick
+ */
+tadpole.Channel.prototype.kick = function( user, by, reason ) {
+
+    this.log('<p><em><strong class="event kick">** '+user+' kicked by '+by+' *</strong> '+reason+'</em></p>');
 
 };
 

@@ -16,7 +16,8 @@
                 "src/menu.js",
                 "src/control.js",
                 "src/book.js",
-                "src/channel.js"
+                "src/channel.js",
+                "src/protocol.js"
             ]
         },
         {
