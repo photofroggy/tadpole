@@ -38,6 +38,73 @@ tadpole.STATE = 'alpha';
 } )( jQuery );
 
 
+
+
+replaceAll = function( text, search, replace ) {
+    return text.split(search).join(replace);
+};
+
+// Size of an associative array, wooo!
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+Object.steal = function( a, b ) {
+    for( var index in b ) {
+        if( !a.hasOwnProperty(index) && !b.hasOwnProperty(index) )
+            continue;
+        if( typeof a[index] == 'object' ) {
+            a[index] = Object.extend(a[index], b[index]);
+        } else {
+            a[index] = b[index];
+        }
+    }
+};
+
+Object.extend = function( a, b ) {
+    var obj = {};
+    Object.steal(obj, a);
+    Object.steal(obj, b);
+    return obj;
+};
+
+function zeroPad( number, width ) {
+    width = width || 2;
+    width -= number.toString().length;
+    if ( width > 0 ) {
+        return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
+    }
+    return number + "";
+}
+
+function formatTime( format, date ) {
+    date = date || new Date();
+    
+    HH = date.getHours();
+    hh = HH;
+    format = replaceAll(format, '{mm}', zeroPad(date.getMinutes(), 2));
+    format = replaceAll(format, '{ss}', zeroPad(date.getSeconds(), 2));
+    mr = 'am';
+    
+    if( hh > 11 ) {
+        mr = 'pm';
+        if( hh > 12 )
+            hh = hh - 12;
+    } else if( hh == 0 ) {
+        hh = '12';
+    }
+    
+    format = replaceAll(format, '{hh}', zeroPad(hh, 2));
+    format = replaceAll(format, '{HH}', zeroPad(HH, 2));
+    format = replaceAll(format, '{mr}', mr);
+    return format;
+}
+
+
 /**
  * Main UI object.
  * @class tadpole.UI
@@ -158,19 +225,131 @@ tadpole.Control.prototype.build = function(  ) {
 tadpole.Book = function( ui ) {
 
     this.manager = ui;
+    this.clist = {};
     this.build();
 
 };
 
 
 /**
- * Place the control box on the screen.
+ * Place the channel book on the screen.
  * @method build
  */
 tadpole.Book.prototype.build = function(  ) {
 
     this.manager.view.append('<div class="book"></div>');
     this.view = this.manager.view.find('div.book');
+
+};
+
+
+/**
+ * Create channel
+ * @method add_channel
+ * @param ns {String} Namespace for the channel
+ * @param raw {String} Raw namespace for the channel
+ */
+tadpole.Book.prototype.add_channel = function( ns, raw ) {
+
+    var chan = new tadpole.Channel( ns, raw, this.manager, this );
+    this.clist[ns.toLowerCase] = chan;
+    return chan;
+
+};
+
+
+
+/**
+ * Channel object.
+ * Manage a channel view.
+ * @class tadpole.Channel
+ * @contructor
+ */
+tadpole.Channel = function( ns, raw, ui, book ) {
+
+    this.manager = ui;
+    this.book = book;
+    this.ns = ns;
+    this.raw = raw;
+    this.hidden = true;
+    this.background = false;
+    this.build();
+
+};
+
+
+/**
+ * Place the channel on the screen.
+ * @method build
+ */
+tadpole.Channel.prototype.build = function(  ) {
+
+    this.book.view.append('<div class="channel" id="'+this.raw+'"><ul class="log"></ul></div>');
+    this.view = this.book.view.find('div.channel#'+this.raw);
+    this.logview = this.view.find('ul.log');
+
+};
+
+
+/**
+ * Reveal the channel.
+ * @method reveal
+ */
+tadpole.Channel.prototype.reveal = function(  ) {
+
+    if( !this.hidden )
+        return;
+    
+    if( this.background )
+        return;
+    
+    this.view.css({'display': 'block'});
+    this.hidden = false;
+
+};
+
+
+/**
+ * Hide the channel.
+ * @method hide
+ */
+tadpole.Channel.prototype.hide = function(  ) {
+
+    if( this.hidden )
+        return;
+    
+    this.view.css({'display': 'none'});
+    this.hidden = true;
+
+};
+
+
+/**
+ * Display a log message.
+ * @method log
+ * @param content {String} Message to display.
+ */
+tadpole.Channel.prototype.log = function( content ) {
+
+    var date = new Date();
+    var ts = formatTime('{HH}:{mm}:{ss}', date);
+    
+    this.logview.append('<li id="'+date+'"><span class="content">'+
+        content+'</span><span class="timestamp">'+ts+
+        '</span></li>');
+
+};
+
+
+/**
+ * Display a chat message.
+ * @method message
+ * @param user {String} Username of the person who sent the message
+ * @param message {String} Message to display
+ */
+tadpole.Channel.prototype.message = function( user, message ) {
+
+    this.log('<h2>'+user+'</h2><p>'+message+'</p>');
 
 };
 
