@@ -150,3 +150,11 @@ tadpole.UI.prototype.build = function(  ) {
 
 };
 
+
+/**
+ * Resize the interface!
+ * @method resize
+ */
+tadpole.UI.prototype.resize = function(  ) {
+};
+
