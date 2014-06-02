@@ -17,6 +17,9 @@ module.exports = function(grunt) {
             }
         },
         sass: {
+            options: {
+                unixNewlines: true
+            },
             build: {
                 src: 'css/tadpole.scss',
                 dest: 'dist/tadpole.css'
