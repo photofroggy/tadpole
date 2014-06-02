@@ -150,71 +150,7 @@ tadpole.UI.prototype.build = function(  ) {
 
 };
 
-
-/**
- * Top bar for the fucking thingy.
- * @class tadpole.Top
- * @constructor
- * @param ui {Object} Main ui object.
- */
-tadpole.Top = function( ui ) {
-
-    this.manager = ui;
-    this.build();
-
-};
-
-
-/**
- * Place the top bar on the page.
- * @method build
- */
-tadpole.Top.prototype.build = function(  ) {
-
-    this.manager.view.append('<div class="top"><a class="menubutton" href="#">+</a> <span>Tadpole</span></div>');
-    this.view = this.manager.view.find('.top');
-    this.button = this.view.find('.menubutton');
-    this.label = this.view.find('span');
-    
-    this.button.click( function( event ) {
-    
-        event.preventDefault();
-    
-    } );
-
-};
-
-
-
-
-/**
- * Control bar.
- * Just an input box really.
- * @class tadpole.Control
- * @contructor
- */
-tadpole.Control = function( ui ) {
-
-    this.manager = ui;
-    this.build();
-
-};
-
-
-/**
- * Place the control box on the screen.
- * @method build
- */
-tadpole.Control.prototype.build = function(  ) {
-
-    this.manager.view.append('<div class="control"><input type="text" class="msg"></input></div>');
-    this.view = this.manager.view.find('div.control');
-    this.input = this.view.find('input');
-    this.input.width(this.view.width() - 20);
-
-};
-
-
+;
 
 /**
  * Channel book.
@@ -257,7 +193,7 @@ tadpole.Book.prototype.add_channel = function( ns, raw ) {
 
 };
 
-
+;
 
 /**
  * Channel object.
@@ -409,4 +345,68 @@ tadpole.Channel.prototype.kick = function( user, by, reason ) {
     this.log('<p><em><strong class="event kick">** '+user+' kicked by '+by+' *</strong> '+reason+'</em></p>');
 
 };
+
+;
+
+/**
+ * Control bar.
+ * Just an input box really.
+ * @class tadpole.Control
+ * @contructor
+ */
+tadpole.Control = function( ui ) {
+
+    this.manager = ui;
+    this.build();
+
+};
+
+
+/**
+ * Place the control box on the screen.
+ * @method build
+ */
+tadpole.Control.prototype.build = function(  ) {
+
+    this.manager.view.append('<div class="control"><input type="text" class="msg"></input></div>');
+    this.view = this.manager.view.find('div.control');
+    this.input = this.view.find('input');
+    this.input.width(this.view.width() - 20);
+
+};
+
+;
+/**
+ * Top bar for the fucking thingy.
+ * @class tadpole.Top
+ * @constructor
+ * @param ui {Object} Main ui object.
+ */
+tadpole.Top = function( ui ) {
+
+    this.manager = ui;
+    this.build();
+
+};
+
+
+/**
+ * Place the top bar on the page.
+ * @method build
+ */
+tadpole.Top.prototype.build = function(  ) {
+
+    this.manager.view.append('<div class="top"><a class="menubutton" href="#">+</a> <span>Tadpole</span></div>');
+    this.view = this.manager.view.find('.top');
+    this.button = this.view.find('.menubutton');
+    this.label = this.view.find('span');
+    
+    this.button.click( function( event ) {
+    
+        event.preventDefault();
+    
+    } );
+
+};
+
 

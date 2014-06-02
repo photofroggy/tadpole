@@ -27,107 +27,160 @@
 
 /* Layout */
 div.tadpole {
-  font: normal 25px verdana, sans-serif;
-  clear: both; }
-  div.tadpole * {
-    margin: 0;
-    padding: 0; }
-  div.tadpole div.soundbank {
-    display: none; }
-  div.tadpole a {
-    color: #3C87F8;
-    text-decoration: none; }
-    div.tadpole a.user em {
-      font-style: normal; }
-  div.tadpole div.top {
-    height: 45px;
-    background-color: #3B573B;
-    color: #7E9B89; }
-    div.tadpole div.top a.menubutton {
-      display: block;
-      height: 30px;
-      width: 25px;
-      padding-left: 10px;
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      border-radius: 3px;
-      background-color: #ABBDAB;
-      border: 1px solid #202C20;
-      color: #1959B9; }
-      div.tadpole div.top a.menubutton:hover {
-        background-color: #829782; }
-    div.tadpole div.top span {
-      margin-left: 60px;
-      position: relative;
-      top: 7px; }
-  div.tadpole div.book {
-    font-size: 20px;
-    margin: 0px;
-    padding: 0px;
-    border-top: 1px solid #1D3A1D;
-    border-bottom: 1px solid #1D3A1D;
-    position: absolute;
-    top: 45px;
-    bottom: 45px;
-    left: 0px;
-    right: 0px;
-    background-color: #779677; }
-    div.tadpole div.book img {
-      display: inline; }
-  div.tadpole div.channel {
-    display: none;
-    overflow: hidden;
-    float: left;
-    width: 100%;
-    height: 100%;
-    /*border: 1px solid black;/*
-      border-radius: 10px 10px 0px 0px;
-      margin-right: 5px;*/ }
-    div.tadpole div.channel a {
-      padding: 0px;
-      margin: 0px; }
-    div.tadpole div.channel img {
-      padding: 0px;
-      margin: 0px;
-      vertical-align: middle; }
-    div.tadpole div.channel ul.log {
-      overflow: auto;
-      list-style: none;
-      font-size: 18px; }
-      div.tadpole div.channel ul.log li {
-        overflow: auto;
-        padding: 15px 10px; }
-        div.tadpole div.channel ul.log li:not(:first-child) {
-          border-top: 1px solid #4E6F53; }
-        div.tadpole div.channel ul.log li span.content {
-          display: block;
-          color: #2D4B30;
-          overflow: auto;
-          padding-right: 80px; }
-          div.tadpole div.channel ul.log li span.content h2 {
-            font-size: 18px; }
-          div.tadpole div.channel ul.log li span.content h2,
-          div.tadpole div.channel ul.log li span.content strong.username,
-          div.tadpole div.channel ul.log li span.content strong.event {
-            color: #1E3120; }
-          div.tadpole div.channel ul.log li span.content p.background,
-          div.tadpole div.channel ul.log li span.content p.background strong.event {
-            color: #4D6958; }
-        div.tadpole div.channel ul.log li span.timestamp {
-          display: block;
-          position: absolute;
-          right: 20px;
-          color: #4D6958;
-          font-size: 16px; }
-  div.tadpole div.control {
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
-    height: 50px;
-    background-color: #3B573B; }
-  div.tadpole div.control input {
-    margin: 8px 10px;
-    font-size: 25px; }
+    font: normal 25px verdana, sans-serif;
+    clear: both;
+    
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    div.soundbank {
+        display: none;
+    }
+    
+    a {
+        color: #3C87F8;
+        text-decoration: none;
+        &.user em {
+            font-style: normal;
+        }
+    
+    }
+    
+    div.top {
+        height: 45px;
+        background-color: #3B573B;
+        color: #7E9B89;
+    
+        a.menubutton {
+            display: block;
+            height: 30px;
+            width: 25px;
+            padding-left: 10px;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            border-radius: 3px;
+            background-color: #ABBDAB;
+            border: 1px solid #202C20;
+            color: #1959B9;
+            
+            &:hover {
+                background-color: #829782;
+            }
+        
+        }
+        
+        span {
+            margin-left: 60px;
+            position: relative;
+            top: 7px;
+        }
+    }
+    
+    div.book {
+        font-size: 20px;
+        margin: 0px;
+        padding: 0px;
+        border-top: 1px solid #1D3A1D;
+        border-bottom: 1px solid #1D3A1D;
+        position: absolute;
+        top: 45px;
+        bottom: 45px;
+        left: 0px;
+        right: 0px;
+        background-color: #779677;
+        
+        img {
+            display: inline;
+        }
+    
+    }
+    
+    div.channel {
+        display: none;
+        overflow: hidden;
+        float: left;
+        width: 100%;
+        height: 100%;
+      /*border: 1px solid black;/*
+        border-radius: 10px 10px 0px 0px;
+        margin-right: 5px;*/
+        
+        a {
+            padding: 0px;
+            margin: 0px;
+        }
+        
+        img {
+            padding: 0px;
+            margin: 0px;
+            vertical-align: middle;
+        }
+        
+        ul.log {
+            overflow: auto;
+            list-style: none;
+            font-size: 18px;
+            
+            li {
+                overflow: auto;
+                padding: 15px 10px;
+                
+                &:not(:first-child) {
+                    border-top: 1px solid #4E6F53;
+                }
+                
+                span.content {
+                    display: block;
+                    color: #2D4B30;
+                    overflow: auto;
+                    padding-right: 80px;
+                    
+                    h2 {
+                        font-size: 18px;
+                    }
+                    
+                    h2,
+                    strong.username,
+                    strong.event {
+                        color: #1E3120;
+                    }
+                    
+                    p.background,
+                    p.background strong.event {
+                        color: #4D6958;
+                    }
+                
+                }
+                
+                span.timestamp {
+                    display: block;
+                    position: absolute;
+                    right: 20px;
+                    color: #4D6958;
+                    font-size: 16px;
+                }
+                
+            }
+            
+        }
+    
+    }
+    
+    div.control {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        height: 50px;
+        background-color: #3B573B;
+    }
+    
+    div.control input {
+        margin: 8px 10px;
+        font-size: 25px;
+    }
 
+}
 /* Themes */
