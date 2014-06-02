@@ -158,3 +158,11 @@ tadpole.UI.prototype.build = function(  ) {
 tadpole.UI.prototype.resize = function(  ) {
 };
 
+
+/**
+ * Do stuff in a loop.
+ * @method loop
+ */
+tadpole.UI.prototype.loop = function(  ) {
+};
+

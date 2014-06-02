@@ -103,8 +103,9 @@ div.tadpole {
         div.tadpole div.channel ul.log li span.content {
           display: block;
           color: #2D4B30;
-          overflow: auto;
-          padding-right: 80px; }
+          overflow: auto; }
+          div.tadpole div.channel ul.log li span.content h2:first-child, div.tadpole div.channel ul.log li span.content p:first-child {
+            padding-right: 80px; }
           div.tadpole div.channel ul.log li span.content h2 {
             font-size: 18px; }
           div.tadpole div.channel ul.log li span.content h2,

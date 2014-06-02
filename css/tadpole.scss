@@ -136,7 +136,10 @@ div.tadpole {
                     display: block;
                     color: #2D4B30;
                     overflow: auto;
-                    padding-right: 80px;
+                    
+                    h2:first-child, p:first-child {
+                        padding-right: 80px;
+                    }
                     
                     h2 {
                         font-size: 18px;

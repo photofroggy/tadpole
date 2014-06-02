@@ -32,4 +32,14 @@ tadpole.Top.prototype.build = function(  ) {
 
 };
 
+/**
+ * Set the text for the top bar.
+ * @method set_label
+ */
+tadpole.Top.prototype.set_label = function( text ) {
+
+    this.label.html(text);
+
+};
+
 

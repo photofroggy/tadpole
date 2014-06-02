@@ -29,11 +29,11 @@ tadpole.Book.prototype.build = function(  ) {
 
 /**
  * Create channel
- * @method add_channel
+ * @method add
  * @param ns {String} Namespace for the channel
  * @param raw {String} Raw namespace for the channel
  */
-tadpole.Book.prototype.add_channel = function( ns, raw ) {
+tadpole.Book.prototype.add = function( ns, raw ) {
 
     var chan = new tadpole.Channel( ns, raw, this.manager, this );
     this.clist[ns.toLowerCase] = chan;

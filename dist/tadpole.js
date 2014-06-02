@@ -158,6 +158,14 @@ tadpole.UI.prototype.build = function(  ) {
 tadpole.UI.prototype.resize = function(  ) {
 };
 
+
+/**
+ * Do stuff in a loop.
+ * @method loop
+ */
+tadpole.UI.prototype.loop = function(  ) {
+};
+
 ;
 
 /**
@@ -189,11 +197,11 @@ tadpole.Book.prototype.build = function(  ) {
 
 /**
  * Create channel
- * @method add_channel
+ * @method add
  * @param ns {String} Namespace for the channel
  * @param raw {String} Raw namespace for the channel
  */
-tadpole.Book.prototype.add_channel = function( ns, raw ) {
+tadpole.Book.prototype.add = function( ns, raw ) {
 
     var chan = new tadpole.Channel( ns, raw, this.manager, this );
     this.clist[ns.toLowerCase] = chan;
@@ -215,6 +223,8 @@ tadpole.Channel = function( ns, raw, ui, book ) {
     this.book = book;
     this.ns = ns;
     this.raw = raw;
+    this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
+    this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
     this.hidden = true;
     this.background = false;
     this.build();
@@ -228,8 +238,8 @@ tadpole.Channel = function( ns, raw, ui, book ) {
  */
 tadpole.Channel.prototype.build = function(  ) {
 
-    this.book.view.append('<div class="channel" id="'+this.raw+'"><ul class="log"></ul></div>');
-    this.view = this.book.view.find('div.channel#'+this.raw);
+    this.book.view.append('<div class="channel" id="'+this.selector+'"><ul class="log"></ul></div>');
+    this.view = this.book.view.find('div.channel#'+this.selector);
     this.logview = this.view.find('ul.log');
 
 };
@@ -249,6 +259,7 @@ tadpole.Channel.prototype.reveal = function(  ) {
     
     this.view.css({'display': 'block'});
     this.hidden = false;
+    this.manager.top.set_label(this.ns);
 
 };
 
@@ -414,6 +425,16 @@ tadpole.Top.prototype.build = function(  ) {
         event.preventDefault();
     
     } );
+
+};
+
+/**
+ * Set the text for the top bar.
+ * @method set_label
+ */
+tadpole.Top.prototype.set_label = function( text ) {
+
+    this.label.html(text);
 
 };
 

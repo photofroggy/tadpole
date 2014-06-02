@@ -12,6 +12,8 @@ tadpole.Channel = function( ns, raw, ui, book ) {
     this.book = book;
     this.ns = ns;
     this.raw = raw;
+    this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
+    this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
     this.hidden = true;
     this.background = false;
     this.build();
@@ -25,8 +27,8 @@ tadpole.Channel = function( ns, raw, ui, book ) {
  */
 tadpole.Channel.prototype.build = function(  ) {
 
-    this.book.view.append('<div class="channel" id="'+this.raw+'"><ul class="log"></ul></div>');
-    this.view = this.book.view.find('div.channel#'+this.raw);
+    this.book.view.append('<div class="channel" id="'+this.selector+'"><ul class="log"></ul></div>');
+    this.view = this.book.view.find('div.channel#'+this.selector);
     this.logview = this.view.find('ul.log');
 
 };
@@ -46,6 +48,7 @@ tadpole.Channel.prototype.reveal = function(  ) {
     
     this.view.css({'display': 'block'});
     this.hidden = false;
+    this.manager.top.set_label(this.ns);
 
 };
 
