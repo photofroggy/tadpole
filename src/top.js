@@ -37,13 +37,7 @@ tadpole.Top.prototype.build = function(  ) {
     
         event.preventDefault();
         event.stopPropagation();
-        
-        if( top.manager.toggle_menu() ) {
-            top.view.addClass('active');
-            return;
-        }
-        
-        top.view.removeClass('active');
+        top.manager.toggle_menu();
     
     } );
 
@@ -56,6 +50,32 @@ tadpole.Top.prototype.build = function(  ) {
 tadpole.Top.prototype.set_label = function( text ) {
 
     this.label.html(text);
+
+};
+
+/**
+ * Set the menu as active.
+ * @method active
+ */
+tadpole.Top.prototype.active = function(  ) {
+
+    if( this.view.hasClass('active') )
+        return;
+    
+    this.view.addClass('active');
+
+};
+
+/**
+ * Set the menu as inactive.
+ * @method inactive
+ */
+tadpole.Top.prototype.inactive = function(  ) {
+
+    if( !this.view.hasClass('active') )
+        return;
+    
+    this.view.removeClass('active');
 
 };
 

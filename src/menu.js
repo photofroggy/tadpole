@@ -73,16 +73,19 @@ tadpole.Menu.prototype.toggle = function(  ) {
     if( this.overlay.visible ) {
         this.channel.hide();
         this.overlay.hide();
+        this.manager.top.inactive();
         return this.overlay.visible;
     }
     
     this.overlay.reveal();
+    this.manager.top.active();
     return this.overlay.visible;
 
 };
 
 tadpole.Menu.prototype.hide_quick = function(  ) {
 
+    this.manager.top.inactive();
     this.overlay.hide_quick();
 
 };

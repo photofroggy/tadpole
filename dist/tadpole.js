@@ -605,16 +605,19 @@ tadpole.Menu.prototype.toggle = function(  ) {
     if( this.overlay.visible ) {
         this.channel.hide();
         this.overlay.hide();
+        this.manager.top.inactive();
         return this.overlay.visible;
     }
     
     this.overlay.reveal();
+    this.manager.top.active();
     return this.overlay.visible;
 
 };
 
 tadpole.Menu.prototype.hide_quick = function(  ) {
 
+    this.manager.top.inactive();
     this.overlay.hide_quick();
 
 };
@@ -789,13 +792,7 @@ tadpole.Top.prototype.build = function(  ) {
     
         event.preventDefault();
         event.stopPropagation();
-        
-        if( top.manager.toggle_menu() ) {
-            top.view.addClass('active');
-            return;
-        }
-        
-        top.view.removeClass('active');
+        top.manager.toggle_menu();
     
     } );
 
@@ -808,6 +805,32 @@ tadpole.Top.prototype.build = function(  ) {
 tadpole.Top.prototype.set_label = function( text ) {
 
     this.label.html(text);
+
+};
+
+/**
+ * Set the menu as active.
+ * @method active
+ */
+tadpole.Top.prototype.active = function(  ) {
+
+    if( this.view.hasClass('active') )
+        return;
+    
+    this.view.addClass('active');
+
+};
+
+/**
+ * Set the menu as inactive.
+ * @method inactive
+ */
+tadpole.Top.prototype.inactive = function(  ) {
+
+    if( !this.view.hasClass('active') )
+        return;
+    
+    this.view.removeClass('active');
 
 };
 

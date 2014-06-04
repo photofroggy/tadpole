@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.0.2';
+tadpole.VERSION = '0.0.3';
 tadpole.STATE = 'alpha';
 
 
