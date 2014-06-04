@@ -162,35 +162,25 @@ div.tadpole {
             li {
                 overflow: auto;
                 padding: 15px 10px;
+                color: #4E5C8A;/*#2D4B30;*/
+                    
+                h2 {
+                    font-size: 18px;
+                }
+                
+                h2,
+                strong.username,
+                strong.event {
+                    color: #3D455F;/*#1E3120;*/
+                }
+                
+                p.background,
+                p.background strong.event {
+                    color: #8291BE;/*#4D6958;*/
+                }
                 
                 &:not(:first-child) {
                     border-top: 1px solid #B3BDDA;/*#4E6F53;*/
-                }
-                
-                span.content {
-                    display: block;
-                    color: #4E5C8A;/*#2D4B30;*/
-                    overflow: auto;
-                    /*
-                    h2:first-child, p:first-child {
-                        padding-right: 80px;
-                    }*/
-                    
-                    h2 {
-                        font-size: 18px;
-                    }
-                    
-                    h2,
-                    strong.username,
-                    strong.event {
-                        color: #3D455F;/*#1E3120;*/
-                    }
-                    
-                    p.background,
-                    p.background strong.event {
-                        color: #8291BE;/*#4D6958;*/
-                    }
-                
                 }
                 
                 span.timestamp {
@@ -203,20 +193,17 @@ div.tadpole {
                 &.highlight {
                 
                     background-color: white;
+                    color: #4E5C8A;
+                
+                    h2,
+                    strong.username,
+                    strong.event {
+                        color: #3D455F;/*#1E3120;*/
+                    }
                     
-                    span.content {
-                        color: #4E5C8A;
-                    
-                        h2,
-                        strong.username,
-                        strong.event {
-                            color: #3D455F;/*#1E3120;*/
-                        }
-                        
-                        p.background,
-                        p.background strong.event {
-                            color: #8291BE;/*#4D6958;*/
-                        }
+                    p.background,
+                    p.background strong.event {
+                        color: #8291BE;/*#4D6958;*/
                     }
                     
                 

@@ -72,6 +72,8 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw ) {
 
     var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
     selector = replaceAll(selector, 'chat:', 'c-chat-');
+    selector = replaceAll(selector, 'server:', 'c-server-');
+    selector = replaceAll(selector, ':', '-');
     
     this.ul.append( '<li><a id="tab-' + selector + '" href="#">' + ns + '</a></li>');
     
@@ -81,9 +83,8 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw ) {
     tab.on( 'click', function( event ) {
     
         event.preventDefault();
-        cmenu.manager.book.reveal(ns);
+        cmenu.manager.book.reveal(raw);
         cmenu.manager.menu.toggle();
-        //cmenu.hide();
     
     } );
     

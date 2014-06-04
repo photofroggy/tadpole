@@ -129,30 +129,23 @@ div.tadpole {
       font-size: 18px; }
       div.tadpole div.channel ul.log li {
         overflow: auto;
-        padding: 15px 10px; }
+        padding: 15px 10px;
+        color: #4E5C8A;
+        /*#2D4B30;*/ }
+        div.tadpole div.channel ul.log li h2 {
+          font-size: 18px; }
+        div.tadpole div.channel ul.log li h2,
+        div.tadpole div.channel ul.log li strong.username,
+        div.tadpole div.channel ul.log li strong.event {
+          color: #3D455F;
+          /*#1E3120;*/ }
+        div.tadpole div.channel ul.log li p.background,
+        div.tadpole div.channel ul.log li p.background strong.event {
+          color: #8291BE;
+          /*#4D6958;*/ }
         div.tadpole div.channel ul.log li:not(:first-child) {
           border-top: 1px solid #B3BDDA;
           /*#4E6F53;*/ }
-        div.tadpole div.channel ul.log li span.content {
-          display: block;
-          color: #4E5C8A;
-          /*#2D4B30;*/
-          overflow: auto;
-          /*
-          h2:first-child, p:first-child {
-              padding-right: 80px;
-          }*/ }
-          div.tadpole div.channel ul.log li span.content h2 {
-            font-size: 18px; }
-          div.tadpole div.channel ul.log li span.content h2,
-          div.tadpole div.channel ul.log li span.content strong.username,
-          div.tadpole div.channel ul.log li span.content strong.event {
-            color: #3D455F;
-            /*#1E3120;*/ }
-          div.tadpole div.channel ul.log li span.content p.background,
-          div.tadpole div.channel ul.log li span.content p.background strong.event {
-            color: #8291BE;
-            /*#4D6958;*/ }
         div.tadpole div.channel ul.log li span.timestamp {
           display: block;
           float: right;
@@ -160,18 +153,17 @@ div.tadpole {
           /*#4D6958;*/
           font-size: 16px; }
         div.tadpole div.channel ul.log li.highlight {
-          background-color: white; }
-          div.tadpole div.channel ul.log li.highlight span.content {
-            color: #4E5C8A; }
-            div.tadpole div.channel ul.log li.highlight span.content h2,
-            div.tadpole div.channel ul.log li.highlight span.content strong.username,
-            div.tadpole div.channel ul.log li.highlight span.content strong.event {
-              color: #3D455F;
-              /*#1E3120;*/ }
-            div.tadpole div.channel ul.log li.highlight span.content p.background,
-            div.tadpole div.channel ul.log li.highlight span.content p.background strong.event {
-              color: #8291BE;
-              /*#4D6958;*/ }
+          background-color: white;
+          color: #4E5C8A; }
+          div.tadpole div.channel ul.log li.highlight h2,
+          div.tadpole div.channel ul.log li.highlight strong.username,
+          div.tadpole div.channel ul.log li.highlight strong.event {
+            color: #3D455F;
+            /*#1E3120;*/ }
+          div.tadpole div.channel ul.log li.highlight p.background,
+          div.tadpole div.channel ul.log li.highlight p.background strong.event {
+            color: #8291BE;
+            /*#4D6958;*/ }
   div.tadpole div.control {
     position: absolute;
     bottom: 0px;

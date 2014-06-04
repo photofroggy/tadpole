@@ -15,6 +15,8 @@ tadpole.Channel = function( ns, raw, tab, ui, book ) {
     this.raw = raw;
     this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
     this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
+    this.selector = replaceAll(this.selector, 'server:', 'c-server-');
+    this.selector = replaceAll(this.selector, ':', '-');
     this.hidden = true;
     this.background = false;
     this.build();
@@ -82,7 +84,7 @@ tadpole.Channel.prototype.log = function( content ) {
     
     this.logview.append(
         '<li id="'+ms+'"><span class="timestamp">'+ts+
-        '</span><span class="content">'+content+'</span></li>'
+        '</span>'+content+'</li>'
     );
     
     return this.logview.find('li#'+ms).last();

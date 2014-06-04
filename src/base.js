@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.0.4';
+tadpole.VERSION = '0.1.5';
 tadpole.STATE = 'alpha';
 
 
@@ -113,7 +113,10 @@ function formatTime( format, date ) {
 tadpole.UI = function( view, client, options, mozilla ) {
 
     this.client = client;
-    this.options = options;
+    this.options = Object.extend({
+        'monitor': ['~Monitor', true]
+    }, options || {});
+    
     this.mozilla = mozilla;
     
     client.settings.agent = 'tadpole/' + tadpole.VERSION + ' ' + client.settings.agent;
@@ -129,6 +132,9 @@ tadpole.UI = function( view, client, options, mozilla ) {
     this.top = null;
     this.menu = null;
     this.book = null;
+    this.monitor = null;
+    
+    this.protocol = new tadpole.Protocol();
 
 };
 
@@ -147,6 +153,68 @@ tadpole.UI.prototype.build = function(  ) {
     // Create a monitor channel for debugging?
     // Shouldn't really need this sort of thing.
     // Although debugging on mobile is somewhat tricky.
+    this.monitor = this.channel_add( this.options.monitor[0], replaceAll(this.options.monitor[0], '~', 'server:') );
+    
+    var ui = this;
+    
+    this.client.bind( 'pkt', function( event, client ) {
+    
+        ui.packet(event, client);
+    
+    } );
+    
+    this.client.bind( 'log', function( event, client ) {
+    
+        ui.packet(event, client);
+    
+    } );
+    
+    /*
+    // Channel removed from client.
+    this.client.middle(
+        'ns.remove',
+        function( data, done ) {
+            ui.remove_channel( data.ns );
+            done( data );
+        }
+    );
+    */
+    
+    this.client.bind(
+        'ns.create',
+        function( event, client ) {
+            ui.channel_add(event.chan.namespace, event.chan.raw);
+        }
+    );
+    /*
+    this.client.bind(
+        'ns.user.list',
+        function( event ) {
+            ui.channel(event.ns).set_user_list( event.users );
+        }
+    );
+    
+    this.client.middle(
+        'ns.user.privchg',
+        function( data, done ) {
+            ui.channel(data.ns).privchg( data, done );
+        }
+    );
+    
+    this.client.bind(
+        'ns.user.remove',
+        function( event, client ) {
+            ui.channel(event.ns).remove_one_user( event.user );
+        }
+    );
+    
+    this.client.bind(
+        'ns.user.registered',
+        function( event ) {
+            ui.channel(event.ns).register_user( event.user );
+        }
+    );
+    */
 
 };
 
@@ -184,6 +252,62 @@ tadpole.UI.prototype.channel_add = function( ns, raw ) {
 
     var tab = this.menu.channel.add( ns, raw );
     return this.book.add( ns, raw, tab );
+
+};
+
+/**
+ * Handle a packet being received.
+ * @method packet
+ * @param event {Object} Event data
+ * @param client {Object} Reference to the client
+ */
+tadpole.UI.prototype.packet = function( event, client ) {
+
+    var ui = this;
+    var msg = this.protocol.log( event );
+    
+    if( msg ) {
+        
+        //if( this.options.developer ) {
+            console.log( '>>>', event.sns, '|', msg.text() );
+        //}
+        
+        if( event.name == 'log' && event.sns == '~current' ) {
+            event.ns = ui.book.current.raw;
+            event.sns = ui.book.current.ns;
+        }
+        
+        // If the event is -shownotice, don't display it!
+        if( event.hasOwnProperty( 's' ) && event.s == '0' ) {
+            //this.book.handle( event, client );
+            return;
+        }
+        
+        event.html = msg.html();
+        
+        /*this.cascade(
+            'log_message',
+            function( data, done ) {*/
+                ui.book.log_message( msg, event );
+            /*}, {
+                message: msg,
+                event: event
+            }
+        );*/
+    
+    }
+    
+    //this.book.handle( event, client );
+
+};
+
+/**
+ * Send a log message to the monitor channel.
+ * @method log
+ */
+tadpole.UI.prototype.log = function( data ) {
+
+    return this.monitor.log( data );
 
 };
 
