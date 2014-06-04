@@ -19,14 +19,31 @@ tadpole.Top = function( ui ) {
  */
 tadpole.Top.prototype.build = function(  ) {
 
-    this.manager.view.append('<div class="top"><a class="menubutton" href="#">+</a> <span>Tadpole</span></div>');
+    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton" href="#">+</a></span></div>');
     this.view = this.manager.view.find('.top');
     this.button = this.view.find('.menubutton');
-    this.label = this.view.find('span');
+    this.label = this.view.find('span.label');
+
+    var top = this;
     
-    this.button.click( function( event ) {
+    this.button.on( 'click', function( event ) {
     
         event.preventDefault();
+        console.log('menu button clicked');
+    
+    } );
+    
+    this.view.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if( top.manager.toggle_menu() ) {
+            top.view.addClass('active');
+            return;
+        }
+        
+        top.view.removeClass('active');
     
     } );
 

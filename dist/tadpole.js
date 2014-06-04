@@ -140,9 +140,9 @@ tadpole.UI = function( view, client, options, mozilla ) {
 tadpole.UI.prototype.build = function(  ) {
 
     this.top = new tadpole.Top( this );
-    //this.menu = new tadpole.Menu( this );
     this.book = new tadpole.Book( this );
     this.control = new tadpole.Control( this );
+    this.menu = new tadpole.Menu( this );
     
     // Create a monitor channel for debugging?
     // Shouldn't really need this sort of thing.
@@ -166,6 +166,27 @@ tadpole.UI.prototype.resize = function(  ) {
 tadpole.UI.prototype.loop = function(  ) {
 };
 
+/**
+ * Toggle the menu visibility.
+ * @method toggle_menu
+ */
+tadpole.UI.prototype.toggle_menu = function(  ) {
+
+    return this.menu.toggle();
+
+};
+
+/**
+ * Add a channel to the UI.
+ * @method channel_add
+ */
+tadpole.UI.prototype.channel_add = function( ns, raw ) {
+
+    var tab = this.menu.channel.add( ns, raw );
+    return this.book.add( ns, raw, tab );
+
+};
+
 ;
 
 /**
@@ -178,6 +199,7 @@ tadpole.Book = function( ui ) {
 
     this.manager = ui;
     this.clist = {};
+    this.current = null;
     this.build();
 
 };
@@ -201,11 +223,33 @@ tadpole.Book.prototype.build = function(  ) {
  * @param ns {String} Namespace for the channel
  * @param raw {String} Raw namespace for the channel
  */
-tadpole.Book.prototype.add = function( ns, raw ) {
+tadpole.Book.prototype.add = function( ns, raw, tab ) {
 
-    var chan = new tadpole.Channel( ns, raw, this.manager, this );
-    this.clist[ns.toLowerCase] = chan;
+    var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
+    this.clist[ns.toLowerCase()] = chan;
+    this.reveal(ns);
     return chan;
+
+};
+
+
+/**
+ * Reveal a given channel, hide the current one.
+ * @method reveal
+ */
+tadpole.Book.prototype.reveal = function( ns ) {
+
+    var nsk = ns.toLowerCase();
+    
+    if( !this.clist.hasOwnProperty(nsk) )
+        return;
+    
+    if( this.current )
+        this.current.hide();
+    
+    this.current = this.clist[nsk];
+    this.current.reveal();
+    this.manager.top.set_label(this.current.ns);
 
 };
 
@@ -217,10 +261,11 @@ tadpole.Book.prototype.add = function( ns, raw ) {
  * @class tadpole.Channel
  * @contructor
  */
-tadpole.Channel = function( ns, raw, ui, book ) {
+tadpole.Channel = function( ns, raw, tab, ui, book ) {
 
     this.manager = ui;
     this.book = book;
+    this.tab = tab;
     this.ns = ns;
     this.raw = raw;
     this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
@@ -366,6 +411,97 @@ tadpole.Channel.prototype.kick = function( user, by, reason ) {
 };
 
 ;
+/**
+ * Channel list for the fucking thingy.
+ * @class tadpole.ChannelMenu
+ * @constructor
+ * @param ui {Object} Main ui object.
+ */
+tadpole.ChannelMenu = function( ui, parentview ) {
+
+    this.manager = ui;
+    this.parentview = parentview;
+    this.build();
+
+};
+
+
+/**
+ * Place the channel list on the page.
+ * @method build
+ */
+tadpole.ChannelMenu.prototype.build = function(  ) {
+
+    // Create the main menu.
+    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu', 'right' );
+    this.overlay.view.append('<nav class="channels">'
+        +'<ul>'
+        +'  <li><span class="button" id="channelexit">&laquo; Channels</span></li>'
+        +'</ul></nav>');
+    
+    this.view = this.overlay.view.find('nav');
+    this.ul = this.view.find('ul');
+    this.button_back = this.ul.find('span#channelexit');
+    
+    var cmenu = this;
+    
+    this.button_back.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        cmenu.hide();
+    
+    } );
+
+};
+
+/**
+ * Reveal the menu.
+ * @method reveal
+ */
+tadpole.ChannelMenu.prototype.reveal = function(  ) {
+
+    this.overlay.reveal();
+    return this.overlay.visible;
+
+};
+
+/**
+ * Hide the menu.
+ * @method hide
+ */
+tadpole.ChannelMenu.prototype.hide = function(  ) {
+
+    this.overlay.hide();
+    return this.overlay.visible;
+
+};
+
+/**
+ * Add a channel to the menu.
+ * @method add
+ */
+tadpole.ChannelMenu.prototype.add = function( ns, raw ) {
+
+    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
+    selector = replaceAll(selector, 'chat:', 'c-chat-');
+    
+    this.ul.append( '<li><a id="tab-' + selector + '" href="#">' + ns + '</a></li>');
+    
+    var cmenu = this;
+    var tab = this.ul.find('a#tab-' + selector);
+    
+    tab.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        cmenu.manager.book.reveal(ns);
+        cmenu.manager.menu.hide_quick();
+        cmenu.hide();
+    
+    } );
+    
+    return tab;
+
+};;
 
 /**
  * Control bar.
@@ -396,6 +532,226 @@ tadpole.Control.prototype.build = function(  ) {
 
 ;
 /**
+ * Menu for the fucking thingy.
+ * @class tadpole.Menu
+ * @constructor
+ * @param ui {Object} Main ui object.
+ */
+tadpole.Menu = function( ui ) {
+
+    this.manager = ui;
+    this.build();
+
+};
+
+
+/**
+ * Place the menu on the page.
+ * @method build
+ */
+tadpole.Menu.prototype.build = function(  ) {
+
+    // Create the main menu.
+    this.overlay = new tadpole.Overlay( this.manager.view, 'menu' );
+    this.overlay.view.append('<nav class="menu">'
+        +'<ul>'
+        +'  <li><a class="users" href="#">Users</a></li>'
+        +'  <li><a class="channels" href="#">Channels</a></li>'
+        +'  <li><a class="settings" href="#">Settings</a></li>'
+        +'</ul></nav>');
+    
+    this.view = this.overlay.view.find('nav');
+    this.button_users = this.view.find('.users');
+    this.button_channels = this.view.find('.channels');
+    this.button_settings = this.view.find('.settings');
+    
+    // Handle events.
+    var menu = this;
+    
+    this.button_users.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_users();
+    
+    } );
+    
+    this.button_channels.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_channels();
+    
+    } );
+    
+    this.button_settings.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_settings();
+    
+    } );
+    
+    // Create sub-menus.
+    this.channel = new tadpole.ChannelMenu( this.manager, this.overlay.view );
+    //this.users = new tadpole.UsersOverlay( this.manager );
+    //this.settings = new tadpole.SettingsOverlay( this.manager );
+
+};
+
+/**
+ * Toggle the menu.
+ * @method toggle
+ */
+tadpole.Menu.prototype.toggle = function(  ) {
+
+    if( this.overlay.visible ) {
+        this.channel.hide();
+        this.overlay.hide();
+        return this.overlay.visible;
+    }
+    
+    this.overlay.reveal();
+    return this.overlay.visible;
+
+};
+
+tadpole.Menu.prototype.hide_quick = function(  ) {
+
+    this.overlay.hide_quick();
+
+};
+
+/**
+ * Show the users.
+ * @method show_users
+ */
+tadpole.Menu.prototype.show_users = function(  ) {};
+
+/**
+ * Show the channels.
+ * @method show_channels
+ */
+tadpole.Menu.prototype.show_channels = function(  ) {
+
+    this.channel.reveal();
+
+};
+
+/**
+ * Show the settings.
+ * @method show_settings
+ */
+tadpole.Menu.prototype.show_settings = function(  ) {};
+
+
+;/**
+ * GUI overlay for the menu.
+ * @class tadpole.Overlay
+ * @constructor
+ */
+tadpole.Overlay = function( parentview, cls, origin ) {
+
+    this.parentview = parentview;
+    this.cls = cls;
+    this.origin = origin || 'top';
+    this.visible = false;
+    this.build();
+
+};
+
+/**
+ * Build the overlay.
+ * @method build
+ */
+tadpole.Overlay.prototype.build = function(  ) {
+
+    this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
+    this.view = this.parentview.find('.overlay.' + this.cls);
+    
+    var clh = $('body').height();
+    this.view.height( clh - 95 );
+
+};
+
+/**
+ * Show the overlay.
+ * @method reveal
+ */
+tadpole.Overlay.prototype.reveal = function(  ) {
+
+    if( this.visible )
+        return;
+    
+    switch(this.origin) {
+        /*case 'left':
+            this.view.slideRight();
+            break;
+        case 'right':
+            this.view.slideLeft();
+            break;
+        case 'bottom':
+            this.view.slideUp();
+            break;*/
+        case 'top':
+        default:
+            this.view.slideDown();
+            break;
+    }
+    
+    this.visible = true;
+
+};
+
+/**
+ * Hide the overlay.
+ * @method hide
+ */
+tadpole.Overlay.prototype.hide = function(  ) {
+
+    if( !this.visible )
+        return;
+    
+    switch(this.origin) {
+        /*case 'left':
+            this.view.slideLeft();
+            break;
+        case 'right':
+            this.view.slideRight();
+            break;
+        case 'bottom':
+            this.view.slideDown();
+            break;*/
+        case 'top':
+        default:
+            this.view.slideUp();
+            break;
+    }
+    
+    this.visible = false;
+
+};
+
+/**
+ * Quick hide!
+ * @method hide_quick
+ */
+tadpole.Overlay.prototype.hide_quick = function(  ) {
+
+    this.view.css({ 'display': 'none' });
+    this.visible = false;
+
+};
+
+/**
+ * Remove the overlay completely.
+ * @method remove
+ */
+tadpole.Overlay.prototype.remove = function(  ) {
+
+    this.view.remove();
+
+};
+
+;
+/**
  * Top bar for the fucking thingy.
  * @class tadpole.Top
  * @constructor
@@ -415,14 +771,31 @@ tadpole.Top = function( ui ) {
  */
 tadpole.Top.prototype.build = function(  ) {
 
-    this.manager.view.append('<div class="top"><a class="menubutton" href="#">+</a> <span>Tadpole</span></div>');
+    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton" href="#">+</a></span></div>');
     this.view = this.manager.view.find('.top');
     this.button = this.view.find('.menubutton');
-    this.label = this.view.find('span');
+    this.label = this.view.find('span.label');
+
+    var top = this;
     
-    this.button.click( function( event ) {
+    this.button.on( 'click', function( event ) {
     
         event.preventDefault();
+        console.log('menu button clicked');
+    
+    } );
+    
+    this.view.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if( top.manager.toggle_menu() ) {
+            top.view.addClass('active');
+            return;
+        }
+        
+        top.view.removeClass('active');
     
     } );
 

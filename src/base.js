@@ -140,9 +140,9 @@ tadpole.UI = function( view, client, options, mozilla ) {
 tadpole.UI.prototype.build = function(  ) {
 
     this.top = new tadpole.Top( this );
-    //this.menu = new tadpole.Menu( this );
     this.book = new tadpole.Book( this );
     this.control = new tadpole.Control( this );
+    this.menu = new tadpole.Menu( this );
     
     // Create a monitor channel for debugging?
     // Shouldn't really need this sort of thing.
@@ -164,5 +164,26 @@ tadpole.UI.prototype.resize = function(  ) {
  * @method loop
  */
 tadpole.UI.prototype.loop = function(  ) {
+};
+
+/**
+ * Toggle the menu visibility.
+ * @method toggle_menu
+ */
+tadpole.UI.prototype.toggle_menu = function(  ) {
+
+    return this.menu.toggle();
+
+};
+
+/**
+ * Add a channel to the UI.
+ * @method channel_add
+ */
+tadpole.UI.prototype.channel_add = function( ns, raw ) {
+
+    var tab = this.menu.channel.add( ns, raw );
+    return this.book.add( ns, raw, tab );
+
 };
 

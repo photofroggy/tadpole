@@ -41,38 +41,70 @@ div.tadpole {
       font-style: normal; }
   div.tadpole div.top {
     height: 45px;
-    background-color: #3B573B;
-    color: #7E9B89; }
+    background-color: #17254E;
+    /*#3B573B;*/
+    color: #94A3CF;
+    /*#7E9B89;*/
+    transition: background-color 300ms;
+    -webkit-transition: background-color 300ms; }
+    div.tadpole div.top.active {
+      background-color: #4C5D91;
+      transition: background-color 300ms;
+      -webkit-transition: background-color 300ms; }
+    div.tadpole div.top span.control {
+      position: absolute;
+      top: 5px;
+      right: 5px; }
     div.tadpole div.top a.menubutton {
       display: block;
       height: 30px;
       width: 25px;
-      padding-left: 10px;
+      /*padding-left: 10px;
       position: absolute;
       top: 5px;
       left: 5px;
       border-radius: 3px;
       background-color: #ABBDAB;
       border: 1px solid #202C20;
-      color: #1959B9; }
-      div.tadpole div.top a.menubutton:hover {
-        background-color: #829782; }
+      color: #1959B9;*/
+      color: #94A3CF;
+      /*#7E9B89;*/ }
     div.tadpole div.top span {
-      margin-left: 60px;
+      margin-left: 5px;
       position: relative;
       top: 7px; }
+  div.tadpole div.overlay {
+    display: none;
+    position: fixed;
+    top: 45px;
+    left: 0px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    /*#17254E;/*#3B573B;*/
+    color: #94A3CF;
+    /*#7E9B89;*/ }
+    div.tadpole div.overlay nav a, div.tadpole div.overlay nav span.button {
+      color: #94A3CF;
+      /*#7E9B89;*/
+      font-size: 18px;
+      display: block;
+      padding: 5px 15px;
+      border-bottom: 1px dotted #94A3CF; }
   div.tadpole div.book {
     font-size: 20px;
     margin: 0px;
     padding: 0px;
-    border-top: 1px solid #1D3A1D;
-    border-bottom: 1px solid #1D3A1D;
+    border-top: 1px solid #CDD9FF;
+    /*#1D3A1D;*/
+    border-bottom: 1px solid #CDD9FF;
+    /*#1D3A1D;*/
     position: absolute;
     top: 45px;
     bottom: 45px;
     left: 0px;
     right: 0px;
-    background-color: #779677; }
+    background-color: #DAE3FF;
+    /*#779677;*/ }
     div.tadpole div.book img {
       display: inline; }
   div.tadpole div.channel {
@@ -99,10 +131,12 @@ div.tadpole {
         overflow: auto;
         padding: 15px 10px; }
         div.tadpole div.channel ul.log li:not(:first-child) {
-          border-top: 1px solid #4E6F53; }
+          border-top: 1px solid #B3BDDA;
+          /*#4E6F53;*/ }
         div.tadpole div.channel ul.log li span.content {
           display: block;
-          color: #2D4B30;
+          color: #4E5C8A;
+          /*#2D4B30;*/
           overflow: auto; }
           div.tadpole div.channel ul.log li span.content h2:first-child, div.tadpole div.channel ul.log li span.content p:first-child {
             padding-right: 80px; }
@@ -111,22 +145,26 @@ div.tadpole {
           div.tadpole div.channel ul.log li span.content h2,
           div.tadpole div.channel ul.log li span.content strong.username,
           div.tadpole div.channel ul.log li span.content strong.event {
-            color: #1E3120; }
+            color: #3D455F;
+            /*#1E3120;*/ }
           div.tadpole div.channel ul.log li span.content p.background,
           div.tadpole div.channel ul.log li span.content p.background strong.event {
-            color: #4D6958; }
+            color: #8291BE;
+            /*#4D6958;*/ }
         div.tadpole div.channel ul.log li span.timestamp {
           display: block;
           position: absolute;
           right: 20px;
-          color: #4D6958;
+          color: #8291BE;
+          /*#4D6958;*/
           font-size: 16px; }
   div.tadpole div.control {
     position: absolute;
     bottom: 0px;
     width: 100%;
     height: 50px;
-    background-color: #3B573B; }
+    background-color: #17254E;
+    /*#3B573B;*/ }
   div.tadpole div.control input {
     margin: 8px 10px;
     font-size: 25px; }

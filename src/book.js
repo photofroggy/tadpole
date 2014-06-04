@@ -10,6 +10,7 @@ tadpole.Book = function( ui ) {
 
     this.manager = ui;
     this.clist = {};
+    this.current = null;
     this.build();
 
 };
@@ -33,11 +34,33 @@ tadpole.Book.prototype.build = function(  ) {
  * @param ns {String} Namespace for the channel
  * @param raw {String} Raw namespace for the channel
  */
-tadpole.Book.prototype.add = function( ns, raw ) {
+tadpole.Book.prototype.add = function( ns, raw, tab ) {
 
-    var chan = new tadpole.Channel( ns, raw, this.manager, this );
-    this.clist[ns.toLowerCase] = chan;
+    var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
+    this.clist[ns.toLowerCase()] = chan;
+    this.reveal(ns);
     return chan;
+
+};
+
+
+/**
+ * Reveal a given channel, hide the current one.
+ * @method reveal
+ */
+tadpole.Book.prototype.reveal = function( ns ) {
+
+    var nsk = ns.toLowerCase();
+    
+    if( !this.clist.hasOwnProperty(nsk) )
+        return;
+    
+    if( this.current )
+        this.current.hide();
+    
+    this.current = this.clist[nsk];
+    this.current.reveal();
+    this.manager.top.set_label(this.current.ns);
 
 };
 
