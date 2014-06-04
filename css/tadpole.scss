@@ -200,6 +200,28 @@ div.tadpole {
                     font-size: 16px;
                 }
                 
+                &.highlight {
+                
+                    background-color: white;
+                    
+                    span.content {
+                        color: #4E5C8A;
+                    
+                        h2,
+                        strong.username,
+                        strong.event {
+                            color: #3D455F;/*#1E3120;*/
+                        }
+                        
+                        p.background,
+                        p.background strong.event {
+                            color: #8291BE;/*#4D6958;*/
+                        }
+                    }
+                    
+                
+                }
+                
             }
             
         }

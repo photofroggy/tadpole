@@ -159,6 +159,19 @@ div.tadpole {
           color: #8291BE;
           /*#4D6958;*/
           font-size: 16px; }
+        div.tadpole div.channel ul.log li.highlight {
+          background-color: white; }
+          div.tadpole div.channel ul.log li.highlight span.content {
+            color: #4E5C8A; }
+            div.tadpole div.channel ul.log li.highlight span.content h2,
+            div.tadpole div.channel ul.log li.highlight span.content strong.username,
+            div.tadpole div.channel ul.log li.highlight span.content strong.event {
+              color: #3D455F;
+              /*#1E3120;*/ }
+            div.tadpole div.channel ul.log li.highlight span.content p.background,
+            div.tadpole div.channel ul.log li.highlight span.content p.background strong.event {
+              color: #8291BE;
+              /*#4D6958;*/ }
   div.tadpole div.control {
     position: absolute;
     bottom: 0px;

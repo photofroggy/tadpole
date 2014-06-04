@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.0.2';
+tadpole.VERSION = '0.0.4';
 tadpole.STATE = 'alpha';
 
 
@@ -340,7 +340,7 @@ tadpole.Channel.prototype.log = function( content ) {
         '</span><span class="content">'+content+'</span></li>'
     );
     
-    return this.logview.find('li#'+ms);
+    return this.logview.find('li#'+ms).last();
 
 };
 
@@ -379,7 +379,7 @@ tadpole.Channel.prototype.part = function( user, reason ) {
 tadpole.Channel.prototype.message = function( user, message ) {
 
     var mb = this.log('<h2 class="username">'+user+'</h2><p>'+message+'</p>');
-    console.log(mb);
+    this.highlight(mb, user, message);
 
 };
 
@@ -392,7 +392,22 @@ tadpole.Channel.prototype.message = function( user, message ) {
  */
 tadpole.Channel.prototype.action = function( user, message ) {
 
-    this.log('<p><em><strong class="username">* '+user+'</strong> '+message+'</em></p>');
+    var mb = this.log('<p><em><strong class="username">* '+user+'</strong> '+message+'</em></p>');
+    this.highlight(mb, user, message);
+
+};
+
+tadpole.Channel.prototype.highlight = function( box, user, message ) {
+
+    var self = this.manager.client.settings.username.toLowerCase();
+    
+    if( user.toLowerCase() == self )
+        return;
+    
+    if( message.toLowerCase().indexOf( self ) == -1 )
+        return;
+    
+    box.addClass('highlight');
 
 };
 
