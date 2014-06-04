@@ -82,8 +82,8 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw ) {
     
         event.preventDefault();
         cmenu.manager.book.reveal(ns);
-        cmenu.manager.menu.hide_quick();
-        cmenu.hide();
+        cmenu.manager.menu.toggle();
+        //cmenu.hide();
     
     } );
     
