@@ -43,6 +43,16 @@ tadpole.ChannelMenu.prototype.build = function(  ) {
 };
 
 /**
+ * Resize the channel menu.
+ * @method resize
+ */
+tadpole.ChannelMenu.prototype.resize = function(  ) {
+
+    this.overlay.resize();
+
+};
+
+/**
  * Reveal the menu.
  * @method reveal
  */

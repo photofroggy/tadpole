@@ -22,8 +22,19 @@ tadpole.Overlay.prototype.build = function(  ) {
     this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
     this.view = this.parentview.find('.overlay.' + this.cls);
     
-    var clh = $('body').height();
-    this.view.height( clh - 95 );
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+
+};
+
+/**
+ * Resize the overlay.
+ * @method resize
+ */
+tadpole.Overlay.prototype.resize = function(  ) {
+
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
 
 };
 

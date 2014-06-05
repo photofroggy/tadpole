@@ -34,6 +34,17 @@ tadpole.Control.prototype.build = function(  ) {
 };
 
 /**
+ * Resize the channel book.
+ * @method resize
+ */
+tadpole.Control.prototype.resize = function(  ) {
+
+    var clh = this.view.width();
+    this.input.width( clh - 20 );
+
+};
+
+/**
  * Get the text in the input box.
  * 
  * @method get_text

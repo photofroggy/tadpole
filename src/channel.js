@@ -36,6 +36,24 @@ tadpole.Channel.prototype.build = function(  ) {
 
 };
 
+/**
+ * Scroll the log panel downwards.
+ * 
+ * @method scroll
+ */
+tadpole.Channel.prototype.scroll = function( ) {
+    //this.pad();
+    //var ws = this.el.l.w.prop('scrollWidth') - this.el.l.w.innerWidth();
+    var hs = this.view.prop('scrollHeight') - this.logview.innerHeight();
+    //if( ws > 0 )
+    //    hs += ws;
+    if( hs < 0 || (hs - this.view.scrollTop()) > 100 )
+        return;
+    this.view.animate({
+        scrollTop: this.view.prop('scrollHeight')
+    }, 600);
+};
+
 
 /**
  * Reveal the channel.
@@ -86,6 +104,12 @@ tadpole.Channel.prototype.log = function( content ) {
         '<li id="'+ms+'"><span class="timestamp">'+ts+
         '</span>'+content+'</li>'
     );
+    
+    var ch = this;
+    
+    //setTimeout( function(  ) {
+        ch.scroll();
+    //}, 100 );
     
     return this.logview.find('li#'+ms).last();
 

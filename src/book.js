@@ -24,6 +24,21 @@ tadpole.Book.prototype.build = function(  ) {
 
     this.manager.view.append('<div class="book"></div>');
     this.view = this.manager.view.find('div.book');
+    
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+
+};
+
+/**
+ * Resize the channel book.
+ * @method resize
+ */
+tadpole.Book.prototype.resize = function(  ) {
+
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+    this.current.scroll();
 
 };
 

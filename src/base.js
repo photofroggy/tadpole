@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.2.6';
+tadpole.VERSION = '0.2.7';
 tadpole.STATE = 'alpha';
 
 
@@ -18,7 +18,9 @@ tadpole.STATE = 'alpha';
         if( method == 'init' || ui === undefined ) {
             if( ui == undefined ) {
                 ui = new tadpole.UI( $(this), client, options, ($.browser.mozilla || false) );
-                $(window).resize(function() { ui.resize(); });
+                $(window).resize(function() {
+                    ui.resize();
+                });
                 setInterval(function(  ) { ui.loop(); }, 120000);
                 ui.build();
             }
@@ -224,6 +226,9 @@ tadpole.UI.prototype.build = function(  ) {
  * @method resize
  */
 tadpole.UI.prototype.resize = function(  ) {
+    this.menu.resize();
+    this.control.resize();
+    this.book.resize();
 };
 
 

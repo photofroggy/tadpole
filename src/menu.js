@@ -65,6 +65,19 @@ tadpole.Menu.prototype.build = function(  ) {
 };
 
 /**
+ * Resize the menu.
+ * @method resize
+ */
+tadpole.Menu.prototype.resize = function(  ) {
+
+    this.overlay.resize();
+    this.channel.resize();
+    //this.users.resize();
+    //this.settings.reszie();
+
+};
+
+/**
  * Toggle the menu.
  * @method toggle
  */

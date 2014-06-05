@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.2.6';
+tadpole.VERSION = '0.2.7';
 tadpole.STATE = 'alpha';
 
 
@@ -18,7 +18,9 @@ tadpole.STATE = 'alpha';
         if( method == 'init' || ui === undefined ) {
             if( ui == undefined ) {
                 ui = new tadpole.UI( $(this), client, options, ($.browser.mozilla || false) );
-                $(window).resize(function() { ui.resize(); });
+                $(window).resize(function() {
+                    ui.resize();
+                });
                 setInterval(function(  ) { ui.loop(); }, 120000);
                 ui.build();
             }
@@ -224,6 +226,9 @@ tadpole.UI.prototype.build = function(  ) {
  * @method resize
  */
 tadpole.UI.prototype.resize = function(  ) {
+    this.menu.resize();
+    this.control.resize();
+    this.book.resize();
 };
 
 
@@ -337,6 +342,21 @@ tadpole.Book.prototype.build = function(  ) {
 
     this.manager.view.append('<div class="book"></div>');
     this.view = this.manager.view.find('div.book');
+    
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+
+};
+
+/**
+ * Resize the channel book.
+ * @method resize
+ */
+tadpole.Book.prototype.resize = function(  ) {
+
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+    this.current.scroll();
 
 };
 
@@ -483,6 +503,24 @@ tadpole.Channel.prototype.build = function(  ) {
 
 };
 
+/**
+ * Scroll the log panel downwards.
+ * 
+ * @method scroll
+ */
+tadpole.Channel.prototype.scroll = function( ) {
+    //this.pad();
+    //var ws = this.el.l.w.prop('scrollWidth') - this.el.l.w.innerWidth();
+    var hs = this.view.prop('scrollHeight') - this.logview.innerHeight();
+    //if( ws > 0 )
+    //    hs += ws;
+    if( hs < 0 || (hs - this.view.scrollTop()) > 100 )
+        return;
+    this.view.animate({
+        scrollTop: this.view.prop('scrollHeight')
+    }, 600);
+};
+
 
 /**
  * Reveal the channel.
@@ -533,6 +571,12 @@ tadpole.Channel.prototype.log = function( content ) {
         '<li id="'+ms+'"><span class="timestamp">'+ts+
         '</span>'+content+'</li>'
     );
+    
+    var ch = this;
+    
+    //setTimeout( function(  ) {
+        ch.scroll();
+    //}, 100 );
     
     return this.logview.find('li#'+ms).last();
 
@@ -664,6 +708,16 @@ tadpole.ChannelMenu.prototype.build = function(  ) {
 };
 
 /**
+ * Resize the channel menu.
+ * @method resize
+ */
+tadpole.ChannelMenu.prototype.resize = function(  ) {
+
+    this.overlay.resize();
+
+};
+
+/**
  * Reveal the menu.
  * @method reveal
  */
@@ -743,6 +797,17 @@ tadpole.Control.prototype.build = function(  ) {
     
     this.input.keydown( function( event ) { return ctrl.keypress( event ); } );
     this.form.submit( function( event ) { return ctrl.submit( event ); } );
+
+};
+
+/**
+ * Resize the channel book.
+ * @method resize
+ */
+tadpole.Control.prototype.resize = function(  ) {
+
+    var clh = this.view.width();
+    this.input.width( clh - 20 );
 
 };
 
@@ -986,6 +1051,19 @@ tadpole.Menu.prototype.build = function(  ) {
 };
 
 /**
+ * Resize the menu.
+ * @method resize
+ */
+tadpole.Menu.prototype.resize = function(  ) {
+
+    this.overlay.resize();
+    this.channel.resize();
+    //this.users.resize();
+    //this.settings.reszie();
+
+};
+
+/**
  * Toggle the menu.
  * @method toggle
  */
@@ -1058,8 +1136,19 @@ tadpole.Overlay.prototype.build = function(  ) {
     this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
     this.view = this.parentview.find('.overlay.' + this.cls);
     
-    var clh = $('body').height();
-    this.view.height( clh - 95 );
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+
+};
+
+/**
+ * Resize the overlay.
+ * @method resize
+ */
+tadpole.Overlay.prototype.resize = function(  ) {
+
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
 
 };
 
