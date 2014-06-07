@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.3.9';
+tadpole.VERSION = '0.4.10';
 tadpole.STATE = 'alpha';
 
 
@@ -171,16 +171,14 @@ tadpole.UI.prototype.build = function(  ) {
     
     } );
     
-    /*
     // Channel removed from client.
     this.client.middle(
         'ns.remove',
         function( data, done ) {
-            ui.remove_channel( data.ns );
+            ui.book.remove( data.ns );
             done( data );
         }
     );
-    */
     
     this.client.bind(
         'ns.create',
@@ -293,7 +291,7 @@ tadpole.UI.prototype.packet = function( event, client ) {
         
         // If the event is -shownotice, don't display it!
         if( event.hasOwnProperty( 's' ) && event.s == '0' ) {
-            //this.book.handle( event, client );
+            this.book.handle( event, client );
             return;
         }
         
@@ -311,7 +309,7 @@ tadpole.UI.prototype.packet = function( event, client ) {
     
     }
     
-    //this.book.handle( event, client );
+    this.book.handle( event, client );
 
 };
 

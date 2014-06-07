@@ -257,7 +257,9 @@ tadpole.MenuItemArray.prototype.add = function( id ) {
 
     this.remove( id );
     var ol = this.overlays.add(id);
-    this.items[id.toLowerCase()] = this.create_item( id, ol );
+    var item = this.create_item( id, ol );
+    this.items[id.toLowerCase()] = item;
+    return item;
 
 };
 

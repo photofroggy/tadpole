@@ -38,6 +38,18 @@ tadpole.Channel.prototype.build = function(  ) {
 };
 
 /**
+ * Remove a channel from the client.
+ * @method remove
+ */
+tadpole.Channel.prototype.remove = function(  ) {
+
+    this.view.remove();
+    this.tab.remove();
+    this.manager.menu.heads.remove(this.selector);
+
+};
+
+/**
  * Scroll the log panel downwards.
  * 
  * @method scroll
@@ -194,6 +206,35 @@ tadpole.Channel.prototype.highlight = function( box, user, message ) {
 tadpole.Channel.prototype.kick = function( user, by, reason ) {
 
     this.log('<p><em><strong class="event kick">** '+user+' kicked by '+by+' *</strong> '+reason+'</em></p>');
+
+};
+
+/**
+ * Handle a property packet.
+ * @method pkt_property
+ * @param event {Object} Event data
+ * @param client {Object} Reference to the client
+ */
+tadpole.Channel.prototype.pkt_property = function( event, client ) {
+
+    var prop = event.pkt.arg.p;
+    var c = client.channel( this.raw );
+    
+    switch(prop) {
+        case "title":
+        case "topic":
+            this.head.set(prop, event.value || (new wsc.MessageString( '' )), event.by, event.ts );
+            break;
+        case "privclasses":
+            //this.build_user_list( c.info.pc, c.info.pc_order.slice(0) );
+            break;
+        case "members":
+            // this.set_members(e);
+            break;
+        default:
+            // this.server_message("Received unknown property " + prop + " received in " + this.info["namespace"] + '.');
+            break;
+    }
 
 };
 

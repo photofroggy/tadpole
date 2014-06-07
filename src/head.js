@@ -16,7 +16,56 @@ tadpole.Head.prototype.constructor = tadpole.MenuItem;
  */
 tadpole.Head.prototype.build = function(  ) {
 
-    this.overlay.view.append('<div class="title">title</div><div class="topic">topic</div>');
+    this.overlay.view.append(
+        '<nav><ul><li>'
+        +'  <span class="button" id="headexit"><span class="icon-left-open"></span>Title/Topic</span>'
+        +'</li></ul></nav>'
+        +'<div class="title"></div><div class="topic"></div>'
+    );
+    
+    this.button_exit = this.overlay.view.find('nav ul li span.button#headexit');
+    
+    this.view = {
+        title: this.overlay.view.find('div.title'),
+        topic: this.overlay.view.find('div.topic')
+    };
+    
+    this.content = {
+        title: {
+            data: new wsc.MessageString(''),
+            by: '',
+            ts: 0.0
+        },
+        topic: {
+            data: new wsc.MessageString(''),
+            by: '',
+            ts: 0.0
+        },
+    };
+    
+    var head = this;
+    
+    this.button_exit.on( 'click', function( event ) {
+    
+        console.log('hide head');
+        event.preventDefault();
+        head.overlay.hide();
+        head.hide();
+    
+    } );
+
+};
+
+/**
+ * Set the title or topic.
+ * @method set
+ */
+tadpole.Head.prototype.set = function( header, content, by, ts ) {
+
+    this.view[header].html(content.html());
+    this.content[header].data = content;
+    this.content[header].by = by;
+    this.content[header].ts = ts;
 
 };
 

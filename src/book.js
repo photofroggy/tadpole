@@ -10,6 +10,7 @@ tadpole.Book = function( ui ) {
 
     this.manager = ui;
     this.clist = {};
+    this.chans = [];
     this.current = null;
     this.build();
 
@@ -75,10 +76,34 @@ tadpole.Book.prototype.channel = function( ns ) {
  */
 tadpole.Book.prototype.add = function( ns, raw, tab ) {
 
+    this.remove(raw);
     var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
     this.clist[raw.toLowerCase()] = chan;
+    this.chans.push(raw.toLowerCase());
     this.reveal(raw);
     return chan;
+
+};
+
+/**
+ * Remove a channel from the book.
+ * @method remove
+ */
+tadpole.Book.prototype.remove = function( raw ) {
+
+    var chan = this.channel(raw);
+    
+    if( !chan )
+        return;
+    
+    var rawk = raw.toLowerCase();
+    
+    chan.remove();
+    delete this.clist[rawk];
+    this.chans.splice(this.chans.indexOf(rawk), 1);
+    
+    if( chan == this.current )
+        this.reveal(this.chans[this.chans.length - 1]);
 
 };
 
@@ -143,6 +168,28 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( '>>', event.html );
             console.log( err );
         }
+    }
+
+};
+
+/**
+ * Handle an event.
+ * @method handle
+ */
+tadpole.Book.prototype.handle = function( event, client ) {
+
+    var c = this.channel(event.ns);
+    
+    if( !c )
+        return;
+    
+    var meth = 'pkt_' + event.name;
+    //console.log(meth, c[meth]);
+    
+    try {
+        c[meth](event, client);
+    } catch( err ) {
+        //console.log(err);
     }
 
 };

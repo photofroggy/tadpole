@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.3.9';
+tadpole.VERSION = '0.4.10';
 tadpole.STATE = 'alpha';
 
 
@@ -171,16 +171,14 @@ tadpole.UI.prototype.build = function(  ) {
     
     } );
     
-    /*
     // Channel removed from client.
     this.client.middle(
         'ns.remove',
         function( data, done ) {
-            ui.remove_channel( data.ns );
+            ui.book.remove( data.ns );
             done( data );
         }
     );
-    */
     
     this.client.bind(
         'ns.create',
@@ -293,7 +291,7 @@ tadpole.UI.prototype.packet = function( event, client ) {
         
         // If the event is -shownotice, don't display it!
         if( event.hasOwnProperty( 's' ) && event.s == '0' ) {
-            //this.book.handle( event, client );
+            this.book.handle( event, client );
             return;
         }
         
@@ -311,7 +309,7 @@ tadpole.UI.prototype.packet = function( event, client ) {
     
     }
     
-    //this.book.handle( event, client );
+    this.book.handle( event, client );
 
 };
 
@@ -434,8 +432,13 @@ tadpole.Overlay = function( parentview, cls, id, origin ) {
  */
 tadpole.Overlay.prototype.build = function(  ) {
 
-    this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
-    this.view = this.parentview.find('.overlay.' + this.cls);
+    var ids = '';
+    
+    if( this.id )
+        ids = ' id="' + this.id + '"';
+    
+    this.parentview.append('<div class="overlay ' + this.cls + '"' + ids + '></div>');
+    this.view = this.parentview.find(this.selector);
     
     var clh = $(window).height();
     this.view.height( clh - 72 );
@@ -936,7 +939,9 @@ tadpole.MenuItemArray.prototype.add = function( id ) {
 
     this.remove( id );
     var ol = this.overlays.add(id);
-    this.items[id.toLowerCase()] = this.create_item( id, ol );
+    var item = this.create_item( id, ol );
+    this.items[id.toLowerCase()] = item;
+    return item;
 
 };
 
@@ -1083,7 +1088,56 @@ tadpole.Head.prototype.constructor = tadpole.MenuItem;
  */
 tadpole.Head.prototype.build = function(  ) {
 
-    this.overlay.view.append('<div class="title">title</div><div class="topic">topic</div>');
+    this.overlay.view.append(
+        '<nav><ul><li>'
+        +'  <span class="button" id="headexit"><span class="icon-left-open"></span>Title/Topic</span>'
+        +'</li></ul></nav>'
+        +'<div class="title"></div><div class="topic"></div>'
+    );
+    
+    this.button_exit = this.overlay.view.find('nav ul li span.button#headexit');
+    
+    this.view = {
+        title: this.overlay.view.find('div.title'),
+        topic: this.overlay.view.find('div.topic')
+    };
+    
+    this.content = {
+        title: {
+            data: new wsc.MessageString(''),
+            by: '',
+            ts: 0.0
+        },
+        topic: {
+            data: new wsc.MessageString(''),
+            by: '',
+            ts: 0.0
+        },
+    };
+    
+    var head = this;
+    
+    this.button_exit.on( 'click', function( event ) {
+    
+        console.log('hide head');
+        event.preventDefault();
+        head.overlay.hide();
+        head.hide();
+    
+    } );
+
+};
+
+/**
+ * Set the title or topic.
+ * @method set
+ */
+tadpole.Head.prototype.set = function( header, content, by, ts ) {
+
+    this.view[header].html(content.html());
+    this.content[header].data = content;
+    this.content[header].by = by;
+    this.content[header].ts = ts;
 
 };
 
@@ -1437,6 +1491,7 @@ tadpole.Book = function( ui ) {
 
     this.manager = ui;
     this.clist = {};
+    this.chans = [];
     this.current = null;
     this.build();
 
@@ -1502,10 +1557,34 @@ tadpole.Book.prototype.channel = function( ns ) {
  */
 tadpole.Book.prototype.add = function( ns, raw, tab ) {
 
+    this.remove(raw);
     var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
     this.clist[raw.toLowerCase()] = chan;
+    this.chans.push(raw.toLowerCase());
     this.reveal(raw);
     return chan;
+
+};
+
+/**
+ * Remove a channel from the book.
+ * @method remove
+ */
+tadpole.Book.prototype.remove = function( raw ) {
+
+    var chan = this.channel(raw);
+    
+    if( !chan )
+        return;
+    
+    var rawk = raw.toLowerCase();
+    
+    chan.remove();
+    delete this.clist[rawk];
+    this.chans.splice(this.chans.indexOf(rawk), 1);
+    
+    if( chan == this.current )
+        this.reveal(this.chans[this.chans.length - 1]);
 
 };
 
@@ -1574,6 +1653,28 @@ tadpole.Book.prototype.log_message = function( message, event ) {
 
 };
 
+/**
+ * Handle an event.
+ * @method handle
+ */
+tadpole.Book.prototype.handle = function( event, client ) {
+
+    var c = this.channel(event.ns);
+    
+    if( !c )
+        return;
+    
+    var meth = 'pkt_' + event.name;
+    //console.log(meth, c[meth]);
+    
+    try {
+        c[meth](event, client);
+    } catch( err ) {
+        //console.log(err);
+    }
+
+};
+
 ;
 
 /**
@@ -1610,6 +1711,18 @@ tadpole.Channel.prototype.build = function(  ) {
     this.book.view.append('<div class="channel" id="'+this.selector+'"><ul class="log"></ul></div>');
     this.view = this.book.view.find('div.channel#'+this.selector);
     this.logview = this.view.find('ul.log');
+
+};
+
+/**
+ * Remove a channel from the client.
+ * @method remove
+ */
+tadpole.Channel.prototype.remove = function(  ) {
+
+    this.view.remove();
+    this.tab.remove();
+    this.manager.menu.heads.remove(this.selector);
 
 };
 
@@ -1770,6 +1883,35 @@ tadpole.Channel.prototype.highlight = function( box, user, message ) {
 tadpole.Channel.prototype.kick = function( user, by, reason ) {
 
     this.log('<p><em><strong class="event kick">** '+user+' kicked by '+by+' *</strong> '+reason+'</em></p>');
+
+};
+
+/**
+ * Handle a property packet.
+ * @method pkt_property
+ * @param event {Object} Event data
+ * @param client {Object} Reference to the client
+ */
+tadpole.Channel.prototype.pkt_property = function( event, client ) {
+
+    var prop = event.pkt.arg.p;
+    var c = client.channel( this.raw );
+    
+    switch(prop) {
+        case "title":
+        case "topic":
+            this.head.set(prop, event.value || (new wsc.MessageString( '' )), event.by, event.ts );
+            break;
+        case "privclasses":
+            //this.build_user_list( c.info.pc, c.info.pc_order.slice(0) );
+            break;
+        case "members":
+            // this.set_members(e);
+            break;
+        default:
+            // this.server_message("Received unknown property " + prop + " received in " + this.info["namespace"] + '.');
+            break;
+    }
 
 };
 

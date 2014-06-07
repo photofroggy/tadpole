@@ -25,8 +25,13 @@ tadpole.Overlay = function( parentview, cls, id, origin ) {
  */
 tadpole.Overlay.prototype.build = function(  ) {
 
-    this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
-    this.view = this.parentview.find('.overlay.' + this.cls);
+    var ids = '';
+    
+    if( this.id )
+        ids = ' id="' + this.id + '"';
+    
+    this.parentview.append('<div class="overlay ' + this.cls + '"' + ids + '></div>');
+    this.view = this.parentview.find(this.selector);
     
     var clh = $(window).height();
     this.view.height( clh - 72 );
