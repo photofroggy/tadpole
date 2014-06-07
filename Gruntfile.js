@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                     'src/overlay.js',
                     'src/menu.js',
                     'src/head.js',
-                    //'src/users.js',
+                    'src/users.js',
                     'src/channelmenu.js',
                     'src/control.js',
                     'src/book.js',

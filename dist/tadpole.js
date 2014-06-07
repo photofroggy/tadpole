@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.10';
+tadpole.VERSION = '0.4.11';
 tadpole.STATE = 'alpha';
 
 
@@ -186,14 +186,14 @@ tadpole.UI.prototype.build = function(  ) {
             ui.channel_add(event.chan.namespace, event.chan.raw);
         }
     );
-    /*
+    
     this.client.bind(
         'ns.user.list',
-        function( event ) {
-            ui.channel(event.ns).set_user_list( event.users );
+        function( event, client ) {
+            ui.book.channel(client.format_ns(event.ns)).users.set_users( event.users );
         }
     );
-    
+    /*
     this.client.middle(
         'ns.user.privchg',
         function( data, done ) {
@@ -260,7 +260,8 @@ tadpole.UI.prototype.channel_add = function( ns, raw ) {
     
     var components = {
         tab: this.menu.channel.add( ns, raw ),
-        head: this.menu.heads.add( selector )
+        head: this.menu.heads.add( selector ),
+        users: this.menu.users.add( selector )
     };
     
     return this.book.add( ns, raw, components );
@@ -766,7 +767,7 @@ tadpole.Menu.prototype.build = function(  ) {
     // Create sub-menus.
     this.channel = new tadpole.ChannelMenu( this.manager, this.overlay.view );
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
-    //this.users = new tadpole.UserListArray( this.manager );
+    this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
     //this.settings = new tadpole.SettingsOverlay( this.manager );
 
 };
@@ -794,6 +795,7 @@ tadpole.Menu.prototype.toggle = function(  ) {
     if( this.overlay.visible ) {
         this.channel.hide();
         this.heads.hide();
+        this.users.hide();
         this.overlay.hide();
         this.manager.top.inactive();
         return this.overlay.visible;
@@ -826,7 +828,11 @@ tadpole.Menu.prototype.show_head = function(  ) {
  * Show the users.
  * @method show_users
  */
-tadpole.Menu.prototype.show_users = function(  ) {};
+tadpole.Menu.prototype.show_users = function(  ) {
+
+    this.users.reveal(this.manager.book.current.selector);
+
+};
 
 /**
  * Show the channels.
@@ -1119,7 +1125,6 @@ tadpole.Head.prototype.build = function(  ) {
     
     this.button_exit.on( 'click', function( event ) {
     
-        console.log('hide head');
         event.preventDefault();
         head.overlay.hide();
         head.hide();
@@ -1156,6 +1161,170 @@ tadpole.HeadArray.prototype.constructor = tadpole.HeadArray;
 tadpole.HeadArray.prototype.create_item = function( id, overlay ) {
 
     return new tadpole.Head( this.manager, this.menu, id, overlay );
+
+};
+;
+/**
+ * Channel Userser.
+ * @class tadpole.Users
+ * @constructor
+ */
+tadpole.Users = function( manager, menu, id, overlay ) {
+    tadpole.MenuItem.call(this, manager, menu, id, overlay);
+};
+tadpole.Users.prototype = new tadpole.MenuItem;
+tadpole.Users.prototype.constructor = tadpole.MenuItem;
+
+/**
+ * Build the channel Users display within the overlay.
+ * @method build
+ */
+tadpole.Users.prototype.build = function(  ) {
+
+    this.users = {};
+    
+    this.overlay.view.append(
+        '<nav><ul><li>'
+        +'  <span class="button" id="usersexit"><span class="icon-left-open"></span>Users</span>'
+        +'</li></ul></nav>'
+        +'<div class="list"><nav><ul></ul></nav></div>'
+    );
+    
+    this.view = this.overlay.view.find('div.list');
+    this.ul = this.view.find('nav ul');
+    this.button_exit = this.overlay.view.find('nav ul li span.button#usersexit');
+    
+    var users = this;
+    
+    this.button_exit.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        users.overlay.hide();
+        users.hide();
+    
+    } );
+
+};
+
+/**
+ * Reveal or hide the userlist depending on the number of users present.
+ * 
+ * @method reveal_pcs
+ */
+tadpole.Users.prototype.reveal_pcs = function(  ) {
+
+    var total = 0;
+    var count = 0;
+    var pc = null;
+    var ulist = this;
+    
+    this.ul.find('.pc').each( function( i, el ) {
+        pc = ulist.ul.find(this);
+        count = pc.find('ul li').length;
+        total+= count;
+        pc.css('display', ( count == 0 ? 'none' : 'block' ));
+    } );
+    
+    this.ul.css('display', ( total == 0 ? 'none' : 'block' ));
+
+};
+
+/**
+ * Build the user list.
+ * 
+ * @method set_pcs
+ * @param names {Object} Privilege class names
+ * @param order {Array} Privilege class orders
+ */
+tadpole.Users.prototype.set_pcs = function( names, order ) {
+    
+    var pc = '';
+    var pcel = null;
+    
+    this.ul.html('');
+    
+    for(var index in order) {
+        pc = names[order[index]];
+        
+        this.ul.append(
+            '<li class="pc" id="' + replaceAll( pc, ' ', '-' ) + '">'
+            +'  <span class="button"><span class="icon-user"></span>' + pc + '</span>'
+            +'  <ul></ul>'
+            +'</li>'
+        );
+        
+        pcel = this.ul.find('li.pc#' + pc);
+        pcel.css('display', 'none');
+        
+        this.users[pc] = {
+            'pc': pcel,
+            'users': pcel.find('ul')
+        };
+    }
+
+};
+
+/**
+ * Set a user in the user list.
+ * @method set
+ */
+tadpole.Users.prototype.set = function( user, noreveal ) {
+
+    var pc = this.users[user.pc];
+    
+    var conn = user.conn == 1 ? '' : '[' + user.conn + ']';
+    var html = '<li class="user" id="' + user.name + '">'
+        +'<a target="_blank" href="http://' + user.name + '.' + this.manager.options['domain'] + '"><em>'
+        + user.symbol + '</em>'
+        + user.name + conn + '</a></li>';
+    
+    pc.users.append(html);
+    
+    var el = pc.users.find('li.user#' + user.name);
+    
+    el.find('a').on( 'click', function( event ) {
+    
+        event.preventDefault();
+        // do something here like tab the user?
+    
+    } );
+    
+    if( noreveal )
+        return;
+    
+    this.reveal_pcs();
+
+};
+
+/**
+ * Set the list of users.
+ * @method set_users
+ */
+tadpole.Users.prototype.set_users = function( users ) {
+
+    for( var i in users ) {
+        this.set(users[i], true);
+    }
+    
+    this.reveal_pcs();
+
+};
+
+
+/**
+ * Array of channel Usersers.
+ * @class tadpole.UsersArray
+ * @constructor
+ */
+tadpole.UsersArray = function( ui, menu, parentview, cls, id, origin ) {
+    tadpole.MenuItemArray.call(this, ui, menu, parentview, cls, id, origin );
+};
+tadpole.UsersArray.prototype = new tadpole.MenuItemArray;
+tadpole.UsersArray.prototype.constructor = tadpole.UsersArray;
+
+tadpole.UsersArray.prototype.create_item = function( id, overlay ) {
+
+    return new tadpole.Users( this.manager, this.menu, id, overlay );
 
 };
 ;
@@ -1689,6 +1858,7 @@ tadpole.Channel = function( ns, raw, components, ui, book ) {
     this.book = book;
     this.tab = components.tab;
     this.head = components.head;
+    this.users = components.users;
     this.ns = ns;
     this.raw = raw;
     this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
@@ -1723,6 +1893,7 @@ tadpole.Channel.prototype.remove = function(  ) {
     this.view.remove();
     this.tab.remove();
     this.manager.menu.heads.remove(this.selector);
+    this.manager.menu.users.remove(this.selector);
 
 };
 
@@ -1760,6 +1931,7 @@ tadpole.Channel.prototype.reveal = function(  ) {
     this.view.css({'display': 'block'});
     this.hidden = false;
     this.manager.top.set_label(this.ns);
+    this.scroll();
 
 };
 
@@ -1903,10 +2075,10 @@ tadpole.Channel.prototype.pkt_property = function( event, client ) {
             this.head.set(prop, event.value || (new wsc.MessageString( '' )), event.by, event.ts );
             break;
         case "privclasses":
-            //this.build_user_list( c.info.pc, c.info.pc_order.slice(0) );
+            this.users.set_pcs( c.info.pc, c.info.pc_order.slice(0) );
             break;
         case "members":
-            // this.set_members(e);
+            this.set_users(e);
             break;
         default:
             // this.server_message("Received unknown property " + prop + " received in " + this.info["namespace"] + '.');

@@ -47,7 +47,6 @@ tadpole.Head.prototype.build = function(  ) {
     
     this.button_exit.on( 'click', function( event ) {
     
-        console.log('hide head');
         event.preventDefault();
         head.overlay.hide();
         head.hide();

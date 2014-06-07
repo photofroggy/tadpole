@@ -12,6 +12,7 @@ tadpole.Channel = function( ns, raw, components, ui, book ) {
     this.book = book;
     this.tab = components.tab;
     this.head = components.head;
+    this.users = components.users;
     this.ns = ns;
     this.raw = raw;
     this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
@@ -46,6 +47,7 @@ tadpole.Channel.prototype.remove = function(  ) {
     this.view.remove();
     this.tab.remove();
     this.manager.menu.heads.remove(this.selector);
+    this.manager.menu.users.remove(this.selector);
 
 };
 
@@ -83,6 +85,7 @@ tadpole.Channel.prototype.reveal = function(  ) {
     this.view.css({'display': 'block'});
     this.hidden = false;
     this.manager.top.set_label(this.ns);
+    this.scroll();
 
 };
 
@@ -226,10 +229,10 @@ tadpole.Channel.prototype.pkt_property = function( event, client ) {
             this.head.set(prop, event.value || (new wsc.MessageString( '' )), event.by, event.ts );
             break;
         case "privclasses":
-            //this.build_user_list( c.info.pc, c.info.pc_order.slice(0) );
+            this.users.set_pcs( c.info.pc, c.info.pc_order.slice(0) );
             break;
         case "members":
-            // this.set_members(e);
+            this.set_users(e);
             break;
         default:
             // this.server_message("Received unknown property " + prop + " received in " + this.info["namespace"] + '.');

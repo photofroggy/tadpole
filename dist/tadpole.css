@@ -185,6 +185,8 @@
 div.tadpole {
   font: normal 25px verdana, sans-serif;
   clear: both; }
+  div.tadpole div.overlay span[class*=" icon-"], div.tadpole div.overlay span[class^="icon-"] {
+    color: #31ACAC; }
   div.tadpole * {
     margin: 0;
     padding: 0; }
@@ -263,6 +265,8 @@ div.tadpole {
     font-size: 16px;
     padding: 10px;
     border-bottom: 1px dotted #94A3CF; }
+  div.tadpole div.userlist .pc .user em {
+    color: #B63636; }
   div.tadpole div.book {
     font-size: 20px;
     margin: 0px;

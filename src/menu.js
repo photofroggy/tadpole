@@ -84,7 +84,7 @@ tadpole.Menu.prototype.build = function(  ) {
     // Create sub-menus.
     this.channel = new tadpole.ChannelMenu( this.manager, this.overlay.view );
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
-    //this.users = new tadpole.UserListArray( this.manager );
+    this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
     //this.settings = new tadpole.SettingsOverlay( this.manager );
 
 };
@@ -112,6 +112,7 @@ tadpole.Menu.prototype.toggle = function(  ) {
     if( this.overlay.visible ) {
         this.channel.hide();
         this.heads.hide();
+        this.users.hide();
         this.overlay.hide();
         this.manager.top.inactive();
         return this.overlay.visible;
@@ -144,7 +145,11 @@ tadpole.Menu.prototype.show_head = function(  ) {
  * Show the users.
  * @method show_users
  */
-tadpole.Menu.prototype.show_users = function(  ) {};
+tadpole.Menu.prototype.show_users = function(  ) {
+
+    this.users.reveal(this.manager.book.current.selector);
+
+};
 
 /**
  * Show the channels.

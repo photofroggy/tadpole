@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.10';
+tadpole.VERSION = '0.4.11';
 tadpole.STATE = 'alpha';
 
 
@@ -186,14 +186,14 @@ tadpole.UI.prototype.build = function(  ) {
             ui.channel_add(event.chan.namespace, event.chan.raw);
         }
     );
-    /*
+    
     this.client.bind(
         'ns.user.list',
-        function( event ) {
-            ui.channel(event.ns).set_user_list( event.users );
+        function( event, client ) {
+            ui.book.channel(client.format_ns(event.ns)).users.set_users( event.users );
         }
     );
-    
+    /*
     this.client.middle(
         'ns.user.privchg',
         function( data, done ) {
@@ -260,7 +260,8 @@ tadpole.UI.prototype.channel_add = function( ns, raw ) {
     
     var components = {
         tab: this.menu.channel.add( ns, raw ),
-        head: this.menu.heads.add( selector )
+        head: this.menu.heads.add( selector ),
+        users: this.menu.users.add( selector )
     };
     
     return this.book.add( ns, raw, components );
