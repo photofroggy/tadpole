@@ -24,11 +24,17 @@
 @import "settings";
 @import "pager";
 @import "theme_template";
+*/
+@import "font";
 
 /* Layout */
 div.tadpole {
     font: normal 25px verdana, sans-serif;
     clear: both;
+    
+    span[class*=" icon-"], span[class^="icon-"] {
+        
+    }
     
     * {
         margin: 0;
@@ -52,25 +58,29 @@ div.tadpole {
         height: 45px;
         background-color: #17254E;/*#3B573B;*/
         color: #94A3CF;/*#7E9B89;*/
-        transition: background-color 300ms;
-        -webkit-transition: background-color 300ms;
+        transition: background-color 300ms, color 300ms;
+        -webkit-transition: background-color 300ms, 300ms;
         
         &.active {
             background-color: #4C5D91;
-            transition: background-color 300ms;
-            -webkit-transition: background-color 300ms;
+            transition: background-color 300ms, color 300ms;
+            -webkit-transition: background-color 300ms, color 300ms;
+            color: #17254E;
+            a.menubutton {
+                transition: background-color 300ms, color 300ms;
+                -webkit-transition: background-color 300ms, color 300ms;
+                color: #17254E;
+            }
         }
         
         span.control {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            right: 0px;
+            padding-right: 5px;
         }
         
         a.menubutton {
-            display: block;
             height: 30px;
-            width: 25px;
             /*padding-left: 10px;
             position: absolute;
             top: 5px;
@@ -80,6 +90,8 @@ div.tadpole {
             border: 1px solid #202C20;
             color: #1959B9;*/
             color: #94A3CF;/*#7E9B89;*/
+            transition: background-color 300ms, color 300ms;
+            -webkit-transition: background-color 300ms, color 300ms;
         
         }
         
@@ -102,13 +114,23 @@ div.tadpole {
         color: #94A3CF;/*#7E9B89;*/
         
         nav {
+            li {
+                border-bottom: 1px dotted #94A3CF;
+                li {
+                    border-top: 1px dotted #94A3CF;
+                    border-bottom: none;
+                    padding-left: 30px;
+                }
+            }
             
             a, span.button {
                 color: #94A3CF;/*#7E9B89;*/
                 font-size: 18px;
                 display: block;
                 padding: 5px 15px;
-                border-bottom: 1px dotted #94A3CF;
+                span[class*=" icon-"], span[class^="icon-"] {
+                    margin-right: 5px;
+                }
             }
         
         }
@@ -126,7 +148,7 @@ div.tadpole {
         bottom: 45px;
         left: 0px;
         right: 0px;
-        background-color: #DAE3FF;/*#779677;*/
+        background-color: #ECECFF;/*#DAE3FF;/*#779677;*/
         
         img {
             display: inline;
@@ -163,7 +185,7 @@ div.tadpole {
             li {
                 overflow: auto;
                 padding: 10px;
-                color: #4E5C8A;/*#2D4B30;*/
+                color: #54567E;/*#4E5C8A;/*#2D4B30;*/
                     
                 h2 {
                     font-size: 18px;
@@ -172,39 +194,40 @@ div.tadpole {
                 h2,
                 strong.username,
                 strong.event {
-                    color: #3D455F;/*#1E3120;*/
+                    color: #1F2264;/*#3D455F;/*#1E3120;*/
                 }
                 
+                h2.background,
                 p.background,
                 p.background strong.event {
-                    color: #8291BE;/*#4D6958;*/
+                    color: #A0B2CC;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
                 }
                 
                 &:not(:first-child) {
-                    border-top: 1px solid #B3BDDA;/*#4E6F53;*/
+                    border-top: 1px solid #D9D9EE;/*#B3BDDA;/*#4E6F53;*/
                 }
                 
                 span.timestamp {
                     display: block;
                     float: right;
-                    color: #8291BE;/*#4D6958;*/
+                    color: #A0B2CC;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
                     font-size: 16px;
                 }
                 
                 &.highlight {
                 
                     background-color: white;
-                    color: #4E5C8A;
+                    color: #54567E;/*#4E5C8A;*/
                 
                     h2,
                     strong.username,
                     strong.event {
-                        color: #3D455F;/*#1E3120;*/
+                        color: #1F2264;/*#3D455F;/*#1E3120;*/
                     }
                     
                     p.background,
                     p.background strong.event {
-                        color: #8291BE;/*#4D6958;*/
+                        color: #A0B2CC;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
                     }
                     
                 

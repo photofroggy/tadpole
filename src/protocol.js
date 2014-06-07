@@ -62,32 +62,32 @@ tadpole.Protocol = function(  ) {
     this.messages = {
         'chatserver': {
             keys: [ 'version' ],
-            template: '<p><strong class="event">** Connected to llama {version} *</strong></p>',
+            template: '<h2>Connected to llama {version}</h2>',
             global: true
         },
         'dAmnServer': {
             keys: [ 'version' ],
-            template: '<p><strong class="event">** Connected to dAmnServer {version} *</strong></p>',
+            template: '<h2>Connected to dAmnServer {version}</h2>',
             global: true
         },
         'login': {
             keys: [ 'username', 'e', 'data' ],
-            template: '<p><strong class="event">** Login as {username}: "{e}" *</strong></p>',
+            template: '<p><strong class="event">Login as {username}:</strong> "{e}"</p>',
             global: true
         },
         'join': {
             keys: [ 'ns', 'e' ],
-            template: '<p><strong class="event">** Join {ns}: "{e}" *</strong></p>',
+            template: '<p><strong class="event">Join {ns}:</strong> "{e}"</p>',
             monitor: true
         },
         'part': {
             keys: [ 'ns', 'e', 'r' ],
-            template: '<p><strong class="event">** Part {ns}: "{e}" * </strong><em>{r}</em></p>',
+            template: '<h2>Part {ns} "{e}"</h2><p>{r}</p>',
             monitor: true
         },
         'property': {
             keys: [ 'ns', 'p', 'by', 'ts', 'value' ],
-            template: '<p><strong class="event">** Got {p} for {ns} *</strong></p>',
+            template: '<h2>Got {p} for {ns}</h2>',
             monitor: true
         },
         'recv_msg': {
@@ -106,84 +106,84 @@ tadpole.Protocol = function(  ) {
         },
         'recv_join': {
             keys: [ 'user', 's', 'info' ],
-            template: '<p class="background"><strong class="event join">** {user} joined *</strong></p>',
+            template: '<h2 class="background">{user} joined</h2>',
         },
         'recv_part': {
             keys: [ 'user', 'r' ],
-            template: '<p class="background"><strong class="event join">** {user} has left *</strong> {r}</p>'
+            template: '<h2 class="background">{user} has left</h2><p class="background">{r}</p>'
         },
         'recv_privchg': {
             keys: [ 'user', 's', 'by', 'pc' ],
-            template: '<p><strong class="event">** {user} has been made a member of {pc} by {by} *</strong></p>'
+            template: '<p><strong><em>{user} has been made a member of {pc} by {by}</em></strong></p>'
         },
         'recv_kicked': {
             keys: [ 'user', 's', 'by', 'r' ],
-            template: '<p><strong class="event">** {user} has been kicked by {by} * </strong><em>{r}</em></p>'
+            template: '<h2>{user} has been kicked by {by}</h2><p>{r}</p>'
         },
         'recv_admin_create': {
             keys: [ 'p', 'user', 'pc', 'privs' ],
-            template: '<p><strong class="event">** Privilege class {pc} has been created by {user} * </strong><em>{privs}</em></p>'
+            template: '<h2>Privilege class {pc} has been created by {user}</h2><p>{privs}</p>'
         },
         'recv_admin_update': {
             keys: [ 'p', 'user', 'pc', 'privs' ],
-            template: '<p><strong class="event">** Privilege class {pc} has been updated by {user} * </strong><em>{privs}</em></p>'
+            template: '<h2>Privilege class {pc} has been updated by {user}</h2><p>{privs}</p>'
         },
         'recv_admin_rename': {
             keys: [ 'p', 'user', 'prev', 'pc' ],
-            template: '<p><strong class="event">** Privilege class {prev} has been renamed to {pc} by {user} *</strong></p>'
+            template: '<h2>Privilege class {prev} has been renamed to {pc} by {user}</h2>'
         },
         'recv_admin_move': {
             keys: [ 'p', 'user', 'prev', 'pc', 'affected' ],
-            template: '<p><strong class="event">** All members of {prev} have been moved to {pc} by {user} * </strong><em>{affected} affected user(s)</em></p>'
+            template: '<h2>All members of {prev} have been moved to {pc} by {user}</h2><p>{affected} affected user(s)</p>'
         },
         'recv_admin_remove': {
             keys: [ 'p', 'user', 'pc', 'affected' ],
-            template: '<p><strong class="event">** Privilege class {pc} has been removed by {user} * </strong><em>{affected} affected user(s)</em></p>'
+            template: '<h2>Privilege class {pc} has been removed by {user}</h2><p>{affected} affected user(s)</p>'
         },
         'recv_admin_show': null,
         'recv_admin_showverbose': null,
         'recv_admin_privclass': {
             keys: [ 'p', 'e', 'command' ],
-            template: '<p><strong class="event">** Admin command "{command}" failed * </strong><em>{e}</em></p>'
+            template: '<h2>Admin command "{command}" failed</h2><p>{e}</p>'
         },
         'kicked': {
             keys: [ 'ns', 'user', 'r' ],
-            template: '<p><strong class="event">** You have been kicked by {user} * </strong><em>{r}</em></p>'
+            template: '<h2>You have been kicked by {user}</h2><p>{r}</p>'
         },
         'ping': null, //['<p><strong class="event">** Ping...</strong></p>', true],
         'disconnect': {
            keys: [ 'e' ],
-           template: '<p><strong class="event">** You have been disconnected * </strong><em>{e}</em></p>',
+           template: '<h2>You have been disconnected</h2><p>{e}</p>',
            global: true
         },
         // Stuff here is errors, yes?
         'send': {
             keys: [ 'ns', 'e' ],
-            template: '<p><strong class="event">** Send error: <em>{e}</em></p>'
+            template: '<p><strong class="event">Send error: <em>{e}</em></p>'
         },
         'kick': {
             keys: [ 'ns', 'user', 'e' ],
-            template: '<p><strong class="event">** Could not kick {user} * </strong><em>{e}</em></p>'
+            template: '<h2>Could not kick {user}</h2><p>{e}</p>'
         },
         'get': {
             keys: [ 'ns', 'p', 'e' ],
-            template: '<p><strong class="event">** Could not get {p} info for {ns} * </strong><em>{e}</em></p>'
+            template: '<h2>Could not get {p} info for {ns}</h2><p>{e}</p>'
         },
         'set': {
             keys: [ 'ns', 'p', 'e' ],
-            template: '<p><strong class="event">** Could not set {p} * </strong><em>{e}</em></p>'
+            template: '<h2>Could not set {p}</h2><p>{e}</p>'
         },
         'kill': {
             keys: [ 'ns', 'e' ],
-            template: '<p><strong class="event">** Kill error * </strong><em>{e}</em></p>'
+            template: '<h2>Kill error</h2><p>{e}</p>'
         },
         'log': {
             keys: [ 'ns', 'msg', 'info' ],
-            template: '<p><strong class="event">** {msg} * </strong><em>{info}</em></p>'
+            template: '<h2>{msg}</h2><p>{info}</p>'
         },
         'unknown': {
             keys: [ 'ns', 'packet' ],
-            template: '<p><strong class="event">** Received unknown packet in {ns} * </strong><em>{packet}</em></p>',
+            template: '<h2>Received unknown packet in {ns}</h2><p>{packet}</p>',
             monitor: true
         }
     };

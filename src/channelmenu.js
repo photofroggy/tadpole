@@ -21,10 +21,10 @@ tadpole.ChannelMenu = function( ui, parentview ) {
 tadpole.ChannelMenu.prototype.build = function(  ) {
 
     // Create the main menu.
-    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu', 'right' );
+    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu' );
     this.overlay.view.append('<nav class="channels">'
         +'<ul>'
-        +'  <li><span class="button" id="channelexit">&laquo; Channels</span></li>'
+        +'  <li><span class="button" id="channelexit"><span class="icon-left-open"></span>Channels</span></li>'
         +'</ul></nav>');
     
     this.view = this.overlay.view.find('nav');

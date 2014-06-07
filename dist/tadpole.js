@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.2.7';
+tadpole.VERSION = '0.3.9';
 tadpole.STATE = 'alpha';
 
 
@@ -255,8 +255,17 @@ tadpole.UI.prototype.toggle_menu = function(  ) {
  */
 tadpole.UI.prototype.channel_add = function( ns, raw ) {
 
-    var tab = this.menu.channel.add( ns, raw );
-    return this.book.add( ns, raw, tab );
+    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
+    selector = replaceAll(selector, 'chat:', 'c-chat-');
+    selector = replaceAll(selector, 'server:', 'c-server-');
+    selector = replaceAll(selector, ':', '-');
+    
+    var components = {
+        tab: this.menu.channel.add( ns, raw ),
+        head: this.menu.heads.add( selector )
+    };
+    
+    return this.book.add( ns, raw, components );
 
 };
 
@@ -274,7 +283,7 @@ tadpole.UI.prototype.packet = function( event, client ) {
     if( msg ) {
         
         //if( this.options.developer ) {
-            console.log( '>>>', event.sns, '|', msg.text() );
+        //    console.log( '>>>', event.sns, '|', msg.text() );
         //}
         
         if( event.name == 'log' && event.sns == '~current' ) {
@@ -317,31 +326,116 @@ tadpole.UI.prototype.log = function( data ) {
 };
 
 ;
-
 /**
- * Channel book.
- * Displays one channel at a time.
- * @class tadpole.Book
- * @contructor
+ * Top bar for the fucking thingy.
+ * @class tadpole.Top
+ * @constructor
+ * @param ui {Object} Main ui object.
  */
-tadpole.Book = function( ui ) {
+tadpole.Top = function( ui ) {
 
     this.manager = ui;
-    this.clist = {};
-    this.current = null;
     this.build();
 
 };
 
 
 /**
- * Place the channel book on the screen.
+ * Place the top bar on the page.
  * @method build
  */
-tadpole.Book.prototype.build = function(  ) {
+tadpole.Top.prototype.build = function(  ) {
 
-    this.manager.view.append('<div class="book"></div>');
-    this.view = this.manager.view.find('div.book');
+    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton icon-menu" href="#"></a></span></div>');
+    this.view = this.manager.view.find('.top');
+    this.button = this.view.find('.menubutton');
+    this.label = this.view.find('span.label');
+
+    var top = this;
+    
+    this.button.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        console.log('menu button clicked');
+    
+    } );
+    
+    this.view.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        top.manager.toggle_menu();
+    
+    } );
+
+};
+
+/**
+ * Set the text for the top bar.
+ * @method set_label
+ */
+tadpole.Top.prototype.set_label = function( text ) {
+
+    this.label.html(text);
+
+};
+
+/**
+ * Set the menu as active.
+ * @method active
+ */
+tadpole.Top.prototype.active = function(  ) {
+
+    if( this.view.hasClass('active') )
+        return;
+    
+    this.view.addClass('active');
+
+};
+
+/**
+ * Set the menu as inactive.
+ * @method inactive
+ */
+tadpole.Top.prototype.inactive = function(  ) {
+
+    if( !this.view.hasClass('active') )
+        return;
+    
+    this.view.removeClass('active');
+
+};
+
+
+;/**
+ * GUI overlay for the menu.
+ * @class tadpole.Overlay
+ * @constructor
+ */
+tadpole.Overlay = function( parentview, cls, id, origin ) {
+
+    this.parentview = parentview;
+    this.cls = cls;
+    this.id = id || null;
+    this.selector = '.overlay.' + this.cls;
+    this.origin = origin || 'top';
+    this.visible = false;
+    
+    if( this.id != null )
+        this.selector = this.selector + '#' + this.id;
+    
+    this.build();
+
+};
+
+/**
+ * Build the overlay.
+ * @method build
+ */
+tadpole.Overlay.prototype.build = function(  ) {
+
+    this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
+    this.view = this.parentview.find('.overlay.' + this.cls);
     
     var clh = $(window).height();
     this.view.height( clh - 72 );
@@ -349,320 +443,667 @@ tadpole.Book.prototype.build = function(  ) {
 };
 
 /**
- * Resize the channel book.
+ * Resize the overlay.
  * @method resize
  */
-tadpole.Book.prototype.resize = function(  ) {
+tadpole.Overlay.prototype.resize = function(  ) {
 
     var clh = $(window).height();
     this.view.height( clh - 72 );
-    this.current.scroll();
+
+};
+
+/**
+ * Show the overlay.
+ * @method reveal
+ */
+tadpole.Overlay.prototype.reveal = function(  ) {
+
+    if( this.visible )
+        return;
+    
+    switch(this.origin) {
+        /*case 'left':
+            this.view.slideRight();
+            break;
+        case 'right':
+            this.view.slideLeft();
+            break;
+        case 'bottom':
+            this.view.slideUp();
+            break;*/
+        case 'top':
+        default:
+            this.view.slideDown();
+            break;
+    }
+    
+    this.visible = true;
+
+};
+
+/**
+ * Hide the overlay.
+ * @method hide
+ */
+tadpole.Overlay.prototype.hide = function(  ) {
+
+    if( !this.visible )
+        return;
+    
+    switch(this.origin) {
+        /*case 'left':
+            this.view.slideLeft();
+            break;
+        case 'right':
+            this.view.slideRight();
+            break;
+        case 'bottom':
+            this.view.slideDown();
+            break;*/
+        case 'top':
+        default:
+            this.view.slideUp();
+            break;
+    }
+    
+    this.visible = false;
+
+};
+
+/**
+ * Quick hide!
+ * @method hide_quick
+ */
+tadpole.Overlay.prototype.hide_quick = function(  ) {
+
+    this.view.css({ 'display': 'none' });
+    this.visible = false;
+
+};
+
+/**
+ * Remove the overlay completely.
+ * @method remove
+ */
+tadpole.Overlay.prototype.remove = function(  ) {
+
+    this.view.remove();
 
 };
 
 
 /**
- * Get a channel.
- * @method channel
- * @param ns {String} Namespace
+ * Array of overlays.
+ * @class tadpole.OverlayArray
+ * @constructor
  */
-tadpole.Book.prototype.channel = function( ns ) {
+tadpole.OverlayArray = function( parentview, cls, id, origin ) {
 
-    var nsk = ns.toLowerCase();
-    
-    for( var k in this.clist ) {
-    
-        if( !this.clist.hasOwnProperty( k ) )
-            continue;
-        
-        if( k == nsk )
-            return this.clist[k];
-    
-    }
+    this.parentview = parentview;
+    this.cls = cls;
+    this.id = id;
+    this.origin = origin || 'top';
+    this.overlays = {};
+
+};
+
+/**
+ * Add a new thingy to the thing.
+ * @method add
+ */
+tadpole.OverlayArray.prototype.add = function( id ) {
+
+    this.remove( id );
+    var overlay = new tadpole.Overlay( this.parentview, this.cls, this.id + '-' + id, this.origin );
+    this.overlays[id.toLowerCase()] = overlay;
+    return overlay;
+
+};
+
+/**
+ * Get an overlay.
+ * @method overlay
+ */
+tadpole.OverlayArray.prototype.overlay = function( id ) {
+
+    try {
+        return this.overlays[id.toLowerCase()];
+    } catch(err) {}
     
     return null;
 
 };
 
-
 /**
- * Create channel
- * @method add
- * @param ns {String} Namespace for the channel
- * @param raw {String} Raw namespace for the channel
+ * Iterate through the overlays.
+ * @method each
  */
-tadpole.Book.prototype.add = function( ns, raw, tab ) {
+tadpole.OverlayArray.prototype.each = function( callback ) {
 
-    var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
-    this.clist[raw.toLowerCase()] = chan;
-    this.reveal(raw);
-    return chan;
+    for( var id in this.overlays ) {
+        if( !this.overlays.hasOwnProperty(id) )
+            continue;
+        callback(id, this.overlays[id]);
+    }
 
 };
 
+/**
+ * Resize all of the overlays.
+ * @method resize
+ */
+tadpole.OverlayArray.prototype.resize = function(  ) {
+
+    this.each(
+        function( id, ol ) {
+            ol.resize();
+        }
+    );
+
+};
 
 /**
- * Reveal a given channel, hide the current one.
+ * Reveal an overlay.
  * @method reveal
  */
-tadpole.Book.prototype.reveal = function( ns ) {
+tadpole.OverlayArray.prototype.reveal = function( id ) {
 
-    var nsk = ns.toLowerCase();
+    var ol = this.overlay(id);
     
-    if( !this.clist.hasOwnProperty(nsk) )
+    if( ol == null )
         return;
     
-    if( this.current )
-        this.current.hide();
+    ol.reveal();
+
+};
+
+/**
+ * Hide overlays.
+ * @method hide
+ */
+tadpole.OverlayArray.prototype.hide = function(  ) {
+
+    this.each(
+        function( id, ol ) {
+            ol.hide();
+        }
+    );
+
+};
+
+/**
+ * Hide overlays quickly.
+ * @method hide_quick
+ */
+tadpole.OverlayArray.prototype.hide_quick = function(  ) {
+
+    this.each(
+        function( id, ol ) {
+            ol.hide_quick();
+        }
+    );
+
+};
+
+/**
+ * Remove an overlay.
+ * @method remove
+ */
+tadpole.OverlayArray.prototype.remove = function( id ) {
+
+    var ol = this.overlay(id);
     
-    this.current = this.clist[nsk];
-    this.current.reveal();
-    this.manager.top.set_label(this.current.ns);
+    if( ol == null )
+        return;
+    
+    ol.remove();
+    delete this.overlays[id.toLowerCase()];
 
 };
 
 /**
- * Display a log item across all open channels.
- * 
- * @method log
- * @param msg {String} Message to display.
+ * Remove all overlays.
+ * @method remove_all
  */
-tadpole.Book.prototype.log = function( msg ) {
+tadpole.OverlayArray.prototype.remove_all = function(  ) {
 
-    for( ns in this.clist ) {
-        this.clist[ns].log(msg);
-    }
-
-};
-
-/**
- * Handle a log message.
- * @method log_message
- * @param message {Object} Log message object
- * @param event {Object} Event data
- */
-tadpole.Book.prototype.log_message = function( message, event ) {
-
-    try {
-        if( !message.global ) {
-            if( !message.monitor ) {
-                this.channel( event.ns ).log( event.html );
-            } else {
-                this.manager.log( event.html );
-            }
-        } else {
-            this.log( event.html );
+    this.each(
+        function( id, ol ) {
+            ol.remove();
+            delete this.overlays[id];
         }
-    } catch( err ) {
-        try {
-            this.manager.log( 'Failed to log for', event.sns, event.html );
-        } catch( err ) {
-            console.log( '>> Failed to log message for', event.sns, '::' );
-            console.log( '>>', event.html );
-            console.log( err );
-        }
-    }
+    );
 
 };
 
 ;
-
 /**
- * Channel object.
- * Manage a channel view.
- * @class tadpole.Channel
- * @contructor
+ * Menu for the fucking thingy.
+ * @class tadpole.Menu
+ * @constructor
+ * @param ui {Object} Main ui object.
  */
-tadpole.Channel = function( ns, raw, tab, ui, book ) {
+tadpole.Menu = function( ui ) {
 
     this.manager = ui;
-    this.book = book;
-    this.tab = tab;
-    this.ns = ns;
-    this.raw = raw;
-    this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
-    this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
-    this.selector = replaceAll(this.selector, 'server:', 'c-server-');
-    this.selector = replaceAll(this.selector, ':', '-');
-    this.hidden = true;
-    this.background = false;
+    this.users = null;
+    this.heads = null;
     this.build();
 
 };
 
 
 /**
- * Place the channel on the screen.
+ * Place the menu on the page.
  * @method build
  */
-tadpole.Channel.prototype.build = function(  ) {
+tadpole.Menu.prototype.build = function(  ) {
 
-    this.book.view.append('<div class="channel" id="'+this.selector+'"><ul class="log"></ul></div>');
-    this.view = this.book.view.find('div.channel#'+this.selector);
-    this.logview = this.view.find('ul.log');
+    // Create the main menu.
+    this.overlay = new tadpole.Overlay( this.manager.view, 'menu' );
+    this.overlay.view.append('<nav class="menu">'
+        +'<ul>'
+        +'  <li><a class="head" href="#"><span class="icon-doc"></span>Topic/Title</a></li>'
+        +'  <li><a class="users" href="#"><span class="icon-user"></span>Users</a></li>'
+        +'  <li><a class="channels" href="#"><span class="icon-comment"></span>Channels</a></li>'
+        +'  <li><a class="commands" href="#"><span class="icon-plus"></span>Commands</a>'
+        +'      <ul>'
+        +'          <li><a class="e-join" href="#">Join Channel</a></li>'
+        +'          <li><a class="e-join" href="#">Leave Channel</a></li>'
+        +'      </ul>'
+        +'  </li>'
+        +'  <li><a class="settings" href="#"><span class="icon-cog"></span>Settings</a></li>'
+        +'</ul></nav>');
+    
+    this.view = this.overlay.view.find('nav');
+    this.button_head = this.view.find('.head');
+    this.button_users = this.view.find('.users');
+    this.button_channels = this.view.find('.channels');
+    this.button_commands = this.view.find('.commands');
+    this.button_settings = this.view.find('.settings');
+    
+    // Handle events.
+    var menu = this;
+    
+    this.button_head.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_head();
+    
+    } );
+    
+    this.button_users.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_users();
+    
+    } );
+    
+    this.button_channels.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_channels();
+    
+    } );
+    
+    this.button_commands.on( 'click', function( event ) {
+    
+        event.preventDefault();
+    
+    } );
+    
+    this.button_settings.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        menu.show_settings();
+    
+    } );
+    
+    // Create sub-menus.
+    this.channel = new tadpole.ChannelMenu( this.manager, this.overlay.view );
+    this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
+    //this.users = new tadpole.UserListArray( this.manager );
+    //this.settings = new tadpole.SettingsOverlay( this.manager );
 
 };
 
 /**
- * Scroll the log panel downwards.
- * 
- * @method scroll
+ * Resize the menu.
+ * @method resize
  */
-tadpole.Channel.prototype.scroll = function( ) {
-    //this.pad();
-    //var ws = this.el.l.w.prop('scrollWidth') - this.el.l.w.innerWidth();
-    var hs = this.view.prop('scrollHeight') - this.logview.innerHeight();
-    //if( ws > 0 )
-    //    hs += ws;
-    if( hs < 0 || (hs - this.view.scrollTop()) > 100 )
-        return;
-    this.view.animate({
-        scrollTop: this.view.prop('scrollHeight')
-    }, 600);
+tadpole.Menu.prototype.resize = function(  ) {
+
+    this.overlay.resize();
+    this.channel.resize();
+    this.heads.resize();
+    //this.users.resize();
+    //this.settings.reszie();
+
 };
+
+/**
+ * Toggle the menu.
+ * @method toggle
+ */
+tadpole.Menu.prototype.toggle = function(  ) {
+
+    if( this.overlay.visible ) {
+        this.channel.hide();
+        this.heads.hide();
+        this.overlay.hide();
+        this.manager.top.inactive();
+        return this.overlay.visible;
+    }
+    
+    this.overlay.reveal();
+    this.manager.top.active();
+    return this.overlay.visible;
+
+};
+
+tadpole.Menu.prototype.hide_quick = function(  ) {
+
+    this.manager.top.inactive();
+    this.overlay.hide_quick();
+
+};
+
+/**
+ * Show the head.
+ * @method show_head
+ */
+tadpole.Menu.prototype.show_head = function(  ) {
+
+    this.heads.reveal(this.manager.book.current.selector);
+
+};
+
+/**
+ * Show the users.
+ * @method show_users
+ */
+tadpole.Menu.prototype.show_users = function(  ) {};
+
+/**
+ * Show the channels.
+ * @method show_channels
+ */
+tadpole.Menu.prototype.show_channels = function(  ) {
+
+    this.channel.reveal();
+
+};
+
+/**
+ * Show the settings.
+ * @method show_settings
+ */
+tadpole.Menu.prototype.show_settings = function(  ) {};
 
 
 /**
- * Reveal the channel.
+ * Menu item.
+ * @class tadpole.MenuItem
+ * @constructor
+ */
+tadpole.MenuItem = function( manager, menu, id, overlay ) {
+
+    this.manager = manager;
+    this.menu = menu;
+    this.id = id;
+    this.overlay = overlay || null;
+    this.build();
+
+};
+
+/**
+ * Build the menu item, if need be.
+ * @method build
+ */
+tadpole.MenuItem.prototype.build = function(  ) {};
+
+/**
+ * Do something when the item is resized.
+ * @method resize
+ */
+tadpole.MenuItem.prototype.resize = function(  ) {};
+
+/**
+ * Do something when the item is revealed.
  * @method reveal
  */
-tadpole.Channel.prototype.reveal = function(  ) {
-
-    if( !this.hidden )
-        return;
-    
-    if( this.background )
-        return;
-    
-    this.view.css({'display': 'block'});
-    this.hidden = false;
-    this.manager.top.set_label(this.ns);
-
-};
-
+tadpole.MenuItem.prototype.reveal = function(  ) {};
 
 /**
- * Hide the channel.
+ * Do something when the item is hidden.
  * @method hide
  */
-tadpole.Channel.prototype.hide = function(  ) {
+tadpole.MenuItem.prototype.hide = function(  ) {};
 
-    if( this.hidden )
-        return;
-    
-    this.view.css({'display': 'none'});
-    this.hidden = true;
-
-};
+/**
+ * Do something when the item is removed.
+ * @method remove
+ */
+tadpole.MenuItem.prototype.remove = function(  ) {};
 
 
 /**
- * Display a log message.
- * @method log
- * @param content {String} Message to display.
+ * Array of items accessible from the menu based on currently open
+ * channel.
+ * @class tadpole.MenuItemArray
+ * @constructor
  */
-tadpole.Channel.prototype.log = function( content ) {
+tadpole.MenuItemArray = function( ui, menu, parentview, cls, id, origin ) {
 
-    var date = new Date();
-    var ts = formatTime('{HH}:{mm}:{ss}', date);
-    var ms = date.getTime();
+    this.manager = ui;
+    this.menu = menu;
+    this.parentview = parentview;
+    this.cls = cls;
+    this.id = id;
+    this.origin = origin || 'top';
+    this.items = {};
     
-    this.logview.append(
-        '<li id="'+ms+'"><span class="timestamp">'+ts+
-        '</span>'+content+'</li>'
+    this.overlays = this.create_overlay_array();
+
+};
+
+/**
+ * Create a new MenuItem.
+ * @method create_item
+ */
+tadpole.MenuItemArray.prototype.create_item = function( id, overlay ) {
+
+    return new tadpole.MenuItem( this.manager, this.menu, id, overlay );
+
+};
+
+/**
+ * Create an overlay array.
+ * @method create_overlay_array
+ */
+tadpole.MenuItemArray.prototype.create_overlay_array = function(  ) {
+
+    return new tadpole.OverlayArray( this.parentview, this.cls, this.id, this.origin );
+
+};
+
+/**
+ * Add an item to the array.
+ * @method add
+ */
+tadpole.MenuItemArray.prototype.add = function( id ) {
+
+    this.remove( id );
+    var ol = this.overlays.add(id);
+    this.items[id.toLowerCase()] = this.create_item( id, ol );
+
+};
+
+/**
+ * Get an item.
+ * @method item
+ */
+tadpole.MenuItemArray.prototype.item = function( id ) {
+
+    try {
+        return this.items[id.toLowerCase()];
+    } catch( err ) {}
+    
+    return null;
+
+};
+
+/**
+ * Iterate through the items.
+ * @method each
+ */
+tadpole.MenuItemArray.prototype.each = function( callback ) {
+
+    for( var id in this.items ) {
+        if( !this.items.hasOwnProperty(id) )
+            continue;
+        callback(id, this.items[id]);
+    }
+
+};
+
+/**
+ * Resize all of the items.
+ * @method resize
+ */
+tadpole.MenuItemArray.prototype.resize = function(  ) {
+
+    this.each(
+        function( id, item ) {
+            item.overlay.resize();
+            item.resize();
+        }
     );
-    
-    var ch = this;
-    
-    //setTimeout( function(  ) {
-        ch.scroll();
-    //}, 100 );
-    
-    return this.logview.find('li#'+ms).last();
 
 };
-
 
 /**
- * Someone joined the channel.
- * @method join
- * @param user {String} Person joining
+ * Reveal a menu item.
+ * @method reveal
  */
-tadpole.Channel.prototype.join = function( user ) {
+tadpole.MenuItemArray.prototype.reveal = function( id ) {
 
-    this.log('<p class="background"><strong class="event join">** '+user+' joined *</strong></p>');
-
-};
-
-
-/**
- * Someone left the channel.
- * @method part
- * @param user {String} Person joining
- * @param [reason=''] {String} Reason for leaving
- */
-tadpole.Channel.prototype.part = function( user, reason ) {
-
-    this.log('<p class="background"><strong class="event part">** '+user+' left *</strong> '+ reason +'</p>');
-
-};
-
-
-/**
- * Display a chat message.
- * @method message
- * @param user {String} Username of the person who sent the message
- * @param message {String} Message to display
- */
-tadpole.Channel.prototype.message = function( user, message ) {
-
-    var mb = this.log('<h2 class="username">'+user+'</h2><p>'+message+'</p>');
-    this.highlight(mb, user, message);
-
-};
-
-
-/**
- * Display a chat action message.
- * @method action
- * @param user {String} Username of the person who sent the message
- * @param message {String} Message to display
- */
-tadpole.Channel.prototype.action = function( user, message ) {
-
-    var mb = this.log('<p><em><strong class="username">* '+user+'</strong> '+message+'</em></p>');
-    this.highlight(mb, user, message);
-
-};
-
-tadpole.Channel.prototype.highlight = function( box, user, message ) {
-
-    var self = this.manager.client.settings.username.toLowerCase();
+    var item = this.item( id );
     
-    if( user.toLowerCase() == self )
+    if( !item )
         return;
     
-    if( message.toLowerCase().indexOf( self ) == -1 )
+    item.overlay.reveal();
+    item.reveal();
+
+};
+
+/**
+ * Hide items.
+ * @method hide
+ */
+tadpole.MenuItemArray.prototype.hide = function(  ) {
+
+    this.each(
+        function( id, item ) {
+            item.overlay.hide();
+            item.hide();
+        }
+    );
+
+};
+
+/**
+ * Hide items quickly.
+ * @method hide_quick
+ */
+tadpole.MenuItemArray.prototype.hide_quick = function(  ) {
+
+    this.each(
+        function( id, item ) {
+            item.overlay.hide_quick();
+            item.hide();
+        }
+    );
+
+};
+
+/**
+ * Remove an item.
+ * @method remove
+ */
+tadpole.MenuItemArray.prototype.remove = function( id ) {
+
+    var item = this.item( id );
+    
+    if( !item )
         return;
     
-    box.addClass('highlight');
+    this.overlays.remove(id);
+    item.remove();
+    delete this.items[id.toLowerCase()];
+
+};
+
+/**
+ * Remove all items.
+ * @method remove_all
+ */
+tadpole.MenuItemArray.prototype.remove_all = function(  ) {
+
+    var arr = this;
+    
+    this.each(
+        function( id, item ) {
+            arr.overlays.remove(id);
+            item.remove();
+            delete arr.items[id];
+        }
+    );
+
+};
+
+
+;
+/**
+ * Channel header.
+ * @class tadpole.Head
+ * @constructor
+ */
+tadpole.Head = function( manager, menu, id, overlay ) {
+    tadpole.MenuItem.call(this, manager, menu, id, overlay);
+};
+tadpole.Head.prototype = new tadpole.MenuItem;
+tadpole.Head.prototype.constructor = tadpole.MenuItem;
+
+/**
+ * Build the channel head display within the overlay.
+ * @method build
+ */
+tadpole.Head.prototype.build = function(  ) {
+
+    this.overlay.view.append('<div class="title">title</div><div class="topic">topic</div>');
 
 };
 
 
 /**
- * Someone got kicked from the channel.
- * @method kick
- * @param user {String} Person kicked
- * @param by {String} Person who kicked
- * @param [reason=''] {String} Reason for the kick
+ * Array of channel headers.
+ * @class tadpole.HeadArray
+ * @constructor
  */
-tadpole.Channel.prototype.kick = function( user, by, reason ) {
+tadpole.HeadArray = function( ui, menu, parentview, cls, id, origin ) {
+    tadpole.MenuItemArray.call(this, ui, menu, parentview, cls, id, origin );
+};
+tadpole.HeadArray.prototype = new tadpole.MenuItemArray;
+tadpole.HeadArray.prototype.constructor = tadpole.HeadArray;
 
-    this.log('<p><em><strong class="event kick">** '+user+' kicked by '+by+' *</strong> '+reason+'</em></p>');
+tadpole.HeadArray.prototype.create_item = function( id, overlay ) {
+
+    return new tadpole.Head( this.manager, this.menu, id, overlay );
 
 };
-
 ;
 /**
  * Channel list for the fucking thingy.
@@ -686,10 +1127,10 @@ tadpole.ChannelMenu = function( ui, parentview ) {
 tadpole.ChannelMenu.prototype.build = function(  ) {
 
     // Create the main menu.
-    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu', 'right' );
+    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu' );
     this.overlay.view.append('<nav class="channels">'
         +'<ul>'
-        +'  <li><span class="button" id="channelexit">&laquo; Channels</span></li>'
+        +'  <li><span class="button" id="channelexit"><span class="icon-left-open"></span>Channels</span></li>'
         +'</ul></nav>');
     
     this.view = this.overlay.view.find('nav');
@@ -985,249 +1426,350 @@ tadpole.Control.prototype.handle = function( event, data ) {
 };
 
 ;
+
 /**
- * Menu for the fucking thingy.
- * @class tadpole.Menu
- * @constructor
- * @param ui {Object} Main ui object.
+ * Channel book.
+ * Displays one channel at a time.
+ * @class tadpole.Book
+ * @contructor
  */
-tadpole.Menu = function( ui ) {
+tadpole.Book = function( ui ) {
 
     this.manager = ui;
+    this.clist = {};
+    this.current = null;
     this.build();
 
 };
 
 
 /**
- * Place the menu on the page.
+ * Place the channel book on the screen.
  * @method build
  */
-tadpole.Menu.prototype.build = function(  ) {
+tadpole.Book.prototype.build = function(  ) {
 
-    // Create the main menu.
-    this.overlay = new tadpole.Overlay( this.manager.view, 'menu' );
-    this.overlay.view.append('<nav class="menu">'
-        +'<ul>'
-        +'  <li><a class="users" href="#">Users</a></li>'
-        +'  <li><a class="channels" href="#">Channels</a></li>'
-        +'  <li><a class="settings" href="#">Settings</a></li>'
-        +'</ul></nav>');
+    this.manager.view.append('<div class="book"></div>');
+    this.view = this.manager.view.find('div.book');
     
-    this.view = this.overlay.view.find('nav');
-    this.button_users = this.view.find('.users');
-    this.button_channels = this.view.find('.channels');
-    this.button_settings = this.view.find('.settings');
-    
-    // Handle events.
-    var menu = this;
-    
-    this.button_users.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        menu.show_users();
-    
-    } );
-    
-    this.button_channels.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        menu.show_channels();
-    
-    } );
-    
-    this.button_settings.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        menu.show_settings();
-    
-    } );
-    
-    // Create sub-menus.
-    this.channel = new tadpole.ChannelMenu( this.manager, this.overlay.view );
-    //this.users = new tadpole.UsersOverlay( this.manager );
-    //this.settings = new tadpole.SettingsOverlay( this.manager );
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
 
 };
 
 /**
- * Resize the menu.
+ * Resize the channel book.
  * @method resize
  */
-tadpole.Menu.prototype.resize = function(  ) {
+tadpole.Book.prototype.resize = function(  ) {
 
-    this.overlay.resize();
-    this.channel.resize();
-    //this.users.resize();
-    //this.settings.reszie();
+    var clh = $(window).height();
+    this.view.height( clh - 72 );
+    this.current.scroll();
 
 };
 
-/**
- * Toggle the menu.
- * @method toggle
- */
-tadpole.Menu.prototype.toggle = function(  ) {
 
-    if( this.overlay.visible ) {
-        this.channel.hide();
-        this.overlay.hide();
-        this.manager.top.inactive();
-        return this.overlay.visible;
+/**
+ * Get a channel.
+ * @method channel
+ * @param ns {String} Namespace
+ */
+tadpole.Book.prototype.channel = function( ns ) {
+
+    var nsk = ns.toLowerCase();
+    
+    for( var k in this.clist ) {
+    
+        if( !this.clist.hasOwnProperty( k ) )
+            continue;
+        
+        if( k == nsk )
+            return this.clist[k];
+    
     }
     
-    this.overlay.reveal();
-    this.manager.top.active();
-    return this.overlay.visible;
+    return null;
 
 };
 
-tadpole.Menu.prototype.hide_quick = function(  ) {
 
-    this.manager.top.inactive();
-    this.overlay.hide_quick();
+/**
+ * Create channel
+ * @method add
+ * @param ns {String} Namespace for the channel
+ * @param raw {String} Raw namespace for the channel
+ */
+tadpole.Book.prototype.add = function( ns, raw, tab ) {
+
+    var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
+    this.clist[raw.toLowerCase()] = chan;
+    this.reveal(raw);
+    return chan;
 
 };
 
-/**
- * Show the users.
- * @method show_users
- */
-tadpole.Menu.prototype.show_users = function(  ) {};
 
 /**
- * Show the channels.
- * @method show_channels
- */
-tadpole.Menu.prototype.show_channels = function(  ) {
-
-    this.channel.reveal();
-
-};
-
-/**
- * Show the settings.
- * @method show_settings
- */
-tadpole.Menu.prototype.show_settings = function(  ) {};
-
-
-;/**
- * GUI overlay for the menu.
- * @class tadpole.Overlay
- * @constructor
- */
-tadpole.Overlay = function( parentview, cls, origin ) {
-
-    this.parentview = parentview;
-    this.cls = cls;
-    this.origin = origin || 'top';
-    this.visible = false;
-    this.build();
-
-};
-
-/**
- * Build the overlay.
- * @method build
- */
-tadpole.Overlay.prototype.build = function(  ) {
-
-    this.parentview.append('<div class="overlay ' + this.cls + '"></div>');
-    this.view = this.parentview.find('.overlay.' + this.cls);
-    
-    var clh = $(window).height();
-    this.view.height( clh - 72 );
-
-};
-
-/**
- * Resize the overlay.
- * @method resize
- */
-tadpole.Overlay.prototype.resize = function(  ) {
-
-    var clh = $(window).height();
-    this.view.height( clh - 72 );
-
-};
-
-/**
- * Show the overlay.
+ * Reveal a given channel, hide the current one.
  * @method reveal
  */
-tadpole.Overlay.prototype.reveal = function(  ) {
+tadpole.Book.prototype.reveal = function( ns ) {
 
-    if( this.visible )
+    var nsk = ns.toLowerCase();
+    
+    if( !this.clist.hasOwnProperty(nsk) )
         return;
     
-    switch(this.origin) {
-        /*case 'left':
-            this.view.slideRight();
-            break;
-        case 'right':
-            this.view.slideLeft();
-            break;
-        case 'bottom':
-            this.view.slideUp();
-            break;*/
-        case 'top':
-        default:
-            this.view.slideDown();
-            break;
-    }
+    if( this.current )
+        this.current.hide();
     
-    this.visible = true;
+    this.current = this.clist[nsk];
+    this.current.reveal();
+    this.manager.top.set_label(this.current.ns);
 
 };
 
 /**
- * Hide the overlay.
+ * Display a log item across all open channels.
+ * 
+ * @method log
+ * @param msg {String} Message to display.
+ */
+tadpole.Book.prototype.log = function( msg ) {
+
+    for( ns in this.clist ) {
+        this.clist[ns].log(msg);
+    }
+
+};
+
+/**
+ * Handle a log message.
+ * @method log_message
+ * @param message {Object} Log message object
+ * @param event {Object} Event data
+ */
+tadpole.Book.prototype.log_message = function( message, event ) {
+
+    try {
+        if( !message.global ) {
+            if( !message.monitor ) {
+                this.channel( event.ns ).log( event.html );
+            } else {
+                this.manager.log( event.html );
+            }
+        } else {
+            this.log( event.html );
+        }
+    } catch( err ) {
+        try {
+            this.manager.log( 'Failed to log for', event.sns, event.html );
+        } catch( err ) {
+            console.log( '>> Failed to log message for', event.sns, '::' );
+            console.log( '>>', event.html );
+            console.log( err );
+        }
+    }
+
+};
+
+;
+
+/**
+ * Channel object.
+ * Manage a channel view.
+ * @class tadpole.Channel
+ * @contructor
+ */
+tadpole.Channel = function( ns, raw, components, ui, book ) {
+
+    this.manager = ui;
+    this.book = book;
+    this.tab = components.tab;
+    this.head = components.head;
+    this.ns = ns;
+    this.raw = raw;
+    this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
+    this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
+    this.selector = replaceAll(this.selector, 'server:', 'c-server-');
+    this.selector = replaceAll(this.selector, ':', '-');
+    this.hidden = true;
+    this.background = false;
+    this.build();
+
+};
+
+
+/**
+ * Place the channel on the screen.
+ * @method build
+ */
+tadpole.Channel.prototype.build = function(  ) {
+
+    this.book.view.append('<div class="channel" id="'+this.selector+'"><ul class="log"></ul></div>');
+    this.view = this.book.view.find('div.channel#'+this.selector);
+    this.logview = this.view.find('ul.log');
+
+};
+
+/**
+ * Scroll the log panel downwards.
+ * 
+ * @method scroll
+ */
+tadpole.Channel.prototype.scroll = function( ) {
+    //this.pad();
+    //var ws = this.el.l.w.prop('scrollWidth') - this.el.l.w.innerWidth();
+    var hs = this.view.prop('scrollHeight') - this.logview.innerHeight();
+    //if( ws > 0 )
+    //    hs += ws;
+    if( hs < 0 || (hs - this.view.scrollTop()) > 100 )
+        return;
+    this.view.animate({
+        scrollTop: this.view.prop('scrollHeight')
+    }, 600);
+};
+
+
+/**
+ * Reveal the channel.
+ * @method reveal
+ */
+tadpole.Channel.prototype.reveal = function(  ) {
+
+    if( !this.hidden )
+        return;
+    
+    if( this.background )
+        return;
+    
+    this.view.css({'display': 'block'});
+    this.hidden = false;
+    this.manager.top.set_label(this.ns);
+
+};
+
+
+/**
+ * Hide the channel.
  * @method hide
  */
-tadpole.Overlay.prototype.hide = function(  ) {
+tadpole.Channel.prototype.hide = function(  ) {
 
-    if( !this.visible )
+    if( this.hidden )
         return;
     
-    switch(this.origin) {
-        /*case 'left':
-            this.view.slideLeft();
-            break;
-        case 'right':
-            this.view.slideRight();
-            break;
-        case 'bottom':
-            this.view.slideDown();
-            break;*/
-        case 'top':
-        default:
-            this.view.slideUp();
-            break;
-    }
+    this.view.css({'display': 'none'});
+    this.hidden = true;
+
+};
+
+
+/**
+ * Display a log message.
+ * @method log
+ * @param content {String} Message to display.
+ */
+tadpole.Channel.prototype.log = function( content ) {
+
+    var date = new Date();
+    var ts = formatTime('{HH}:{mm}:{ss}', date);
+    var ms = date.getTime();
     
-    this.visible = false;
+    this.logview.append(
+        '<li id="'+ms+'"><span class="timestamp">'+ts+
+        '</span>'+content+'</li>'
+    );
+    
+    var ch = this;
+    
+    //setTimeout( function(  ) {
+        ch.scroll();
+    //}, 100 );
+    
+    return this.logview.find('li#'+ms).last();
 
 };
 
-/**
- * Quick hide!
- * @method hide_quick
- */
-tadpole.Overlay.prototype.hide_quick = function(  ) {
 
-    this.view.css({ 'display': 'none' });
-    this.visible = false;
+/**
+ * Someone joined the channel.
+ * @method join
+ * @param user {String} Person joining
+ */
+tadpole.Channel.prototype.join = function( user ) {
+
+    this.log('<p class="background"><strong class="event join">** '+user+' joined *</strong></p>');
 
 };
 
-/**
- * Remove the overlay completely.
- * @method remove
- */
-tadpole.Overlay.prototype.remove = function(  ) {
 
-    this.view.remove();
+/**
+ * Someone left the channel.
+ * @method part
+ * @param user {String} Person joining
+ * @param [reason=''] {String} Reason for leaving
+ */
+tadpole.Channel.prototype.part = function( user, reason ) {
+
+    this.log('<p class="background"><strong class="event part">** '+user+' left *</strong> '+ reason +'</p>');
+
+};
+
+
+/**
+ * Display a chat message.
+ * @method message
+ * @param user {String} Username of the person who sent the message
+ * @param message {String} Message to display
+ */
+tadpole.Channel.prototype.message = function( user, message ) {
+
+    var mb = this.log('<h2 class="username">'+user+'</h2><p>'+message+'</p>');
+    this.highlight(mb, user, message);
+
+};
+
+
+/**
+ * Display a chat action message.
+ * @method action
+ * @param user {String} Username of the person who sent the message
+ * @param message {String} Message to display
+ */
+tadpole.Channel.prototype.action = function( user, message ) {
+
+    var mb = this.log('<p><em><strong class="username">* '+user+'</strong> '+message+'</em></p>');
+    this.highlight(mb, user, message);
+
+};
+
+tadpole.Channel.prototype.highlight = function( box, user, message ) {
+
+    var self = this.manager.client.settings.username.toLowerCase();
+    
+    if( user.toLowerCase() == self )
+        return;
+    
+    if( message.toLowerCase().indexOf( self ) == -1 )
+        return;
+    
+    box.addClass('highlight');
+
+};
+
+
+/**
+ * Someone got kicked from the channel.
+ * @method kick
+ * @param user {String} Person kicked
+ * @param by {String} Person who kicked
+ * @param [reason=''] {String} Reason for the kick
+ */
+tadpole.Channel.prototype.kick = function( user, by, reason ) {
+
+    this.log('<p><em><strong class="event kick">** '+user+' kicked by '+by+' *</strong> '+reason+'</em></p>');
 
 };
 
@@ -1295,32 +1837,32 @@ tadpole.Protocol = function(  ) {
     this.messages = {
         'chatserver': {
             keys: [ 'version' ],
-            template: '<p><strong class="event">** Connected to llama {version} *</strong></p>',
+            template: '<h2>Connected to llama {version}</h2>',
             global: true
         },
         'dAmnServer': {
             keys: [ 'version' ],
-            template: '<p><strong class="event">** Connected to dAmnServer {version} *</strong></p>',
+            template: '<h2>Connected to dAmnServer {version}</h2>',
             global: true
         },
         'login': {
             keys: [ 'username', 'e', 'data' ],
-            template: '<p><strong class="event">** Login as {username}: "{e}" *</strong></p>',
+            template: '<p><strong class="event">Login as {username}:</strong> "{e}"</p>',
             global: true
         },
         'join': {
             keys: [ 'ns', 'e' ],
-            template: '<p><strong class="event">** Join {ns}: "{e}" *</strong></p>',
+            template: '<p><strong class="event">Join {ns}:</strong> "{e}"</p>',
             monitor: true
         },
         'part': {
             keys: [ 'ns', 'e', 'r' ],
-            template: '<p><strong class="event">** Part {ns}: "{e}" * </strong><em>{r}</em></p>',
+            template: '<h2>Part {ns} "{e}"</h2><p>{r}</p>',
             monitor: true
         },
         'property': {
             keys: [ 'ns', 'p', 'by', 'ts', 'value' ],
-            template: '<p><strong class="event">** Got {p} for {ns} *</strong></p>',
+            template: '<h2>Got {p} for {ns}</h2>',
             monitor: true
         },
         'recv_msg': {
@@ -1339,84 +1881,84 @@ tadpole.Protocol = function(  ) {
         },
         'recv_join': {
             keys: [ 'user', 's', 'info' ],
-            template: '<p class="background"><strong class="event join">** {user} joined *</strong></p>',
+            template: '<h2 class="background">{user} joined</h2>',
         },
         'recv_part': {
             keys: [ 'user', 'r' ],
-            template: '<p class="background"><strong class="event join">** {user} has left *</strong> {r}</p>'
+            template: '<h2 class="background">{user} has left</h2><p class="background">{r}</p>'
         },
         'recv_privchg': {
             keys: [ 'user', 's', 'by', 'pc' ],
-            template: '<p><strong class="event">** {user} has been made a member of {pc} by {by} *</strong></p>'
+            template: '<p><strong><em>{user} has been made a member of {pc} by {by}</em></strong></p>'
         },
         'recv_kicked': {
             keys: [ 'user', 's', 'by', 'r' ],
-            template: '<p><strong class="event">** {user} has been kicked by {by} * </strong><em>{r}</em></p>'
+            template: '<h2>{user} has been kicked by {by}</h2><p>{r}</p>'
         },
         'recv_admin_create': {
             keys: [ 'p', 'user', 'pc', 'privs' ],
-            template: '<p><strong class="event">** Privilege class {pc} has been created by {user} * </strong><em>{privs}</em></p>'
+            template: '<h2>Privilege class {pc} has been created by {user}</h2><p>{privs}</p>'
         },
         'recv_admin_update': {
             keys: [ 'p', 'user', 'pc', 'privs' ],
-            template: '<p><strong class="event">** Privilege class {pc} has been updated by {user} * </strong><em>{privs}</em></p>'
+            template: '<h2>Privilege class {pc} has been updated by {user}</h2><p>{privs}</p>'
         },
         'recv_admin_rename': {
             keys: [ 'p', 'user', 'prev', 'pc' ],
-            template: '<p><strong class="event">** Privilege class {prev} has been renamed to {pc} by {user} *</strong></p>'
+            template: '<h2>Privilege class {prev} has been renamed to {pc} by {user}</h2>'
         },
         'recv_admin_move': {
             keys: [ 'p', 'user', 'prev', 'pc', 'affected' ],
-            template: '<p><strong class="event">** All members of {prev} have been moved to {pc} by {user} * </strong><em>{affected} affected user(s)</em></p>'
+            template: '<h2>All members of {prev} have been moved to {pc} by {user}</h2><p>{affected} affected user(s)</p>'
         },
         'recv_admin_remove': {
             keys: [ 'p', 'user', 'pc', 'affected' ],
-            template: '<p><strong class="event">** Privilege class {pc} has been removed by {user} * </strong><em>{affected} affected user(s)</em></p>'
+            template: '<h2>Privilege class {pc} has been removed by {user}</h2><p>{affected} affected user(s)</p>'
         },
         'recv_admin_show': null,
         'recv_admin_showverbose': null,
         'recv_admin_privclass': {
             keys: [ 'p', 'e', 'command' ],
-            template: '<p><strong class="event">** Admin command "{command}" failed * </strong><em>{e}</em></p>'
+            template: '<h2>Admin command "{command}" failed</h2><p>{e}</p>'
         },
         'kicked': {
             keys: [ 'ns', 'user', 'r' ],
-            template: '<p><strong class="event">** You have been kicked by {user} * </strong><em>{r}</em></p>'
+            template: '<h2>You have been kicked by {user}</h2><p>{r}</p>'
         },
         'ping': null, //['<p><strong class="event">** Ping...</strong></p>', true],
         'disconnect': {
            keys: [ 'e' ],
-           template: '<p><strong class="event">** You have been disconnected * </strong><em>{e}</em></p>',
+           template: '<h2>You have been disconnected</h2><p>{e}</p>',
            global: true
         },
         // Stuff here is errors, yes?
         'send': {
             keys: [ 'ns', 'e' ],
-            template: '<p><strong class="event">** Send error: <em>{e}</em></p>'
+            template: '<p><strong class="event">Send error: <em>{e}</em></p>'
         },
         'kick': {
             keys: [ 'ns', 'user', 'e' ],
-            template: '<p><strong class="event">** Could not kick {user} * </strong><em>{e}</em></p>'
+            template: '<h2>Could not kick {user}</h2><p>{e}</p>'
         },
         'get': {
             keys: [ 'ns', 'p', 'e' ],
-            template: '<p><strong class="event">** Could not get {p} info for {ns} * </strong><em>{e}</em></p>'
+            template: '<h2>Could not get {p} info for {ns}</h2><p>{e}</p>'
         },
         'set': {
             keys: [ 'ns', 'p', 'e' ],
-            template: '<p><strong class="event">** Could not set {p} * </strong><em>{e}</em></p>'
+            template: '<h2>Could not set {p}</h2><p>{e}</p>'
         },
         'kill': {
             keys: [ 'ns', 'e' ],
-            template: '<p><strong class="event">** Kill error * </strong><em>{e}</em></p>'
+            template: '<h2>Kill error</h2><p>{e}</p>'
         },
         'log': {
             keys: [ 'ns', 'msg', 'info' ],
-            template: '<p><strong class="event">** {msg} * </strong><em>{info}</em></p>'
+            template: '<h2>{msg}</h2><p>{info}</p>'
         },
         'unknown': {
             keys: [ 'ns', 'packet' ],
-            template: '<p><strong class="event">** Received unknown packet in {ns} * </strong><em>{packet}</em></p>',
+            template: '<h2>Received unknown packet in {ns}</h2><p>{packet}</p>',
             monitor: true
         }
     };
@@ -1587,85 +2129,3 @@ tadpole.Protocol.LogMessage.prototype.render = function( format ) {
     return render;
 
 };
-;
-/**
- * Top bar for the fucking thingy.
- * @class tadpole.Top
- * @constructor
- * @param ui {Object} Main ui object.
- */
-tadpole.Top = function( ui ) {
-
-    this.manager = ui;
-    this.build();
-
-};
-
-
-/**
- * Place the top bar on the page.
- * @method build
- */
-tadpole.Top.prototype.build = function(  ) {
-
-    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton" href="#">+</a></span></div>');
-    this.view = this.manager.view.find('.top');
-    this.button = this.view.find('.menubutton');
-    this.label = this.view.find('span.label');
-
-    var top = this;
-    
-    this.button.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        console.log('menu button clicked');
-    
-    } );
-    
-    this.view.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        event.stopPropagation();
-        top.manager.toggle_menu();
-    
-    } );
-
-};
-
-/**
- * Set the text for the top bar.
- * @method set_label
- */
-tadpole.Top.prototype.set_label = function( text ) {
-
-    this.label.html(text);
-
-};
-
-/**
- * Set the menu as active.
- * @method active
- */
-tadpole.Top.prototype.active = function(  ) {
-
-    if( this.view.hasClass('active') )
-        return;
-    
-    this.view.addClass('active');
-
-};
-
-/**
- * Set the menu as inactive.
- * @method inactive
- */
-tadpole.Top.prototype.inactive = function(  ) {
-
-    if( !this.view.hasClass('active') )
-        return;
-    
-    this.view.removeClass('active');
-
-};
-
-

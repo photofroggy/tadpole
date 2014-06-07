@@ -1,0 +1,81 @@
+@font-face {
+  font-family: 'tadpole';
+  src: url('/font/tadpole.eot?53116564');
+  src: url('/font/tadpole.eot?53116564#iefix') format('embedded-opentype'),
+       url('/font/tadpole.woff?53116564') format('woff'),
+       url('/font/tadpole.ttf?53116564') format('truetype'),
+       url('/font/tadpole.svg?53116564#tadpole') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'tadpole';
+    src: url('../font/tadpole.svg?53116564#tadpole') format('svg');
+  }
+}
+*/
+ 
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "tadpole";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+ 
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+ 
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+     
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+ 
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+ 
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+ 
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+ 
+.icon-left-open:before { content: '\e800'; } /* '?' */
+.icon-right-open:before { content: '\e801'; } /* '?' */
+.icon-comment:before { content: '\e802'; } /* '?' */
+.icon-cancel:before { content: '\e803'; } /* '?' */
+.icon-terminal:before { content: '\e804'; } /* '?' */
+.icon-phone:before { content: '\e805'; } /* '?' */
+.icon-github-circled:before { content: '\e806'; } /* '?' */
+.icon-mail:before { content: '\e807'; } /* '?' */
+.icon-user:before { content: '\e808'; } /* '?' */
+.icon-videocam:before { content: '\e809'; } /* '?' */
+.icon-mic:before { content: '\e80a'; } /* '?' */
+.icon-mic-off:before { content: '\e80b'; } /* '?' */
+.icon-heart:before { content: '\e80c'; } /* '?' */
+.icon-html5:before { content: '\e80d'; } /* '?' */
+.icon-edit:before { content: '\e80e'; } /* '?' */
+.icon-volume:before { content: '\e80f'; } /* '?' */
+.icon-volume-off:before { content: '\e810'; } /* '?' */
+.icon-plus:before { content: '\e811'; } /* '?' */
+.icon-minus:before { content: '\e812'; } /* '?' */
+.icon-menu:before { content: '\e813'; } /* '?' */
+.icon-ok:before { content: '\e814'; } /* '?' */
+.icon-share:before { content: '\e815'; } /* '?' */
+.icon-link:before { content: '\e816'; } /* '?' */
+.icon-home:before { content: '\e817'; } /* '?' */
+.icon-cog:before { content: '\e818'; } /* '?' */
+.icon-doc:before { content: '\e819'; } /* '?' */
+.icon-users:before { content: '\e81a'; } /* '?' */
+.icon-info-alt:before { content: '\e81b'; } /* '?' */
+.icon-info:before { content: '\e81c'; } /* '?' */

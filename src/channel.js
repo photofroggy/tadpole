@@ -6,11 +6,12 @@
  * @class tadpole.Channel
  * @contructor
  */
-tadpole.Channel = function( ns, raw, tab, ui, book ) {
+tadpole.Channel = function( ns, raw, components, ui, book ) {
 
     this.manager = ui;
     this.book = book;
-    this.tab = tab;
+    this.tab = components.tab;
+    this.head = components.head;
     this.ns = ns;
     this.raw = raw;
     this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');

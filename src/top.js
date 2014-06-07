@@ -19,7 +19,7 @@ tadpole.Top = function( ui ) {
  */
 tadpole.Top.prototype.build = function(  ) {
 
-    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton" href="#">+</a></span></div>');
+    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton icon-menu" href="#"></a></span></div>');
     this.view = this.manager.view.find('.top');
     this.button = this.view.find('.menubutton');
     this.label = this.view.find('span.label');

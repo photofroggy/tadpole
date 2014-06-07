@@ -24,7 +24,163 @@
 @import "settings";
 @import "pager";
 @import "theme_template";
+*/
+@font-face {
+  font-family: 'tadpole';
+  src: url("/font/tadpole.eot?53116564");
+  src: url("/font/tadpole.eot?53116564#iefix") format("embedded-opentype"), url("/font/tadpole.woff?53116564") format("woff"), url("/font/tadpole.ttf?53116564") format("truetype"), url("/font/tadpole.svg?53116564#tadpole") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'tadpole';
+    src: url('../font/tadpole.svg?53116564#tadpole') format('svg');
+  }
+}
+*/
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "tadpole";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
 
+.icon-left-open:before {
+  content: '\e800'; }
+
+/* '?' */
+.icon-right-open:before {
+  content: '\e801'; }
+
+/* '?' */
+.icon-comment:before {
+  content: '\e802'; }
+
+/* '?' */
+.icon-cancel:before {
+  content: '\e803'; }
+
+/* '?' */
+.icon-terminal:before {
+  content: '\e804'; }
+
+/* '?' */
+.icon-phone:before {
+  content: '\e805'; }
+
+/* '?' */
+.icon-github-circled:before {
+  content: '\e806'; }
+
+/* '?' */
+.icon-mail:before {
+  content: '\e807'; }
+
+/* '?' */
+.icon-user:before {
+  content: '\e808'; }
+
+/* '?' */
+.icon-videocam:before {
+  content: '\e809'; }
+
+/* '?' */
+.icon-mic:before {
+  content: '\e80a'; }
+
+/* '?' */
+.icon-mic-off:before {
+  content: '\e80b'; }
+
+/* '?' */
+.icon-heart:before {
+  content: '\e80c'; }
+
+/* '?' */
+.icon-html5:before {
+  content: '\e80d'; }
+
+/* '?' */
+.icon-edit:before {
+  content: '\e80e'; }
+
+/* '?' */
+.icon-volume:before {
+  content: '\e80f'; }
+
+/* '?' */
+.icon-volume-off:before {
+  content: '\e810'; }
+
+/* '?' */
+.icon-plus:before {
+  content: '\e811'; }
+
+/* '?' */
+.icon-minus:before {
+  content: '\e812'; }
+
+/* '?' */
+.icon-menu:before {
+  content: '\e813'; }
+
+/* '?' */
+.icon-ok:before {
+  content: '\e814'; }
+
+/* '?' */
+.icon-share:before {
+  content: '\e815'; }
+
+/* '?' */
+.icon-link:before {
+  content: '\e816'; }
+
+/* '?' */
+.icon-home:before {
+  content: '\e817'; }
+
+/* '?' */
+.icon-cog:before {
+  content: '\e818'; }
+
+/* '?' */
+.icon-doc:before {
+  content: '\e819'; }
+
+/* '?' */
+.icon-users:before {
+  content: '\e81a'; }
+
+/* '?' */
+.icon-info-alt:before {
+  content: '\e81b'; }
+
+/* '?' */
+.icon-info:before {
+  content: '\e81c'; }
+
+/* '?' */
 /* Layout */
 div.tadpole {
   font: normal 25px verdana, sans-serif;
@@ -45,20 +201,23 @@ div.tadpole {
     /*#3B573B;*/
     color: #94A3CF;
     /*#7E9B89;*/
-    transition: background-color 300ms;
-    -webkit-transition: background-color 300ms; }
+    transition: background-color 300ms, color 300ms;
+    -webkit-transition: background-color 300ms, 300ms; }
     div.tadpole div.top.active {
       background-color: #4C5D91;
-      transition: background-color 300ms;
-      -webkit-transition: background-color 300ms; }
+      transition: background-color 300ms, color 300ms;
+      -webkit-transition: background-color 300ms, color 300ms;
+      color: #17254E; }
+      div.tadpole div.top.active a.menubutton {
+        transition: background-color 300ms, color 300ms;
+        -webkit-transition: background-color 300ms, color 300ms;
+        color: #17254E; }
     div.tadpole div.top span.control {
       position: absolute;
-      top: 5px;
-      right: 5px; }
+      right: 0px;
+      padding-right: 5px; }
     div.tadpole div.top a.menubutton {
-      display: block;
       height: 30px;
-      width: 25px;
       /*padding-left: 10px;
       position: absolute;
       top: 5px;
@@ -68,7 +227,9 @@ div.tadpole {
       border: 1px solid #202C20;
       color: #1959B9;*/
       color: #94A3CF;
-      /*#7E9B89;*/ }
+      /*#7E9B89;*/
+      transition: background-color 300ms, color 300ms;
+      -webkit-transition: background-color 300ms, color 300ms; }
     div.tadpole div.top span {
       margin-left: 5px;
       position: relative;
@@ -84,13 +245,20 @@ div.tadpole {
     /*#17254E;/*#3B573B;*/
     color: #94A3CF;
     /*#7E9B89;*/ }
+    div.tadpole div.overlay nav li {
+      border-bottom: 1px dotted #94A3CF; }
+      div.tadpole div.overlay nav li li {
+        border-top: 1px dotted #94A3CF;
+        border-bottom: none;
+        padding-left: 30px; }
     div.tadpole div.overlay nav a, div.tadpole div.overlay nav span.button {
       color: #94A3CF;
       /*#7E9B89;*/
       font-size: 18px;
       display: block;
-      padding: 5px 15px;
-      border-bottom: 1px dotted #94A3CF; }
+      padding: 5px 15px; }
+      div.tadpole div.overlay nav a span[class*=" icon-"], div.tadpole div.overlay nav a span[class^="icon-"], div.tadpole div.overlay nav span.button span[class*=" icon-"], div.tadpole div.overlay nav span.button span[class^="icon-"] {
+        margin-right: 5px; }
   div.tadpole div.book {
     font-size: 20px;
     margin: 0px;
@@ -104,8 +272,8 @@ div.tadpole {
     bottom: 45px;
     left: 0px;
     right: 0px;
-    background-color: #DAE3FF;
-    /*#779677;*/ }
+    background-color: #ECECFF;
+    /*#DAE3FF;/*#779677;*/ }
     div.tadpole div.book img {
       display: inline; }
   div.tadpole div.channel {
@@ -131,40 +299,42 @@ div.tadpole {
       div.tadpole div.channel ul.log li {
         overflow: auto;
         padding: 10px;
-        color: #4E5C8A;
-        /*#2D4B30;*/ }
+        color: #54567E;
+        /*#4E5C8A;/*#2D4B30;*/ }
         div.tadpole div.channel ul.log li h2 {
           font-size: 18px; }
         div.tadpole div.channel ul.log li h2,
         div.tadpole div.channel ul.log li strong.username,
         div.tadpole div.channel ul.log li strong.event {
-          color: #3D455F;
-          /*#1E3120;*/ }
+          color: #1F2264;
+          /*#3D455F;/*#1E3120;*/ }
+        div.tadpole div.channel ul.log li h2.background,
         div.tadpole div.channel ul.log li p.background,
         div.tadpole div.channel ul.log li p.background strong.event {
-          color: #8291BE;
-          /*#4D6958;*/ }
+          color: #A0B2CC;
+          /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
         div.tadpole div.channel ul.log li:not(:first-child) {
-          border-top: 1px solid #B3BDDA;
-          /*#4E6F53;*/ }
+          border-top: 1px solid #D9D9EE;
+          /*#B3BDDA;/*#4E6F53;*/ }
         div.tadpole div.channel ul.log li span.timestamp {
           display: block;
           float: right;
-          color: #8291BE;
-          /*#4D6958;*/
+          color: #A0B2CC;
+          /*#A3B9D5;/*#8291BE;/*#4D6958;*/
           font-size: 16px; }
         div.tadpole div.channel ul.log li.highlight {
           background-color: white;
-          color: #4E5C8A; }
+          color: #54567E;
+          /*#4E5C8A;*/ }
           div.tadpole div.channel ul.log li.highlight h2,
           div.tadpole div.channel ul.log li.highlight strong.username,
           div.tadpole div.channel ul.log li.highlight strong.event {
-            color: #3D455F;
-            /*#1E3120;*/ }
+            color: #1F2264;
+            /*#3D455F;/*#1E3120;*/ }
           div.tadpole div.channel ul.log li.highlight p.background,
           div.tadpole div.channel ul.log li.highlight p.background strong.event {
-            color: #8291BE;
-            /*#4D6958;*/ }
+            color: #A0B2CC;
+            /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
   div.tadpole div.control {
     position: absolute;
     bottom: 0px;

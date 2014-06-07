@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.2.7';
+tadpole.VERSION = '0.3.9';
 tadpole.STATE = 'alpha';
 
 
@@ -255,8 +255,17 @@ tadpole.UI.prototype.toggle_menu = function(  ) {
  */
 tadpole.UI.prototype.channel_add = function( ns, raw ) {
 
-    var tab = this.menu.channel.add( ns, raw );
-    return this.book.add( ns, raw, tab );
+    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
+    selector = replaceAll(selector, 'chat:', 'c-chat-');
+    selector = replaceAll(selector, 'server:', 'c-server-');
+    selector = replaceAll(selector, ':', '-');
+    
+    var components = {
+        tab: this.menu.channel.add( ns, raw ),
+        head: this.menu.heads.add( selector )
+    };
+    
+    return this.book.add( ns, raw, components );
 
 };
 
@@ -274,7 +283,7 @@ tadpole.UI.prototype.packet = function( event, client ) {
     if( msg ) {
         
         //if( this.options.developer ) {
-            console.log( '>>>', event.sns, '|', msg.text() );
+        //    console.log( '>>>', event.sns, '|', msg.text() );
         //}
         
         if( event.name == 'log' && event.sns == '~current' ) {

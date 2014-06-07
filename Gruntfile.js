@@ -6,7 +6,19 @@ module.exports = function(grunt) {
                 separator: ';'
             },
             dist: {
-                src: ['src/*.js'],
+                src: [
+                    'src/base.js',
+                    'src/top.js',
+                    'src/overlay.js',
+                    'src/menu.js',
+                    'src/head.js',
+                    //'src/users.js',
+                    'src/channelmenu.js',
+                    'src/control.js',
+                    'src/book.js',
+                    'src/channel.js',
+                    'src/protocol.js'
+                ],
                 dest: 'dist/tadpole.js'
             }
         },
@@ -45,6 +57,12 @@ module.exports = function(grunt) {
                 expand: true,
                 src: ['dist/*.js'],
                 dest: '../../heroku/frogpond/static/js/chat/',
+                flatten: true
+            },
+            font: {
+                expand: true,
+                src: ['font/*'],
+                dest: '../../heroku/frogpond/static/font/',
                 flatten: true
             }
         }
