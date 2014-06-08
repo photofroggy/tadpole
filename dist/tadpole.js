@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.11';
+tadpole.VERSION = '0.4.12';
 tadpole.STATE = 'alpha';
 
 
@@ -200,21 +200,20 @@ tadpole.UI.prototype.build = function(  ) {
             ui.channel(data.ns).privchg( data, done );
         }
     );
-    
+    */
     this.client.bind(
         'ns.user.remove',
         function( event, client ) {
-            ui.channel(event.ns).remove_one_user( event.user );
+            ui.book.channel(client.format_ns(event.ns)).users.register( event.user );
         }
     );
     
     this.client.bind(
         'ns.user.registered',
-        function( event ) {
-            ui.channel(event.ns).register_user( event.user );
+        function( event, client ) {
+            ui.book.channel(client.format_ns(event.ns)).users.register( event.user );
         }
     );
-    */
 
 };
 
@@ -253,10 +252,7 @@ tadpole.UI.prototype.toggle_menu = function(  ) {
  */
 tadpole.UI.prototype.channel_add = function( ns, raw ) {
 
-    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
-    selector = replaceAll(selector, 'chat:', 'c-chat-');
-    selector = replaceAll(selector, 'server:', 'c-server-');
-    selector = replaceAll(selector, ':', '-');
+    var selector = 'c-' + replaceAll(raw, ':', '-');
     
     var components = {
         tab: this.menu.channel.add( ns, raw ),
@@ -781,7 +777,7 @@ tadpole.Menu.prototype.resize = function(  ) {
     this.overlay.resize();
     this.channel.resize();
     this.heads.resize();
-    //this.users.resize();
+    this.users.resize();
     //this.settings.reszie();
 
 };
@@ -792,6 +788,8 @@ tadpole.Menu.prototype.resize = function(  ) {
  */
 tadpole.Menu.prototype.toggle = function(  ) {
 
+    this.resize();
+    
     if( this.overlay.visible ) {
         this.channel.hide();
         this.heads.hide();
@@ -1307,6 +1305,47 @@ tadpole.Users.prototype.set_users = function( users ) {
     }
     
     this.reveal_pcs();
+
+};
+
+/**
+ * Remove a user from the list.
+ * @method remove_user
+ */
+tadpole.Users.prototype.remove_user = function( user, noreveal ) {
+
+    var entry = this.ul.find('li.user#' + user);
+    
+    if( entry )
+        entry.remove();
+    
+    if( noreveal )
+        return;
+    
+    this.reveal_pcs();
+
+};
+
+/**
+ * Handle the register user event.
+ * 
+ * @method register
+ * @param user {String} Name of the user to register
+ */
+tadpole.Users.prototype.register = function( user, noreveal ) {
+
+    this.remove_user( user, true );
+    var member = this.manager.client.channel(
+        this.id.split('-').slice(1).join(':')).info.members[user];
+    
+    if( !member ) {
+        if( noreveal )
+            return;
+        this.reveal_pcs();
+        return;
+    }
+    
+    this.set(member, noreveal || false);
 
 };
 

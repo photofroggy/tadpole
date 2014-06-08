@@ -1,6 +1,6 @@
 {
   "name": "tadpole",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "devDependencies": {
     "grunt": "*",
     "grunt-contrib-sass": "*",

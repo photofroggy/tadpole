@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.11';
+tadpole.VERSION = '0.4.12';
 tadpole.STATE = 'alpha';
 
 
@@ -200,21 +200,20 @@ tadpole.UI.prototype.build = function(  ) {
             ui.channel(data.ns).privchg( data, done );
         }
     );
-    
+    */
     this.client.bind(
         'ns.user.remove',
         function( event, client ) {
-            ui.channel(event.ns).remove_one_user( event.user );
+            ui.book.channel(client.format_ns(event.ns)).users.register( event.user );
         }
     );
     
     this.client.bind(
         'ns.user.registered',
-        function( event ) {
-            ui.channel(event.ns).register_user( event.user );
+        function( event, client ) {
+            ui.book.channel(client.format_ns(event.ns)).users.register( event.user );
         }
     );
-    */
 
 };
 
@@ -253,10 +252,7 @@ tadpole.UI.prototype.toggle_menu = function(  ) {
  */
 tadpole.UI.prototype.channel_add = function( ns, raw ) {
 
-    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
-    selector = replaceAll(selector, 'chat:', 'c-chat-');
-    selector = replaceAll(selector, 'server:', 'c-server-');
-    selector = replaceAll(selector, ':', '-');
+    var selector = 'c-' + replaceAll(raw, ':', '-');
     
     var components = {
         tab: this.menu.channel.add( ns, raw ),

@@ -98,7 +98,7 @@ tadpole.Menu.prototype.resize = function(  ) {
     this.overlay.resize();
     this.channel.resize();
     this.heads.resize();
-    //this.users.resize();
+    this.users.resize();
     //this.settings.reszie();
 
 };
@@ -109,6 +109,8 @@ tadpole.Menu.prototype.resize = function(  ) {
  */
 tadpole.Menu.prototype.toggle = function(  ) {
 
+    this.resize();
+    
     if( this.overlay.visible ) {
         this.channel.hide();
         this.heads.hide();
