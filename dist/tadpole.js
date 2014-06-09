@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.13';
+tadpole.VERSION = '0.4.14';
 tadpole.STATE = 'alpha';
 
 
@@ -135,6 +135,7 @@ tadpole.UI = function( view, client, options, mozilla ) {
     this.menu = null;
     this.book = null;
     this.monitor = null;
+    this.lusername = this.client.settings.username.toLowerCase();
     
     this.protocol = new tadpole.Protocol();
 
@@ -1293,11 +1294,23 @@ tadpole.Users.prototype.set = function( user, noreveal ) {
     pc.users.append(html);
     
     var el = pc.users.find('li.user#' + user.name);
+    var control = this.manager.control;
     
     el.find('a').on( 'click', function( event ) {
     
         event.preventDefault();
-        // do something here like tab the user?
+        var text = control.get_text();
+        
+        if( text.length > 0 ) {
+            control.set_text(
+                text
+                + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
+                + user.name
+            );
+            return;
+        }
+        
+        control.set_text(user.name + ': ');
     
     } );
     
@@ -1853,15 +1866,17 @@ tadpole.Book.prototype.log = function( msg ) {
  */
 tadpole.Book.prototype.log_message = function( message, event ) {
 
+    var mbox = null;
+    
     try {
         if( !message.global ) {
             if( !message.monitor ) {
-                this.channel( event.ns ).log( event.html );
+                mbox = this.channel( event.ns ).log( event.html );
             } else {
-                this.manager.log( event.html );
+                mbox = this.manager.log( event.html );
             }
         } else {
-            this.log( event.html );
+            mbox = this.log( event.html );
         }
     } catch( err ) {
         try {
@@ -1872,6 +1887,40 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( err );
         }
     }
+    
+    if( !event.hasOwnProperty( 'user' )
+        || event.user.toLowerCase() == this.manager.lusername )
+        return;
+    
+    if( event.name == 'recv_msg' ||
+        event.name == 'recv_action' ) {
+        if( event.message.toLowerCase().indexOf( this.manager.lusername ) != -1 ) {
+            mbox.addClass('highlight');
+        }
+    }
+    
+    var user = event.user;
+    var control = this.manager.control;
+    
+    mbox.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        
+        var text = control.get_text();
+        
+        if( text.length > 0 ) {
+            control.set_text(
+                text
+                + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
+                + user
+            );
+            return;
+        }
+        
+        control.set_text(user + ': ');
+    
+    } );
 
 };
 
@@ -2020,11 +2069,7 @@ tadpole.Channel.prototype.log = function( content ) {
         '</span>'+content+'</li>'
     );
     
-    var ch = this;
-    
-    //setTimeout( function(  ) {
-        ch.scroll();
-    //}, 100 );
+    this.scroll();
     
     return this.logview.find('li#'+ms).last();
 

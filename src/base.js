@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.13';
+tadpole.VERSION = '0.4.14';
 tadpole.STATE = 'alpha';
 
 
@@ -135,6 +135,7 @@ tadpole.UI = function( view, client, options, mozilla ) {
     this.menu = null;
     this.book = null;
     this.monitor = null;
+    this.lusername = this.client.settings.username.toLowerCase();
     
     this.protocol = new tadpole.Protocol();
 

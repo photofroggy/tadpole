@@ -150,15 +150,17 @@ tadpole.Book.prototype.log = function( msg ) {
  */
 tadpole.Book.prototype.log_message = function( message, event ) {
 
+    var mbox = null;
+    
     try {
         if( !message.global ) {
             if( !message.monitor ) {
-                this.channel( event.ns ).log( event.html );
+                mbox = this.channel( event.ns ).log( event.html );
             } else {
-                this.manager.log( event.html );
+                mbox = this.manager.log( event.html );
             }
         } else {
-            this.log( event.html );
+            mbox = this.log( event.html );
         }
     } catch( err ) {
         try {
@@ -169,6 +171,40 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( err );
         }
     }
+    
+    if( !event.hasOwnProperty( 'user' )
+        || event.user.toLowerCase() == this.manager.lusername )
+        return;
+    
+    if( event.name == 'recv_msg' ||
+        event.name == 'recv_action' ) {
+        if( event.message.toLowerCase().indexOf( this.manager.lusername ) != -1 ) {
+            mbox.addClass('highlight');
+        }
+    }
+    
+    var user = event.user;
+    var control = this.manager.control;
+    
+    mbox.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        
+        var text = control.get_text();
+        
+        if( text.length > 0 ) {
+            control.set_text(
+                text
+                + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
+                + user
+            );
+            return;
+        }
+        
+        control.set_text(user + ': ');
+    
+    } );
 
 };
 

@@ -121,11 +121,7 @@ tadpole.Channel.prototype.log = function( content ) {
         '</span>'+content+'</li>'
     );
     
-    var ch = this;
-    
-    //setTimeout( function(  ) {
-        ch.scroll();
-    //}, 100 );
+    this.scroll();
     
     return this.logview.find('li#'+ms).last();
 
