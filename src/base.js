@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.12';
+tadpole.VERSION = '0.4.13';
 tadpole.STATE = 'alpha';
 
 
@@ -193,14 +193,28 @@ tadpole.UI.prototype.build = function(  ) {
             ui.book.channel(client.format_ns(event.ns)).users.set_users( event.users );
         }
     );
-    /*
+    
     this.client.middle(
         'ns.user.privchg',
         function( data, done ) {
-            ui.channel(data.ns).privchg( data, done );
+            var users = ui.book.channel(ui.client.format_ns(data.ns)).users;
+            var member = ui.client.channel(data.ns).info.members[data.user];
+            
+            users.remove_user(data.user, true);
+            
+            if( !member ) {
+                users.reveal_pcs();
+                done(data);
+                return;
+            }
+            
+            member = Object.extend(member, {});
+            member.pc = data.pc;
+            users.set(member);
+            done(data);
         }
     );
-    */
+    
     this.client.bind(
         'ns.user.remove',
         function( event, client ) {
