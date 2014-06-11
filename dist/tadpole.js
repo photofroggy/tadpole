@@ -4,8 +4,8 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.4.14';
-tadpole.STATE = 'alpha';
+tadpole.VERSION = '0.5.15';
+tadpole.STATE = 'beta';
 
 
 // jQuery hook.
