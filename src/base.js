@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.5.15';
+tadpole.VERSION = '0.5.16';
 tadpole.STATE = 'beta';
 
 
@@ -184,7 +184,7 @@ tadpole.UI.prototype.build = function(  ) {
     this.client.bind(
         'ns.create',
         function( event, client ) {
-            ui.channel_add(event.chan.namespace, event.chan.raw);
+            ui.channel_add(event.chan.namespace, event.chan.raw, event.chan.hidden);
         }
     );
     
@@ -265,17 +265,17 @@ tadpole.UI.prototype.toggle_menu = function(  ) {
  * Add a channel to the UI.
  * @method channel_add
  */
-tadpole.UI.prototype.channel_add = function( ns, raw ) {
+tadpole.UI.prototype.channel_add = function( ns, raw, hidden ) {
 
     var selector = 'c-' + replaceAll(raw, ':', '-');
     
     var components = {
-        tab: this.menu.channel.add( ns, raw ),
-        head: this.menu.heads.add( selector ),
-        users: this.menu.users.add( selector )
+        tab: this.menu.channel.add( ns, raw, hidden ),
+        head: this.menu.heads.add( selector, hidden ),
+        users: this.menu.users.add( selector, hidden )
     };
     
-    return this.book.add( ns, raw, components );
+    return this.book.add( ns, raw, hidden, components );
 
 };
 

@@ -131,6 +131,9 @@ div.tadpole {
                 span[class*=" icon-"], span[class^="icon-"] {
                     margin-right: 5px;
                 }
+                &.hidden {
+                    display: none;
+                }
             }
         
         }

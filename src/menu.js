@@ -175,12 +175,13 @@ tadpole.Menu.prototype.show_settings = function(  ) {};
  * @class tadpole.MenuItem
  * @constructor
  */
-tadpole.MenuItem = function( manager, menu, id, overlay ) {
+tadpole.MenuItem = function( manager, menu, id, overlay, hidden ) {
 
     this.manager = manager;
     this.menu = menu;
     this.id = id;
     this.overlay = overlay || null;
+    this.hidden = hidden || false;
     this.build();
 
 };
@@ -240,9 +241,9 @@ tadpole.MenuItemArray = function( ui, menu, parentview, cls, id, origin ) {
  * Create a new MenuItem.
  * @method create_item
  */
-tadpole.MenuItemArray.prototype.create_item = function( id, overlay ) {
+tadpole.MenuItemArray.prototype.create_item = function( id, overlay, hidden ) {
 
-    return new tadpole.MenuItem( this.manager, this.menu, id, overlay );
+    return new tadpole.MenuItem( this.manager, this.menu, id, overlay, hidden );
 
 };
 
@@ -260,11 +261,11 @@ tadpole.MenuItemArray.prototype.create_overlay_array = function(  ) {
  * Add an item to the array.
  * @method add
  */
-tadpole.MenuItemArray.prototype.add = function( id ) {
+tadpole.MenuItemArray.prototype.add = function( id, hidden ) {
 
     this.remove( id );
     var ol = this.overlays.add(id);
-    var item = this.create_item( id, ol );
+    var item = this.create_item( id, ol, hidden );
     this.items[id.toLowerCase()] = item;
     return item;
 

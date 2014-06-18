@@ -4,8 +4,8 @@
  * @class tadpole.Head
  * @constructor
  */
-tadpole.Head = function( manager, menu, id, overlay ) {
-    tadpole.MenuItem.call(this, manager, menu, id, overlay);
+tadpole.Head = function( manager, menu, id, overlay, hidden ) {
+    tadpole.MenuItem.call(this, manager, menu, id, overlay, hidden);
 };
 tadpole.Head.prototype = new tadpole.MenuItem;
 tadpole.Head.prototype.constructor = tadpole.MenuItem;
@@ -80,8 +80,8 @@ tadpole.HeadArray = function( ui, menu, parentview, cls, id, origin ) {
 tadpole.HeadArray.prototype = new tadpole.MenuItemArray;
 tadpole.HeadArray.prototype.constructor = tadpole.HeadArray;
 
-tadpole.HeadArray.prototype.create_item = function( id, overlay ) {
+tadpole.HeadArray.prototype.create_item = function( id, overlay, hidden ) {
 
-    return new tadpole.Head( this.manager, this.menu, id, overlay );
+    return new tadpole.Head( this.manager, this.menu, id, overlay, hidden );
 
 };

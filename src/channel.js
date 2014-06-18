@@ -6,10 +6,11 @@
  * @class tadpole.Channel
  * @contructor
  */
-tadpole.Channel = function( ns, raw, components, ui, book ) {
+tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
 
     this.manager = ui;
     this.book = book;
+    this.secret = hidden;
     this.tab = components.tab;
     this.head = components.head;
     this.users = components.users;

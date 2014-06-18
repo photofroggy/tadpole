@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.5.15';
+tadpole.VERSION = '0.5.16';
 tadpole.STATE = 'beta';
 
 
@@ -184,7 +184,7 @@ tadpole.UI.prototype.build = function(  ) {
     this.client.bind(
         'ns.create',
         function( event, client ) {
-            ui.channel_add(event.chan.namespace, event.chan.raw);
+            ui.channel_add(event.chan.namespace, event.chan.raw, event.chan.hidden);
         }
     );
     
@@ -265,17 +265,17 @@ tadpole.UI.prototype.toggle_menu = function(  ) {
  * Add a channel to the UI.
  * @method channel_add
  */
-tadpole.UI.prototype.channel_add = function( ns, raw ) {
+tadpole.UI.prototype.channel_add = function( ns, raw, hidden ) {
 
     var selector = 'c-' + replaceAll(raw, ':', '-');
     
     var components = {
-        tab: this.menu.channel.add( ns, raw ),
-        head: this.menu.heads.add( selector ),
-        users: this.menu.users.add( selector )
+        tab: this.menu.channel.add( ns, raw, hidden ),
+        head: this.menu.heads.add( selector, hidden ),
+        users: this.menu.users.add( selector, hidden )
     };
     
-    return this.book.add( ns, raw, components );
+    return this.book.add( ns, raw, hidden, components );
 
 };
 
@@ -869,12 +869,13 @@ tadpole.Menu.prototype.show_settings = function(  ) {};
  * @class tadpole.MenuItem
  * @constructor
  */
-tadpole.MenuItem = function( manager, menu, id, overlay ) {
+tadpole.MenuItem = function( manager, menu, id, overlay, hidden ) {
 
     this.manager = manager;
     this.menu = menu;
     this.id = id;
     this.overlay = overlay || null;
+    this.hidden = hidden || false;
     this.build();
 
 };
@@ -934,9 +935,9 @@ tadpole.MenuItemArray = function( ui, menu, parentview, cls, id, origin ) {
  * Create a new MenuItem.
  * @method create_item
  */
-tadpole.MenuItemArray.prototype.create_item = function( id, overlay ) {
+tadpole.MenuItemArray.prototype.create_item = function( id, overlay, hidden ) {
 
-    return new tadpole.MenuItem( this.manager, this.menu, id, overlay );
+    return new tadpole.MenuItem( this.manager, this.menu, id, overlay, hidden );
 
 };
 
@@ -954,11 +955,11 @@ tadpole.MenuItemArray.prototype.create_overlay_array = function(  ) {
  * Add an item to the array.
  * @method add
  */
-tadpole.MenuItemArray.prototype.add = function( id ) {
+tadpole.MenuItemArray.prototype.add = function( id, hidden ) {
 
     this.remove( id );
     var ol = this.overlays.add(id);
-    var item = this.create_item( id, ol );
+    var item = this.create_item( id, ol, hidden );
     this.items[id.toLowerCase()] = item;
     return item;
 
@@ -1095,8 +1096,8 @@ tadpole.MenuItemArray.prototype.remove_all = function(  ) {
  * @class tadpole.Head
  * @constructor
  */
-tadpole.Head = function( manager, menu, id, overlay ) {
-    tadpole.MenuItem.call(this, manager, menu, id, overlay);
+tadpole.Head = function( manager, menu, id, overlay, hidden ) {
+    tadpole.MenuItem.call(this, manager, menu, id, overlay, hidden);
 };
 tadpole.Head.prototype = new tadpole.MenuItem;
 tadpole.Head.prototype.constructor = tadpole.MenuItem;
@@ -1171,9 +1172,9 @@ tadpole.HeadArray = function( ui, menu, parentview, cls, id, origin ) {
 tadpole.HeadArray.prototype = new tadpole.MenuItemArray;
 tadpole.HeadArray.prototype.constructor = tadpole.HeadArray;
 
-tadpole.HeadArray.prototype.create_item = function( id, overlay ) {
+tadpole.HeadArray.prototype.create_item = function( id, overlay, hidden ) {
 
-    return new tadpole.Head( this.manager, this.menu, id, overlay );
+    return new tadpole.Head( this.manager, this.menu, id, overlay, hidden );
 
 };
 ;
@@ -1473,14 +1474,15 @@ tadpole.ChannelMenu.prototype.hide = function(  ) {
  * Add a channel to the menu.
  * @method add
  */
-tadpole.ChannelMenu.prototype.add = function( ns, raw ) {
+tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
 
-    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
-    selector = replaceAll(selector, 'chat:', 'c-chat-');
-    selector = replaceAll(selector, 'server:', 'c-server-');
-    selector = replaceAll(selector, ':', '-');
+    var selector = 'c-' + replaceAll(raw, ':', '-');
+    var hcls = '';
     
-    this.ul.append( '<li><a id="tab-' + selector + '" href="#">' + ns + '</a></li>');
+    if( hidden )
+        hcls = 'class="hidden" ';
+    
+    this.ul.append( '<li><a '+hcls+'id="tab-' + selector + '" href="#">' + ns + '</a></li>');
     
     var cmenu = this;
     var tab = this.ul.find('a#tab-' + selector);
@@ -1790,13 +1792,16 @@ tadpole.Book.prototype.channel = function( ns ) {
  * @param ns {String} Namespace for the channel
  * @param raw {String} Raw namespace for the channel
  */
-tadpole.Book.prototype.add = function( ns, raw, tab ) {
+tadpole.Book.prototype.add = function( ns, raw, hidden, components ) {
 
     this.remove(raw);
-    var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
+    var chan = new tadpole.Channel( ns, raw, hidden, components, this.manager, this );
     this.clist[raw.toLowerCase()] = chan;
     this.chans.push(raw.toLowerCase());
-    this.reveal(raw);
+    
+    if( !hidden )
+        this.reveal(raw);
+    
     return chan;
 
 };
@@ -1954,10 +1959,11 @@ tadpole.Book.prototype.handle = function( event, client ) {
  * @class tadpole.Channel
  * @contructor
  */
-tadpole.Channel = function( ns, raw, components, ui, book ) {
+tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
 
     this.manager = ui;
     this.book = book;
+    this.secret = hidden;
     this.tab = components.tab;
     this.head = components.head;
     this.users = components.users;

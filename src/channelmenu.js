@@ -78,14 +78,15 @@ tadpole.ChannelMenu.prototype.hide = function(  ) {
  * Add a channel to the menu.
  * @method add
  */
-tadpole.ChannelMenu.prototype.add = function( ns, raw ) {
+tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
 
-    var selector = replaceAll(raw, 'pchat:', 'c-pchat-');
-    selector = replaceAll(selector, 'chat:', 'c-chat-');
-    selector = replaceAll(selector, 'server:', 'c-server-');
-    selector = replaceAll(selector, ':', '-');
+    var selector = 'c-' + replaceAll(raw, ':', '-');
+    var hcls = '';
     
-    this.ul.append( '<li><a id="tab-' + selector + '" href="#">' + ns + '</a></li>');
+    if( hidden )
+        hcls = 'class="hidden" ';
+    
+    this.ul.append( '<li><a '+hcls+'id="tab-' + selector + '" href="#">' + ns + '</a></li>');
     
     var cmenu = this;
     var tab = this.ul.find('a#tab-' + selector);

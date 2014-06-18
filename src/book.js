@@ -74,13 +74,16 @@ tadpole.Book.prototype.channel = function( ns ) {
  * @param ns {String} Namespace for the channel
  * @param raw {String} Raw namespace for the channel
  */
-tadpole.Book.prototype.add = function( ns, raw, tab ) {
+tadpole.Book.prototype.add = function( ns, raw, hidden, components ) {
 
     this.remove(raw);
-    var chan = new tadpole.Channel( ns, raw, tab, this.manager, this );
+    var chan = new tadpole.Channel( ns, raw, hidden, components, this.manager, this );
     this.clist[raw.toLowerCase()] = chan;
     this.chans.push(raw.toLowerCase());
-    this.reveal(raw);
+    
+    if( !hidden )
+        this.reveal(raw);
+    
     return chan;
 
 };
