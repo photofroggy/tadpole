@@ -253,6 +253,8 @@ div.tadpole {
         border-top: 1px dotted #94A3CF;
         border-bottom: none;
         padding-left: 30px; }
+      div.tadpole div.overlay nav li.hidden {
+        display: none; }
     div.tadpole div.overlay nav a, div.tadpole div.overlay nav span.button {
       color: #94A3CF;
       /*#7E9B89;*/

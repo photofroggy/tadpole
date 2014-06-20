@@ -9,6 +9,7 @@ tadpole.ChannelMenu = function( ui, parentview ) {
 
     this.manager = ui;
     this.parentview = parentview;
+    this.menu = null;
     this.build();
 
 };
@@ -20,25 +21,16 @@ tadpole.ChannelMenu = function( ui, parentview ) {
  */
 tadpole.ChannelMenu.prototype.build = function(  ) {
 
-    // Create the main menu.
-    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu' );
-    this.overlay.view.append('<nav class="channels">'
-        +'<ul>'
-        +'  <li><span class="button" id="channelexit"><span class="icon-left-open"></span>Channels</span></li>'
-        +'</ul></nav>');
+    // Create the channel menu.
+    this.menu = new tadpole.Menu(this.manager, this.parentview, 'channels');
     
-    this.view = this.overlay.view.find('nav');
-    this.ul = this.view.find('ul');
-    this.button_back = this.ul.find('span#channelexit');
+    var menu = this;
     
-    var cmenu = this;
+    this.menu.add( 'back', 'exit', 'Channels', function( event ) {
     
-    this.button_back.on( 'click', function( event ) {
+        menu.hide();
     
-        event.preventDefault();
-        cmenu.hide();
-    
-    } );
+    }, 'left-open' );
 
 };
 
@@ -48,7 +40,7 @@ tadpole.ChannelMenu.prototype.build = function(  ) {
  */
 tadpole.ChannelMenu.prototype.resize = function(  ) {
 
-    this.overlay.resize();
+    this.menu.resize();
 
 };
 
@@ -58,8 +50,7 @@ tadpole.ChannelMenu.prototype.resize = function(  ) {
  */
 tadpole.ChannelMenu.prototype.reveal = function(  ) {
 
-    this.overlay.reveal();
-    return this.overlay.visible;
+    return this.menu.reveal();
 
 };
 
@@ -69,8 +60,7 @@ tadpole.ChannelMenu.prototype.reveal = function(  ) {
  */
 tadpole.ChannelMenu.prototype.hide = function(  ) {
 
-    this.overlay.hide();
-    return this.overlay.visible;
+    return this.menu.hide();
 
 };
 
@@ -79,25 +69,17 @@ tadpole.ChannelMenu.prototype.hide = function(  ) {
  * @method add
  */
 tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
-
-    var selector = 'c-' + replaceAll(raw, ':', '-');
-    var hcls = '';
     
-    if( hidden )
-        hcls = 'class="hidden" ';
+    var menu = this;
     
-    this.ul.append( '<li><a '+hcls+'id="tab-' + selector + '" href="#">' + ns + '</a></li>');
-    
-    var cmenu = this;
-    var tab = this.ul.find('a#tab-' + selector);
-    
-    tab.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        cmenu.manager.book.reveal(raw);
-        cmenu.manager.menu.toggle();
-    
-    } );
+    var tab = this.menu.add(
+        'tab',
+        'tab-c-' + replaceAll(raw, ':', '-'),
+        ns, function( event ) {
+            menu.manager.book.reveal(raw);
+            menu.manager.menu.toggle();
+        }, '', hidden
+    );
     
     return tab;
 

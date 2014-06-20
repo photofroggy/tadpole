@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.6.17';
+tadpole.VERSION = '0.6.18';
 tadpole.STATE = 'beta';
 
 
@@ -729,9 +729,9 @@ tadpole.Menu.prototype.build = function(  ) {
  * @param label {String} Label for the button.
  * @param callback {Function} Method to call when the button is clicked.
  */
-tadpole.Menu.prototype.add = function( cls, label, callback, icon ) {
+tadpole.Menu.prototype.add = function( cls, id, label, callback, icon, hidden ) {
 
-    var button = new tadpole.MenuButton( this.ul, cls, label, callback, icon );
+    var button = new tadpole.MenuButton( this.ul, cls, id, label, callback, icon, hidden );
     this.buttons.push(button);
     return button;
 
@@ -767,13 +767,13 @@ tadpole.Menu.prototype.toggle = function(  ) {
 
 tadpole.Menu.prototype.reveal = function(  ) {
 
-    this.overlay.reveal();
+    return this.overlay.reveal();
 
 };
 
 tadpole.Menu.prototype.hide = function(  ) {
 
-    this.overlay.hide();
+    return this.overlay.hide();
 
 };
 
@@ -789,13 +789,15 @@ tadpole.Menu.prototype.hide_quick = function(  ) {
  * @class tadpole.MenuButton
  * @constructor
  */
-tadpole.MenuButton = function( parent, cls, label, callback, icon ) {
+tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden ) {
 
     this.parent = parent;
     this.label = label;
     this.callback = callback;
     this.cls = cls;
+    this.id = id || '';
     this.icon = icon || '';
+    this.hidden = hidden || false;
     this.button = null;
     this.view = null;
     this.visible = true;
@@ -811,16 +813,23 @@ tadpole.MenuButton = function( parent, cls, label, callback, icon ) {
 tadpole.MenuButton.prototype.build = function(  ) {
 
     var icon = '';
+    var id = '';
+    var selector = '.button.' + replaceAll(this.cls, ' ', '.');
     
     if( this.icon )
         icon = '<span class="icon-' + this.icon + '"></span>';
     
-    this.parent.append('<li>'
-        +'<a class="button ' + this.cls + '" href="#">'
+    if( this.id ) {
+        selector = selector + '#' + this.id;
+        id = 'id="' + this.id + '" ';
+    }
+    
+    this.parent.append('<li' + ( this.hidden ? ' class="hidden"': '' ) + '>'
+        +'<a class="button ' + this.cls + '" '+id+'href="#">'
         +icon+this.label
         +'</a></li>');
     
-    this.button = this.parent.find('.button.' + replaceAll(this.cls, ' ', '.'));
+    this.button = this.parent.find(selector);
     this.view = this.button.parent();
     
     var cb = this.callback;
@@ -882,19 +891,19 @@ tadpole.MainMenu.prototype.build = function(  ) {
     // Handle events.
     var menu = this;
     
-    this.button_head = this.menu.add( 'head', 'Title/Topic', function( event ) {
+    this.button_head = this.menu.add( 'head', '', 'Title/Topic', function( event ) {
     
         menu.show_head();
     
     }, 'doc' );
     
-    this.button_users = this.menu.add( 'users', 'Users', function( event ) {
+    this.button_users = this.menu.add( 'users', '', 'Users', function( event ) {
     
         menu.show_users();
     
     }, 'user' );
     
-    this.button_channels = this.menu.add( 'channels', 'Channels', function( event ) {
+    this.button_channels = this.menu.add( 'channels', '', 'Channels', function( event ) {
     
         menu.show_channels();
     
@@ -906,7 +915,7 @@ tadpole.MainMenu.prototype.build = function(  ) {
     //this.command_menu.add( 'part', 'Leave Channel', function( event ) {} );
     
     
-    this.button_settings = this.menu.add( 'settings', 'Settings', function( event ) {
+    this.button_settings = this.menu.add( 'settings', '', 'Settings', function( event ) {
     
         menu.show_settings();
     
@@ -1542,6 +1551,7 @@ tadpole.ChannelMenu = function( ui, parentview ) {
 
     this.manager = ui;
     this.parentview = parentview;
+    this.menu = null;
     this.build();
 
 };
@@ -1553,25 +1563,16 @@ tadpole.ChannelMenu = function( ui, parentview ) {
  */
 tadpole.ChannelMenu.prototype.build = function(  ) {
 
-    // Create the main menu.
-    this.overlay = new tadpole.Overlay( this.manager.view, 'channelmenu' );
-    this.overlay.view.append('<nav class="channels">'
-        +'<ul>'
-        +'  <li><span class="button" id="channelexit"><span class="icon-left-open"></span>Channels</span></li>'
-        +'</ul></nav>');
+    // Create the channel menu.
+    this.menu = new tadpole.Menu(this.manager, this.parentview, 'channels');
     
-    this.view = this.overlay.view.find('nav');
-    this.ul = this.view.find('ul');
-    this.button_back = this.ul.find('span#channelexit');
+    var menu = this;
     
-    var cmenu = this;
+    this.menu.add( 'back', 'exit', 'Channels', function( event ) {
     
-    this.button_back.on( 'click', function( event ) {
+        menu.hide();
     
-        event.preventDefault();
-        cmenu.hide();
-    
-    } );
+    }, 'left-open' );
 
 };
 
@@ -1581,7 +1582,7 @@ tadpole.ChannelMenu.prototype.build = function(  ) {
  */
 tadpole.ChannelMenu.prototype.resize = function(  ) {
 
-    this.overlay.resize();
+    this.menu.resize();
 
 };
 
@@ -1591,8 +1592,7 @@ tadpole.ChannelMenu.prototype.resize = function(  ) {
  */
 tadpole.ChannelMenu.prototype.reveal = function(  ) {
 
-    this.overlay.reveal();
-    return this.overlay.visible;
+    return this.menu.reveal();
 
 };
 
@@ -1602,8 +1602,7 @@ tadpole.ChannelMenu.prototype.reveal = function(  ) {
  */
 tadpole.ChannelMenu.prototype.hide = function(  ) {
 
-    this.overlay.hide();
-    return this.overlay.visible;
+    return this.menu.hide();
 
 };
 
@@ -1612,25 +1611,17 @@ tadpole.ChannelMenu.prototype.hide = function(  ) {
  * @method add
  */
 tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
-
-    var selector = 'c-' + replaceAll(raw, ':', '-');
-    var hcls = '';
     
-    if( hidden )
-        hcls = 'class="hidden" ';
+    var menu = this;
     
-    this.ul.append( '<li><a '+hcls+'id="tab-' + selector + '" href="#">' + ns + '</a></li>');
-    
-    var cmenu = this;
-    var tab = this.ul.find('a#tab-' + selector);
-    
-    tab.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        cmenu.manager.book.reveal(raw);
-        cmenu.manager.menu.toggle();
-    
-    } );
+    var tab = this.menu.add(
+        'tab',
+        'tab-c-' + replaceAll(raw, ':', '-'),
+        ns, function( event ) {
+            menu.manager.book.reveal(raw);
+            menu.manager.menu.toggle();
+        }, '', hidden
+    );
     
     return tab;
 

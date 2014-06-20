@@ -35,9 +35,9 @@ tadpole.Menu.prototype.build = function(  ) {
  * @param label {String} Label for the button.
  * @param callback {Function} Method to call when the button is clicked.
  */
-tadpole.Menu.prototype.add = function( cls, label, callback, icon ) {
+tadpole.Menu.prototype.add = function( cls, id, label, callback, icon, hidden ) {
 
-    var button = new tadpole.MenuButton( this.ul, cls, label, callback, icon );
+    var button = new tadpole.MenuButton( this.ul, cls, id, label, callback, icon, hidden );
     this.buttons.push(button);
     return button;
 
@@ -73,13 +73,13 @@ tadpole.Menu.prototype.toggle = function(  ) {
 
 tadpole.Menu.prototype.reveal = function(  ) {
 
-    this.overlay.reveal();
+    return this.overlay.reveal();
 
 };
 
 tadpole.Menu.prototype.hide = function(  ) {
 
-    this.overlay.hide();
+    return this.overlay.hide();
 
 };
 
@@ -95,13 +95,15 @@ tadpole.Menu.prototype.hide_quick = function(  ) {
  * @class tadpole.MenuButton
  * @constructor
  */
-tadpole.MenuButton = function( parent, cls, label, callback, icon ) {
+tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden ) {
 
     this.parent = parent;
     this.label = label;
     this.callback = callback;
     this.cls = cls;
+    this.id = id || '';
     this.icon = icon || '';
+    this.hidden = hidden || false;
     this.button = null;
     this.view = null;
     this.visible = true;
@@ -117,16 +119,23 @@ tadpole.MenuButton = function( parent, cls, label, callback, icon ) {
 tadpole.MenuButton.prototype.build = function(  ) {
 
     var icon = '';
+    var id = '';
+    var selector = '.button.' + replaceAll(this.cls, ' ', '.');
     
     if( this.icon )
         icon = '<span class="icon-' + this.icon + '"></span>';
     
-    this.parent.append('<li>'
-        +'<a class="button ' + this.cls + '" href="#">'
+    if( this.id ) {
+        selector = selector + '#' + this.id;
+        id = 'id="' + this.id + '" ';
+    }
+    
+    this.parent.append('<li' + ( this.hidden ? ' class="hidden"': '' ) + '>'
+        +'<a class="button ' + this.cls + '" '+id+'href="#">'
         +icon+this.label
         +'</a></li>');
     
-    this.button = this.parent.find('.button.' + replaceAll(this.cls, ' ', '.'));
+    this.button = this.parent.find(selector);
     this.view = this.button.parent();
     
     var cb = this.callback;
@@ -188,19 +197,19 @@ tadpole.MainMenu.prototype.build = function(  ) {
     // Handle events.
     var menu = this;
     
-    this.button_head = this.menu.add( 'head', 'Title/Topic', function( event ) {
+    this.button_head = this.menu.add( 'head', '', 'Title/Topic', function( event ) {
     
         menu.show_head();
     
     }, 'doc' );
     
-    this.button_users = this.menu.add( 'users', 'Users', function( event ) {
+    this.button_users = this.menu.add( 'users', '', 'Users', function( event ) {
     
         menu.show_users();
     
     }, 'user' );
     
-    this.button_channels = this.menu.add( 'channels', 'Channels', function( event ) {
+    this.button_channels = this.menu.add( 'channels', '', 'Channels', function( event ) {
     
         menu.show_channels();
     
@@ -212,7 +221,7 @@ tadpole.MainMenu.prototype.build = function(  ) {
     //this.command_menu.add( 'part', 'Leave Channel', function( event ) {} );
     
     
-    this.button_settings = this.menu.add( 'settings', 'Settings', function( event ) {
+    this.button_settings = this.menu.add( 'settings', '', 'Settings', function( event ) {
     
         menu.show_settings();
     

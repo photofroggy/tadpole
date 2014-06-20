@@ -121,6 +121,11 @@ div.tadpole {
                     border-bottom: none;
                     padding-left: 30px;
                 }
+                
+                &.hidden {
+                    display: none;
+                }
+                
             }
             
             a, span.button {
