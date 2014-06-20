@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.6.18';
+tadpole.VERSION = '0.6.19';
 tadpole.STATE = 'beta';
 
 
@@ -841,6 +841,18 @@ tadpole.MenuButton.prototype.build = function(  ) {
         cb( event );
     
     } );
+    
+    this.button.css({'width': this.parent.parent().parent().width() - 30});
+
+};
+
+/**
+ * Remove this shit yo.
+ * @method remove
+ */
+tadpole.MenuButton.prototype.remove = function(  ) {
+
+    this.view.remove();
 
 };
 
@@ -1622,6 +1634,22 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
             menu.manager.menu.toggle();
         }, '', hidden
     );
+    
+    if( ns[0] == '~' )
+        return tab;
+    
+    tab.view.append('<a href="#" class="button close icon-cancel"></a>');
+    var close = tab.view.find('.button.close');
+    
+    close.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        menu.manager.client.part(raw);
+    
+    } );
+    
+    tab.button.css({'width': (this.manager.view.width() - 90)});
     
     return tab;
 

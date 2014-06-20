@@ -255,16 +255,23 @@ div.tadpole {
         padding-left: 30px; }
       div.tadpole div.overlay nav li.hidden {
         display: none; }
-    div.tadpole div.overlay nav a, div.tadpole div.overlay nav span.button {
-      color: #94A3CF;
-      /*#7E9B89;*/
-      font-size: 18px;
-      display: block;
-      padding: 5px 15px; }
-      div.tadpole div.overlay nav a span[class*=" icon-"], div.tadpole div.overlay nav a span[class^="icon-"], div.tadpole div.overlay nav span.button span[class*=" icon-"], div.tadpole div.overlay nav span.button span[class^="icon-"] {
-        margin-right: 5px; }
-      div.tadpole div.overlay nav a.hidden, div.tadpole div.overlay nav span.button.hidden {
-        display: none; }
+      div.tadpole div.overlay nav li a, div.tadpole div.overlay nav li span.button {
+        color: #94A3CF;
+        /*#7E9B89;*/
+        font-size: 18px;
+        display: inline-block;
+        padding: 5px 15px;
+       /*
+      &:first-child {
+          width: 300px;
+      }*/ }
+        div.tadpole div.overlay nav li a span[class*=" icon-"], div.tadpole div.overlay nav li a span[class^="icon-"], div.tadpole div.overlay nav li span.button span[class*=" icon-"], div.tadpole div.overlay nav li span.button span[class^="icon-"] {
+          margin-right: 5px; }
+        div.tadpole div.overlay nav li a.hidden, div.tadpole div.overlay nav li span.button.hidden {
+          display: none; }
+        div.tadpole div.overlay nav li a[class*=" icon-"], div.tadpole div.overlay nav li span.button[class*=" icon-"] {
+          float: right;
+          color: #C71414; }
   div.tadpole div.head div {
     font-size: 16px;
     padding: 10px;

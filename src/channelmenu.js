@@ -81,6 +81,22 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
         }, '', hidden
     );
     
+    if( ns[0] == '~' )
+        return tab;
+    
+    tab.view.append('<a href="#" class="button close icon-cancel"></a>');
+    var close = tab.view.find('.button.close');
+    
+    close.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        menu.manager.client.part(raw);
+    
+    } );
+    
+    tab.button.css({'width': (this.manager.view.width() - 90)});
+    
     return tab;
 
 };

@@ -147,6 +147,18 @@ tadpole.MenuButton.prototype.build = function(  ) {
         cb( event );
     
     } );
+    
+    this.button.css({'width': this.parent.parent().parent().width() - 30});
+
+};
+
+/**
+ * Remove this shit yo.
+ * @method remove
+ */
+tadpole.MenuButton.prototype.remove = function(  ) {
+
+    this.view.remove();
 
 };
 

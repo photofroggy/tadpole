@@ -125,19 +125,25 @@ div.tadpole {
                 &.hidden {
                     display: none;
                 }
-                
-            }
             
-            a, span.button {
-                color: #94A3CF;/*#7E9B89;*/
-                font-size: 18px;
-                display: block;
-                padding: 5px 15px;
-                span[class*=" icon-"], span[class^="icon-"] {
-                    margin-right: 5px;
-                }
-                &.hidden {
-                    display: none;
+                a, span.button {
+                    color: #94A3CF;/*#7E9B89;*/
+                    font-size: 18px;
+                    display: inline-block;
+                    padding: 5px 15px;
+                    span[class*=" icon-"], span[class^="icon-"] {
+                        margin-right: 5px;
+                    }
+                    &.hidden {
+                        display: none;
+                    }
+                    &[class*=" icon-"] {
+                        float: right;
+                        color: #C71414;
+                    }/*
+                    &:first-child {
+                        width: 300px;
+                    }*/
                 }
             }
         
