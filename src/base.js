@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.5.16';
+tadpole.VERSION = '0.6.17';
 tadpole.STATE = 'beta';
 
 
@@ -151,7 +151,7 @@ tadpole.UI.prototype.build = function(  ) {
     this.top = new tadpole.Top( this );
     this.book = new tadpole.Book( this );
     this.control = new tadpole.Control( this );
-    this.menu = new tadpole.Menu( this );
+    this.menu = new tadpole.MainMenu( this );
     
     // Create a monitor channel for debugging?
     // Shouldn't really need this sort of thing.

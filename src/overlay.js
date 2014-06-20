@@ -8,7 +8,7 @@ tadpole.Overlay = function( parentview, cls, id, origin ) {
     this.parentview = parentview;
     this.cls = cls;
     this.id = id || null;
-    this.selector = '.overlay.' + this.cls;
+    this.selector = '.overlay.' + replaceAll(this.cls, ' ', '.');
     this.origin = origin || 'top';
     this.visible = false;
     

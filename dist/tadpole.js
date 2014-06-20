@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.5.16';
+tadpole.VERSION = '0.6.17';
 tadpole.STATE = 'beta';
 
 
@@ -151,7 +151,7 @@ tadpole.UI.prototype.build = function(  ) {
     this.top = new tadpole.Top( this );
     this.book = new tadpole.Book( this );
     this.control = new tadpole.Control( this );
-    this.menu = new tadpole.Menu( this );
+    this.menu = new tadpole.MainMenu( this );
     
     // Create a monitor channel for debugging?
     // Shouldn't really need this sort of thing.
@@ -427,7 +427,7 @@ tadpole.Overlay = function( parentview, cls, id, origin ) {
     this.parentview = parentview;
     this.cls = cls;
     this.id = id || null;
-    this.selector = '.overlay.' + this.cls;
+    this.selector = '.overlay.' + replaceAll(this.cls, ' ', '.');
     this.origin = origin || 'top';
     this.visible = false;
     
@@ -694,14 +694,158 @@ tadpole.OverlayArray.prototype.remove_all = function(  ) {
 
 ;
 /**
+ * Menu thing.
+ * @class tadpole.Menu
+ * @constructor
+ */
+tadpole.Menu = function( ui, parent, cls ) {
+
+    this.manager = ui;
+    this.parent = parent;
+    this.overlay = null;
+    this.buttons = [];
+    this.cls = cls || '';
+    this.build();
+
+};
+
+/**
+ * Build the menu.
+ * @method build
+ */
+tadpole.Menu.prototype.build = function(  ) {
+
+    var cls = 'menu' + ( this.cls ? ' ' + this.cls : '' );
+    this.overlay = new tadpole.Overlay( this.parent, cls );
+    this.overlay.view.append( '<nav class="' + cls + '"><ul></ul></nav>');
+    this.view = this.overlay.view.find('nav');
+    this.ul = this.view.find('ul');
+
+};
+
+/**
+ * Add a button to the menu.
+ * @method add
+ * @param label {String} Label for the button.
+ * @param callback {Function} Method to call when the button is clicked.
+ */
+tadpole.Menu.prototype.add = function( cls, label, callback, icon ) {
+
+    var button = new tadpole.MenuButton( this.ul, cls, label, callback, icon );
+    this.buttons.push(button);
+    return button;
+
+};
+
+/**
+ * Resize the menu.
+ * @method resize
+ */
+tadpole.Menu.prototype.resize = function(  ) {
+
+    this.overlay.resize();
+
+};
+
+/**
+ * Toggle the menu.
+ * @method toggle
+ */
+tadpole.Menu.prototype.toggle = function(  ) {
+
+    this.resize();
+    
+    if( this.overlay.visible ) {
+        this.overlay.hide();
+        return this.overlay.visible;
+    }
+    
+    this.overlay.reveal();
+    return this.overlay.visible;
+
+};
+
+tadpole.Menu.prototype.reveal = function(  ) {
+
+    this.overlay.reveal();
+
+};
+
+tadpole.Menu.prototype.hide = function(  ) {
+
+    this.overlay.hide();
+
+};
+
+tadpole.Menu.prototype.hide_quick = function(  ) {
+
+    this.overlay.hide_quick();
+
+};
+
+
+/**
+ * Button in a menu.
+ * @class tadpole.MenuButton
+ * @constructor
+ */
+tadpole.MenuButton = function( parent, cls, label, callback, icon ) {
+
+    this.parent = parent;
+    this.label = label;
+    this.callback = callback;
+    this.cls = cls;
+    this.icon = icon || '';
+    this.button = null;
+    this.view = null;
+    this.visible = true;
+    this.build();
+
+};
+
+
+/**
+ * Build the button.
+ * @method build
+ */
+tadpole.MenuButton.prototype.build = function(  ) {
+
+    var icon = '';
+    
+    if( this.icon )
+        icon = '<span class="icon-' + this.icon + '"></span>';
+    
+    this.parent.append('<li>'
+        +'<a class="button ' + this.cls + '" href="#">'
+        +icon+this.label
+        +'</a></li>');
+    
+    this.button = this.parent.find('.button.' + replaceAll(this.cls, ' ', '.'));
+    this.view = this.button.parent();
+    
+    var cb = this.callback;
+    
+    this.button.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        cb( event );
+    
+    } );
+
+};
+
+
+/**
  * Menu for the fucking thingy.
  * @class tadpole.Menu
  * @constructor
  * @param ui {Object} Main ui object.
  */
-tadpole.Menu = function( ui ) {
+tadpole.MainMenu = function( ui ) {
 
     this.manager = ui;
+    this.menu = null;
     this.users = null;
     this.heads = null;
     this.build();
@@ -713,10 +857,10 @@ tadpole.Menu = function( ui ) {
  * Place the menu on the page.
  * @method build
  */
-tadpole.Menu.prototype.build = function(  ) {
+tadpole.MainMenu.prototype.build = function(  ) {
 
     // Create the main menu.
-    this.overlay = new tadpole.Overlay( this.manager.view, 'menu' );
+    /*
     this.overlay.view.append('<nav class="menu">'
         +'<ul>'
         +'  <li><a class="head" href="#"><span class="icon-doc"></span>Topic/Title</a></li>'
@@ -730,53 +874,46 @@ tadpole.Menu.prototype.build = function(  ) {
         +'  </li>'
         +'  <li><a class="settings" href="#"><span class="icon-cog"></span>Settings</a></li>'
         +'</ul></nav>');
+    */
     
-    this.view = this.overlay.view.find('nav');
-    this.button_head = this.view.find('.head');
-    this.button_users = this.view.find('.users');
-    this.button_channels = this.view.find('.channels');
-    this.button_commands = this.view.find('.commands');
-    this.button_settings = this.view.find('.settings');
+    this.menu = new tadpole.Menu( this.manager, this.manager.view, 'main' );
+    
     
     // Handle events.
     var menu = this;
     
-    this.button_head.on( 'click', function( event ) {
+    this.button_head = this.menu.add( 'head', 'Title/Topic', function( event ) {
     
-        event.preventDefault();
         menu.show_head();
     
-    } );
+    }, 'doc' );
     
-    this.button_users.on( 'click', function( event ) {
+    this.button_users = this.menu.add( 'users', 'Users', function( event ) {
     
-        event.preventDefault();
         menu.show_users();
     
-    } );
+    }, 'user' );
     
-    this.button_channels.on( 'click', function( event ) {
+    this.button_channels = this.menu.add( 'channels', 'Channels', function( event ) {
     
-        event.preventDefault();
         menu.show_channels();
     
-    } );
+    }, 'comment' );
     
-    this.button_commands.on( 'click', function( event ) {
     
-        event.preventDefault();
+    //this.command_menu = this.menu.add_nested( 'commands', 'Commands', 'plus' );
+    //this.command_menu.add( 'join', 'Join Channel', function( event ) {} );
+    //this.command_menu.add( 'part', 'Leave Channel', function( event ) {} );
     
-    } );
     
-    this.button_settings.on( 'click', function( event ) {
+    this.button_settings = this.menu.add( 'settings', 'Settings', function( event ) {
     
-        event.preventDefault();
         menu.show_settings();
     
-    } );
+    }, 'cog' );
     
     // Create sub-menus.
-    this.channel = new tadpole.ChannelMenu( this.manager, this.overlay.view );
+    this.channel = new tadpole.ChannelMenu( this.manager, this.manager.view );
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
     this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
     //this.settings = new tadpole.SettingsOverlay( this.manager );
@@ -787,9 +924,9 @@ tadpole.Menu.prototype.build = function(  ) {
  * Resize the menu.
  * @method resize
  */
-tadpole.Menu.prototype.resize = function(  ) {
+tadpole.MainMenu.prototype.resize = function(  ) {
 
-    this.overlay.resize();
+    this.menu.resize();
     this.channel.resize();
     this.heads.resize();
     this.users.resize();
@@ -801,29 +938,29 @@ tadpole.Menu.prototype.resize = function(  ) {
  * Toggle the menu.
  * @method toggle
  */
-tadpole.Menu.prototype.toggle = function(  ) {
+tadpole.MainMenu.prototype.toggle = function(  ) {
 
     this.resize();
     
-    if( this.overlay.visible ) {
+    if( this.menu.overlay.visible ) {
         this.channel.hide();
         this.heads.hide();
         this.users.hide();
-        this.overlay.hide();
+        this.menu.hide();
         this.manager.top.inactive();
-        return this.overlay.visible;
+        return this.menu.overlay.visible;
     }
     
-    this.overlay.reveal();
+    this.menu.reveal();
     this.manager.top.active();
-    return this.overlay.visible;
+    return this.menu.overlay.visible;
 
 };
 
-tadpole.Menu.prototype.hide_quick = function(  ) {
+tadpole.MainMenu.prototype.hide_quick = function(  ) {
 
     this.manager.top.inactive();
-    this.overlay.hide_quick();
+    this.menu.hide_quick();
 
 };
 
@@ -831,7 +968,7 @@ tadpole.Menu.prototype.hide_quick = function(  ) {
  * Show the head.
  * @method show_head
  */
-tadpole.Menu.prototype.show_head = function(  ) {
+tadpole.MainMenu.prototype.show_head = function(  ) {
 
     this.heads.reveal(this.manager.book.current.selector);
 
@@ -841,7 +978,7 @@ tadpole.Menu.prototype.show_head = function(  ) {
  * Show the users.
  * @method show_users
  */
-tadpole.Menu.prototype.show_users = function(  ) {
+tadpole.MainMenu.prototype.show_users = function(  ) {
 
     this.users.reveal(this.manager.book.current.selector);
 
@@ -851,7 +988,7 @@ tadpole.Menu.prototype.show_users = function(  ) {
  * Show the channels.
  * @method show_channels
  */
-tadpole.Menu.prototype.show_channels = function(  ) {
+tadpole.MainMenu.prototype.show_channels = function(  ) {
 
     this.channel.reveal();
 
@@ -861,7 +998,7 @@ tadpole.Menu.prototype.show_channels = function(  ) {
  * Show the settings.
  * @method show_settings
  */
-tadpole.Menu.prototype.show_settings = function(  ) {};
+tadpole.MainMenu.prototype.show_settings = function(  ) {};
 
 
 /**
@@ -1969,10 +2106,7 @@ tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
     this.users = components.users;
     this.ns = ns;
     this.raw = raw;
-    this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
-    this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
-    this.selector = replaceAll(this.selector, 'server:', 'c-server-');
-    this.selector = replaceAll(this.selector, ':', '-');
+    this.selector = 'c-' + replaceAll(this.raw, ':', '-');
     this.hidden = true;
     this.background = false;
     this.build();

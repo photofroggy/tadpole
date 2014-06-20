@@ -16,10 +16,7 @@ tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
     this.users = components.users;
     this.ns = ns;
     this.raw = raw;
-    this.selector = replaceAll(this.raw, 'pchat:', 'c-pchat-');
-    this.selector = replaceAll(this.selector, 'chat:', 'c-chat-');
-    this.selector = replaceAll(this.selector, 'server:', 'c-server-');
-    this.selector = replaceAll(this.selector, ':', '-');
+    this.selector = 'c-' + replaceAll(this.raw, ':', '-');
     this.hidden = true;
     this.background = false;
     this.build();
