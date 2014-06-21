@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.7.20';
+tadpole.VERSION = '0.8.21';
 tadpole.STATE = 'beta';
 
 
@@ -1342,6 +1342,7 @@ tadpole.HeadArray.prototype.create_item = function( id, overlay, hidden ) {
  * @constructor
  */
 tadpole.Users = function( manager, menu, id, overlay ) {
+    this.onselect = null;
     tadpole.MenuItem.call(this, manager, menu, id, overlay);
 };
 tadpole.Users.prototype = new tadpole.MenuItem;
@@ -1375,6 +1376,16 @@ tadpole.Users.prototype.build = function(  ) {
         users.hide();
     
     } );
+
+};
+
+/**
+ * When revealing the user list, store an onselect callback.
+ * @method reveal
+ */
+tadpole.Users.prototype.reveal = function( onselect ) {
+
+    this.onselect = onselect || null;
 
 };
 
@@ -1454,22 +1465,26 @@ tadpole.Users.prototype.set = function( user, noreveal ) {
     
     var el = pc.users.find('li.user#' + user.name);
     var control = this.manager.control;
+    var ul = this;
     
     el.find('a').on( 'click', function( event ) {
     
         event.preventDefault();
-        var text = control.get_text();
         
-        if( text.length > 0 ) {
-            control.set_text(
-                text
-                + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
-                + user.name
-            );
-            return;
-        }
-        
-        control.set_text(user.name + ': ');
+        ( ul.onselect || function( user ) {
+            var text = control.get_text();
+            
+            if( text.length > 0 ) {
+                control.set_text(
+                    text
+                    + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
+                    + user.name
+                );
+                return;
+            }
+            
+            control.set_text(user.name + ': ');
+        } )( user );
     
     } );
     
@@ -1550,6 +1565,22 @@ tadpole.UsersArray.prototype.constructor = tadpole.UsersArray;
 tadpole.UsersArray.prototype.create_item = function( id, overlay ) {
 
     return new tadpole.Users( this.manager, this.menu, id, overlay );
+
+};
+
+/**
+ * Reveal a user list.
+ * @method reveal
+ */
+tadpole.UsersArray.prototype.reveal = function( id, onselect ) {
+
+    var item = this.item( id );
+    
+    if( !item )
+        return;
+    
+    item.overlay.reveal();
+    item.reveal(onselect);
 
 };
 ;
