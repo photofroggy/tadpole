@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.6.19';
+tadpole.VERSION = '0.7.20';
 tadpole.STATE = 'beta';
 
 
@@ -1941,6 +1941,50 @@ tadpole.Book.prototype.channel = function( ns ) {
 
 };
 
+/**
+ * Iterate through each channel.
+ * @method each
+ */
+tadpole.Book.prototype.each = function( callback, exclude_hidden ) {
+
+    var chan = null;
+    exclude_hidden = exclude_hidden || false;
+    
+    for( var k in this.clist ) {
+    
+        if( !this.clist.hasOwnProperty( k ) )
+            continue;
+        
+        chan = this.clist[k];
+        
+        if( chan.hidden && exclude_hidden )
+            continue;
+        
+        if( callback( k, chan ) )
+            break;
+    
+    }
+
+};
+
+/**
+ * Count the number of channels currently open in the UI.
+ * @method count
+ */
+tadpole.Book.prototype.count = function( exclude_hidden ) {
+
+    var count = -1;
+    
+    this.each( function( ns, chan ) {
+    
+        count++;
+    
+    }, exclude_hidden );
+    
+    return count;
+
+};
+
 
 /**
  * Create channel
@@ -1973,14 +2017,18 @@ tadpole.Book.prototype.remove = function( raw ) {
     if( !chan )
         return;
     
+    if( this.count(true) == 0 && !chan.hidden )
+        return;
+    
     var rawk = raw.toLowerCase();
     
     chan.remove();
     delete this.clist[rawk];
-    this.chans.splice(this.chans.indexOf(rawk), 1);
     
     if( chan == this.current )
-        this.reveal(this.chans[this.chans.length - 1]);
+        this.reveal(this.previous());
+    
+    this.chans.splice(this.chans.indexOf(rawk), 1);
 
 };
 
@@ -2002,6 +2050,39 @@ tadpole.Book.prototype.reveal = function( ns ) {
     this.current = this.clist[nsk];
     this.current.reveal();
     this.manager.top.set_label(this.current.ns);
+
+};
+
+/**
+ * Get the namespace for the channel appearing before the current channel.
+ * 
+ * @method previous
+ */
+tadpole.Book.prototype.previous = function(  ) {
+
+    var ns = this.current.raw;
+    var index = this.chans.indexOf(ns.toLowerCase());
+    
+    if( index < 0 )
+        return ns;
+    
+    var nc = null;
+    while( true ) {
+        try {
+            nc = this.channel(this.chans[--index]);
+        } catch( err ) {
+            index = this.chans.length - 1;
+            nc = this.channel(this.chans[index]);
+        }
+        
+        if( !nc.hidden )
+            break;
+        
+        //if( this.manager.settings.developer )
+        //    break;
+    }
+    
+    return nc.raw;
 
 };
 
@@ -2126,8 +2207,8 @@ tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
     this.ns = ns;
     this.raw = raw;
     this.selector = 'c-' + replaceAll(this.raw, ':', '-');
-    this.hidden = true;
-    this.background = false;
+    this.hidden = hidden || false;
+    this.visible = false;
     this.build();
 
 };
@@ -2183,14 +2264,14 @@ tadpole.Channel.prototype.scroll = function( ) {
  */
 tadpole.Channel.prototype.reveal = function(  ) {
 
-    if( !this.hidden )
+    if( !this.visible )
         return;
     
     if( this.background )
         return;
     
     this.view.css({'display': 'block'});
-    this.hidden = false;
+    this.visible = false;
     this.manager.top.set_label(this.ns);
     this.scroll();
 
@@ -2203,11 +2284,11 @@ tadpole.Channel.prototype.reveal = function(  ) {
  */
 tadpole.Channel.prototype.hide = function(  ) {
 
-    if( this.hidden )
+    if( this.visible )
         return;
     
     this.view.css({'display': 'none'});
-    this.hidden = true;
+    this.visible = true;
 
 };
 

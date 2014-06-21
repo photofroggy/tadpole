@@ -17,8 +17,8 @@ tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
     this.ns = ns;
     this.raw = raw;
     this.selector = 'c-' + replaceAll(this.raw, ':', '-');
-    this.hidden = true;
-    this.background = false;
+    this.hidden = hidden || false;
+    this.visible = false;
     this.build();
 
 };
@@ -74,14 +74,14 @@ tadpole.Channel.prototype.scroll = function( ) {
  */
 tadpole.Channel.prototype.reveal = function(  ) {
 
-    if( !this.hidden )
+    if( !this.visible )
         return;
     
     if( this.background )
         return;
     
     this.view.css({'display': 'block'});
-    this.hidden = false;
+    this.visible = false;
     this.manager.top.set_label(this.ns);
     this.scroll();
 
@@ -94,11 +94,11 @@ tadpole.Channel.prototype.reveal = function(  ) {
  */
 tadpole.Channel.prototype.hide = function(  ) {
 
-    if( this.hidden )
+    if( this.visible )
         return;
     
     this.view.css({'display': 'none'});
-    this.hidden = true;
+    this.visible = true;
 
 };
 
