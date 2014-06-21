@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.8.21';
+tadpole.VERSION = '0.9.22';
 tadpole.STATE = 'beta';
 
 
@@ -138,6 +138,8 @@ tadpole.UI = function( view, client, options, mozilla ) {
     this.lusername = this.client.settings.username.toLowerCase();
     
     this.protocol = new tadpole.Protocol();
+    
+    this.ext = {};
 
 };
 
@@ -229,6 +231,8 @@ tadpole.UI.prototype.build = function(  ) {
             ui.book.channel(client.format_ns(event.ns)).users.register( event.user );
         }
     );
+    
+    this.ext.default = tadpole.Commands( this.client, this );
 
 };
 
@@ -726,8 +730,11 @@ tadpole.Menu.prototype.build = function(  ) {
 /**
  * Add a button to the menu.
  * @method add
+ * @param cls {String} Class for the button.
+ * @param id {String} ID for the button.
  * @param label {String} Label for the button.
  * @param callback {Function} Method to call when the button is clicked.
+ * @param icon {String} Name of the icon to use for the button.
  */
 tadpole.Menu.prototype.add = function( cls, id, label, callback, icon, hidden ) {
 
@@ -736,6 +743,20 @@ tadpole.Menu.prototype.add = function( cls, id, label, callback, icon, hidden ) 
     return button;
 
 };
+
+
+/**
+ * Add a nested menu.
+ * @method add_nested
+ */
+tadpole.Menu.prototype.add_nested = function( cls, id, label, callback, icon, hidden ) {
+
+    var menu = new tadpole.NestedMenu( this.manager, this.ul, cls, id, label, callback, icon, hidden );
+    this.buttons.push(menu);
+    return menu;
+
+};
+
 
 /**
  * Resize the menu.
@@ -785,11 +806,94 @@ tadpole.Menu.prototype.hide_quick = function(  ) {
 
 
 /**
+ * Nested menu.
+ * @class tadpole.NestedMenu
+ * @constructor
+ */
+tadpole.NestedMenu = function( ui, parent, cls, id, label, callback, icon, hidden ) {
+
+    this.manager = ui;
+    this.parent = parent;
+    this.buttons = [];
+    this.label = label;
+    this.callback = callback;
+    this.cls = cls;
+    this.id = id || '';
+    this.icon = icon || '';
+    this.hidden = hidden || false;
+    this.button = null;
+    this.view = null;
+    this.ul = null;
+    this.visible = true;
+    this.build();
+
+};
+
+/**
+ * Build the nested menu.
+ * @method build
+ */
+tadpole.NestedMenu.prototype.build = function(  ) {
+
+    var icon = '';
+    var id = '';
+    var selector = '.button.' + replaceAll(this.cls, ' ', '.');
+    
+    if( this.icon )
+        icon = '<span class="icon-' + this.icon + '"></span>';
+    
+    if( this.id ) {
+        selector = selector + '#' + this.id;
+        id = 'id="' + this.id + '" ';
+    }
+    
+    this.parent.append('<li' + ( this.hidden ? ' class="hidden"': '' ) + '>'
+        +'<a class="button ' + this.cls + '" '+id+'href="#">'
+        +icon+this.label
+        +'</a><ul></ul></li>');
+    
+    this.button = this.parent.find(selector);
+    this.view = this.button.parent();
+    this.ul = this.view.find('ul');
+    
+    var cb = this.callback;
+    
+    this.button.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        cb( event );
+    
+    } );
+    
+    this.button.css({'width': this.parent.parent().parent().width() - 30});
+
+};
+
+/**
+ * Add a button to the menu.
+ * @method add
+ * @param cls {String} Class for the button.
+ * @param id {String} ID for the button.
+ * @param label {String} Label for the button.
+ * @param callback {Function} Method to call when the button is clicked.
+ * @param icon {String} Name of the icon to use for the button.
+ */
+tadpole.NestedMenu.prototype.add = function( cls, id, label, callback, icon, hidden ) {
+
+    var button = new tadpole.MenuButton( this.ul, cls, id, label, callback, icon, hidden, 30 );
+    this.buttons.push(button);
+    return button;
+
+};
+
+
+/**
  * Button in a menu.
  * @class tadpole.MenuButton
  * @constructor
  */
-tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden ) {
+tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden, pad ) {
 
     this.parent = parent;
     this.label = label;
@@ -798,6 +902,7 @@ tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden ) 
     this.id = id || '';
     this.icon = icon || '';
     this.hidden = hidden || false;
+    this.pad = pad || 0;
     this.button = null;
     this.view = null;
     this.visible = true;
@@ -842,7 +947,12 @@ tadpole.MenuButton.prototype.build = function(  ) {
     
     } );
     
-    this.button.css({'width': this.parent.parent().parent().width() - 30});
+    var parent = this.parent.parent().parent();
+    
+    if( this.pad != 0 )
+        parent = parent.parent().parent();
+    
+    this.button.css({'width': parent.width() - (30 + this.pad)});
 
 };
 
@@ -922,9 +1032,9 @@ tadpole.MainMenu.prototype.build = function(  ) {
     }, 'comment' );
     
     
-    //this.command_menu = this.menu.add_nested( 'commands', 'Commands', 'plus' );
-    //this.command_menu.add( 'join', 'Join Channel', function( event ) {} );
-    //this.command_menu.add( 'part', 'Leave Channel', function( event ) {} );
+    this.commands = this.menu.add_nested( 'commands', '', 'Commands', function( event ) {}, 'plus' );
+    //this.commands.add( 'join', 'Join Channel', function( event ) {} );
+    //this.commands.add( 'part', 'Leave Channel', function( event ) {} );
     
     
     this.button_settings = this.menu.add( 'settings', '', 'Settings', function( event ) {
@@ -937,6 +1047,7 @@ tadpole.MainMenu.prototype.build = function(  ) {
     this.channel = new tadpole.ChannelMenu( this.manager, this.manager.view );
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
     this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
+    this.commanditems = new tadpole.MenuItemArray( this.manager, this, this.manager.view, 'command', 'mcom' );
     //this.settings = new tadpole.SettingsOverlay( this.manager );
 
 };
@@ -951,6 +1062,7 @@ tadpole.MainMenu.prototype.resize = function(  ) {
     this.channel.resize();
     this.heads.resize();
     this.users.resize();
+    this.commanditems.resize();
     //this.settings.reszie();
 
 };
@@ -968,6 +1080,7 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.heads.hide();
         this.users.hide();
         this.menu.hide();
+        this.commanditems.hide();
         this.manager.top.inactive();
         return this.menu.overlay.visible;
     }
@@ -2812,3 +2925,49 @@ tadpole.Protocol.LogMessage.prototype.render = function( format ) {
     return render;
 
 };
+;
+/**
+ * Default commands for tadpole.
+ * @class tadpole.Commands
+ * @constructor
+ */
+tadpole.Commands = function( client, ui ) {
+
+    var api = {};
+    
+    var init = function(  ) {
+        ui.menu.commands.add( 'join', 'joinchannel', 'Join Channel', function( event ) {
+        
+            cmdarr.reveal('joinchannel');
+        
+        } );
+    };
+    
+    var cmdarr = ui.menu.commanditems;
+    var join_command = tadpole.Commands.JoinChannel( client, ui, cmdarr );
+    
+    init();
+    
+    return api;
+
+};
+
+
+/**
+ * Join channel command overlay.
+ * @class tadpole.Commands.JoinChannel
+ * @constructor
+ */
+tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
+
+    var item = cmd_array.add( 'joinchannel' );
+    item.overlay.view.append('<p>Some stuff can be done here...</p>');
+    
+    return function(  ) {
+    
+        console.log('join a channel?');
+    
+    };
+
+};
+

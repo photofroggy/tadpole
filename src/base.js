@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.8.21';
+tadpole.VERSION = '0.9.22';
 tadpole.STATE = 'beta';
 
 
@@ -138,6 +138,8 @@ tadpole.UI = function( view, client, options, mozilla ) {
     this.lusername = this.client.settings.username.toLowerCase();
     
     this.protocol = new tadpole.Protocol();
+    
+    this.ext = {};
 
 };
 
@@ -229,6 +231,8 @@ tadpole.UI.prototype.build = function(  ) {
             ui.book.channel(client.format_ns(event.ns)).users.register( event.user );
         }
     );
+    
+    this.ext.default = tadpole.Commands( this.client, this );
 
 };
 
