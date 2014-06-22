@@ -220,6 +220,18 @@ div.tadpole {
       position: absolute;
       right: 0px;
       padding-right: 5px; }
+      div.tadpole div.top span.control span.highlights {
+        color: #C71414;
+        position: relative;
+        top: 3px;
+        display: none; }
+        div.tadpole div.top span.control span.highlights span.count {
+          color: #FFF;
+          position: relative;
+          left: -32px;
+          top: -7px;
+          font-size: 16px;
+          margin-right: -15px; }
     div.tadpole div.top a.menubutton {
       height: 30px;
       /*padding-left: 10px;
@@ -280,6 +292,10 @@ div.tadpole {
           /*color: #C71414;*/ }
         div.tadpole div.overlay nav li a.red, div.tadpole div.overlay nav li span.button.red {
           color: #C71414; }
+      div.tadpole div.overlay nav li.highlight {
+        background-color: #94A3CF; }
+        div.tadpole div.overlay nav li.highlight a, div.tadpole div.overlay nav li.highlight span.button {
+          color: #17254E; }
     div.tadpole div.overlay div.section {
       font-size: 16px;
       padding: 10px 45px; }

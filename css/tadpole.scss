@@ -81,6 +81,20 @@ div.tadpole {
             position: absolute;
             right: 0px;
             padding-right: 5px;
+            span.highlights {
+                color: #C71414;
+                position: relative;
+                top: 3px;
+                display: none;
+                span.count {
+                    color: #FFF;
+                    position: relative;
+                    left: -32px;
+                    top: -7px;
+                    font-size: 16px;
+                    margin-right: -15px;
+                }
+            }
         }
         
         a.menubutton {
@@ -160,6 +174,14 @@ div.tadpole {
                         width: 300px;
                     }*/
                 }
+                
+                &.highlight {
+                    background-color: #94A3CF;
+                    a, span.button {
+                        color: #17254E;
+                    }
+                }
+                
             }
         
         }

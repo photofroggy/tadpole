@@ -246,13 +246,6 @@ tadpole.MenuButton.prototype.build = function(  ) {
         cb( event );
     
     } );
-    /*
-    var parent = this.parent.parent().parent();
-    
-    if( this.pad != 0 )
-        parent = parent.parent().parent();
-    
-    this.button.css({'width': parent.width() - (30 + this.pad)});*/
 
 };
 
@@ -263,6 +256,32 @@ tadpole.MenuButton.prototype.build = function(  ) {
 tadpole.MenuButton.prototype.remove = function(  ) {
 
     this.view.remove();
+
+};
+
+/**
+ * Highlight the menu button.
+ * @method highlight
+ */
+tadpole.MenuButton.prototype.highlight = function(  ) {
+    
+    if( this.view.hasClass('highlight') )
+        return;
+    
+    this.view.addClass('highlight');
+
+};
+
+/**
+ * Unhighlight the menu button.
+ * @method unhighlight
+ */
+tadpole.MenuButton.prototype.unhighlight = function(  ) {
+
+    if( !this.view.hasClass('highlight') )
+        return;
+    
+    this.view.removeClass('highlight');
 
 };
 
@@ -395,11 +414,12 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.channel.hide();
         this.heads.hide();
         this.users.hide();
-        this.menu.hide();
         this.commanditems.hide();
         this.settings.hide();
         this.about.hide();
         this.manager.top.inactive();
+        this.menu.hide();
+        this.manager.book.current.unhighlight();
         return this.menu.overlay.visible;
     }
     

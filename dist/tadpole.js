@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.11.26';
+tadpole.VERSION = '0.12.27';
 tadpole.STATE = 'beta';
 
 
@@ -350,6 +350,7 @@ tadpole.UI.prototype.log = function( data ) {
 tadpole.Top = function( ui ) {
 
     this.manager = ui;
+    this.unread = 0;
     this.build();
 
 };
@@ -361,10 +362,17 @@ tadpole.Top = function( ui ) {
  */
 tadpole.Top.prototype.build = function(  ) {
 
-    this.manager.view.append('<div class="top"><span class="label">Tadpole</span><span class="control"><a class="menubutton icon-menu" href="#"></a></span></div>');
+    this.manager.view.append('<div class="top">'
+        +'<span class="label">Tadpole</span>'
+        +'<span class="control">'
+        +'<span class="button highlights red icon-comment"><span class="count">5</span></span>'
+        +'<a class="menubutton icon-menu" href="#"></a></span></div>');
+        
     this.view = this.manager.view.find('.top');
     this.button = this.view.find('.menubutton');
     this.label = this.view.find('span.label');
+    this.hbox = this.view.find('.highlights');
+    this.hcount = this.hbox.find('.count');
 
     var top = this;
     
@@ -418,6 +426,55 @@ tadpole.Top.prototype.inactive = function(  ) {
         return;
     
     this.view.removeClass('active');
+
+};
+
+/**
+ * Tab the user n times.
+ * @method tab
+ */
+tadpole.Top.prototype.tab = function( msgs ) {
+
+    this.unread = this.unread + msgs;
+    this.notify();
+
+};
+
+/**
+ * Untab the user n times.
+ * @method tab
+ */
+tadpole.Top.prototype.untab = function( msgs ) {
+
+    this.unread = this.unread - msgs;
+    this.notify();
+
+};
+
+/**
+ * Reveal or hide the highlighting notice depending on the unread count.
+ * @method notify
+ */
+tadpole.Top.prototype.notify = function(  ) {
+
+    
+    if( this.unread <= 0 ) {
+        var top = this;
+        this.hbox.fadeOut( function(  ) {
+            top.hcount.text( top.unread.toString() );
+        });
+        return;
+    }
+    
+    this.hcount.text( this.unread.toString() );
+    
+    var margin = -15;
+    
+    if( this.unread > 9 )
+        margin = -25;
+    
+    this.hbox.fadeIn();
+    this.hcount.css({'margin-right': margin});
 
 };
 
@@ -945,13 +1002,6 @@ tadpole.MenuButton.prototype.build = function(  ) {
         cb( event );
     
     } );
-    /*
-    var parent = this.parent.parent().parent();
-    
-    if( this.pad != 0 )
-        parent = parent.parent().parent();
-    
-    this.button.css({'width': parent.width() - (30 + this.pad)});*/
 
 };
 
@@ -962,6 +1012,32 @@ tadpole.MenuButton.prototype.build = function(  ) {
 tadpole.MenuButton.prototype.remove = function(  ) {
 
     this.view.remove();
+
+};
+
+/**
+ * Highlight the menu button.
+ * @method highlight
+ */
+tadpole.MenuButton.prototype.highlight = function(  ) {
+    
+    if( this.view.hasClass('highlight') )
+        return;
+    
+    this.view.addClass('highlight');
+
+};
+
+/**
+ * Unhighlight the menu button.
+ * @method unhighlight
+ */
+tadpole.MenuButton.prototype.unhighlight = function(  ) {
+
+    if( !this.view.hasClass('highlight') )
+        return;
+    
+    this.view.removeClass('highlight');
 
 };
 
@@ -1094,11 +1170,12 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.channel.hide();
         this.heads.hide();
         this.users.hide();
-        this.menu.hide();
         this.commanditems.hide();
         this.settings.hide();
         this.about.hide();
         this.manager.top.inactive();
+        this.menu.hide();
+        this.manager.book.current.unhighlight();
         return this.menu.overlay.visible;
     }
     
@@ -2312,6 +2389,9 @@ tadpole.Book.prototype.log_message = function( message, event ) {
         event.name == 'recv_action' ) {
         if( event.message.toLowerCase().indexOf( this.manager.lusername ) != -1 ) {
             mbox.addClass('highlight');
+            try {
+                this.channel( event.ns ).highlight();
+            } catch(err) {}
         }
     }
     
@@ -2383,6 +2463,7 @@ tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
     this.selector = 'c-' + replaceAll(this.raw, ':', '-');
     this.hidden = hidden || false;
     this.visible = false;
+    this.tabc = 0;
     this.build();
 
 };
@@ -2448,6 +2529,7 @@ tadpole.Channel.prototype.reveal = function(  ) {
     this.visible = true;
     this.manager.top.set_label(this.ns);
     this.scroll();
+    this.unhighlight();
 
 };
 
@@ -2542,20 +2624,35 @@ tadpole.Channel.prototype.action = function( user, message ) {
 
 };
 
-tadpole.Channel.prototype.highlight = function( box, user, message ) {
+/**
+ * Indicate that the user has been highlighted in here.
+ * @method highlight
+ */
+tadpole.Channel.prototype.highlight = function(  ) {
 
-    var self = this.manager.client.settings.username.toLowerCase();
-    
-    if( user.toLowerCase() == self )
+    if( this.visible && !this.ui.menu.menu.overlay.visible )
         return;
     
-    if( message.toLowerCase().indexOf( self ) == -1 )
+    if( this.hidden )
         return;
     
-    box.addClass('highlight');
+    this.tabc++;
+    this.manager.top.tab(1);
+    this.tab.highlight();
 
 };
 
+/**
+ * Messages checked wooo.
+ * @method unhighlight
+ */
+tadpole.Channel.prototype.unhighlight = function(  ) {
+
+    this.manager.top.untab(this.tabc);
+    this.tab.unhighlight();
+    this.tabc = 0;
+
+};
 
 /**
  * Someone got kicked from the channel.

@@ -264,6 +264,9 @@ tadpole.Book.prototype.log_message = function( message, event ) {
         event.name == 'recv_action' ) {
         if( event.message.toLowerCase().indexOf( this.manager.lusername ) != -1 ) {
             mbox.addClass('highlight');
+            try {
+                this.channel( event.ns ).highlight();
+            } catch(err) {}
         }
     }
     

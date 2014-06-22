@@ -19,6 +19,7 @@ tadpole.Channel = function( ns, raw, hidden, components, ui, book ) {
     this.selector = 'c-' + replaceAll(this.raw, ':', '-');
     this.hidden = hidden || false;
     this.visible = false;
+    this.tabc = 0;
     this.build();
 
 };
@@ -84,6 +85,7 @@ tadpole.Channel.prototype.reveal = function(  ) {
     this.visible = true;
     this.manager.top.set_label(this.ns);
     this.scroll();
+    this.unhighlight();
 
 };
 
@@ -178,20 +180,35 @@ tadpole.Channel.prototype.action = function( user, message ) {
 
 };
 
-tadpole.Channel.prototype.highlight = function( box, user, message ) {
+/**
+ * Indicate that the user has been highlighted in here.
+ * @method highlight
+ */
+tadpole.Channel.prototype.highlight = function(  ) {
 
-    var self = this.manager.client.settings.username.toLowerCase();
-    
-    if( user.toLowerCase() == self )
+    if( this.visible && !this.ui.menu.menu.overlay.visible )
         return;
     
-    if( message.toLowerCase().indexOf( self ) == -1 )
+    if( this.hidden )
         return;
     
-    box.addClass('highlight');
+    this.tabc++;
+    this.manager.top.tab(1);
+    this.tab.highlight();
 
 };
 
+/**
+ * Messages checked wooo.
+ * @method unhighlight
+ */
+tadpole.Channel.prototype.unhighlight = function(  ) {
+
+    this.manager.top.untab(this.tabc);
+    this.tab.unhighlight();
+    this.tabc = 0;
+
+};
 
 /**
  * Someone got kicked from the channel.
