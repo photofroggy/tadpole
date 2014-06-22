@@ -274,9 +274,11 @@ div.tadpole {
           color: #C71414; }
     div.tadpole div.overlay div.section {
       font-size: 16px;
-      padding: 10px; }
+      padding: 10px 45px; }
       div.tadpole div.overlay div.section.border {
         border-bottom: 1px dotted #94A3CF; }
+      div.tadpole div.overlay div.section.title, div.tadpole div.overlay div.section.topic {
+        padding: 10px; }
     div.tadpole div.overlay p {
       padding-bottom: 10px; }
   div.tadpole div.userlist .pc .user em {

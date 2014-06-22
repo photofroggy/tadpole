@@ -18,7 +18,8 @@ module.exports = function(grunt) {
                     'src/book.js',
                     'src/channel.js',
                     'src/protocol.js',
-                    'src/commands.js'
+                    'src/commands.js',
+                    'src/settings.js'
                 ],
                 dest: 'dist/tadpole.js'
             }

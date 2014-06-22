@@ -333,7 +333,7 @@ tadpole.MainMenu.prototype.build = function(  ) {
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
     this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
     this.commanditems = new tadpole.MenuItemArray( this.manager, this, this.manager.view, 'command', 'mcom' );
-    //this.settings = new tadpole.SettingsOverlay( this.manager );
+    this.settings = new tadpole.SettingsMenu( this.manager, this.manager.view );
     this.about = new tadpole.Overlay( this.manager.view, 'about' );
     
     // Build the about page.
@@ -381,7 +381,7 @@ tadpole.MainMenu.prototype.resize = function(  ) {
     this.heads.resize();
     this.users.resize();
     this.commanditems.resize();
-    //this.settings.reszie();
+    this.settings.resize();
 
 };
 
@@ -399,7 +399,7 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.users.hide();
         this.menu.hide();
         this.commanditems.hide();
-        //this.settings.hide();
+        this.settings.hide();
         this.about.hide();
         this.manager.top.inactive();
         return this.menu.overlay.visible;
@@ -452,7 +452,11 @@ tadpole.MainMenu.prototype.show_channels = function(  ) {
  * Show the settings.
  * @method show_settings
  */
-tadpole.MainMenu.prototype.show_settings = function(  ) {};
+tadpole.MainMenu.prototype.show_settings = function(  ) {
+
+    this.settings.reveal();
+
+};
 
 /**
  * Show the about page.

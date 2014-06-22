@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.10.24';
+tadpole.VERSION = '0.11.25';
 tadpole.STATE = 'beta';
 
 
@@ -1032,7 +1032,7 @@ tadpole.MainMenu.prototype.build = function(  ) {
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
     this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
     this.commanditems = new tadpole.MenuItemArray( this.manager, this, this.manager.view, 'command', 'mcom' );
-    //this.settings = new tadpole.SettingsOverlay( this.manager );
+    this.settings = new tadpole.SettingsMenu( this.manager, this.manager.view );
     this.about = new tadpole.Overlay( this.manager.view, 'about' );
     
     // Build the about page.
@@ -1080,7 +1080,7 @@ tadpole.MainMenu.prototype.resize = function(  ) {
     this.heads.resize();
     this.users.resize();
     this.commanditems.resize();
-    //this.settings.reszie();
+    this.settings.resize();
 
 };
 
@@ -1098,7 +1098,7 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.users.hide();
         this.menu.hide();
         this.commanditems.hide();
-        //this.settings.hide();
+        this.settings.hide();
         this.about.hide();
         this.manager.top.inactive();
         return this.menu.overlay.visible;
@@ -1151,7 +1151,11 @@ tadpole.MainMenu.prototype.show_channels = function(  ) {
  * Show the settings.
  * @method show_settings
  */
-tadpole.MainMenu.prototype.show_settings = function(  ) {};
+tadpole.MainMenu.prototype.show_settings = function(  ) {
+
+    this.settings.reveal();
+
+};
 
 /**
  * Show the about page.
@@ -3059,3 +3063,89 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
 
 };
 
+;
+/**
+ * Settings menu.
+ * @class tadpole.SettingsMenu
+ * @constructor
+ * @param ui {Object} Main ui object.
+ */
+tadpole.SettingsMenu = function( ui, parentview ) {
+
+    this.manager = ui;
+    this.parentview = parentview;
+    this.menu = null;
+    this.build();
+
+};
+
+
+/**
+ * Place the channel list on the page.
+ * @method build
+ */
+tadpole.SettingsMenu.prototype.build = function(  ) {
+
+    // Create the channel menu.
+    this.menu = new tadpole.Menu(this.manager, this.parentview, 'settings');
+    
+    var menu = this;
+    
+    this.add( 'exit', 'Settings', function( event ) {
+    
+        menu.hide();
+    
+    }, 'left-open' );
+    
+    this.add( 'comingsoon', 'Coming Soon...', function( event ) {} );
+
+};
+
+/**
+ * Resize the channel menu.
+ * @method resize
+ */
+tadpole.SettingsMenu.prototype.resize = function(  ) {
+
+    this.menu.resize();
+
+};
+
+/**
+ * Reveal the menu.
+ * @method reveal
+ */
+tadpole.SettingsMenu.prototype.reveal = function(  ) {
+
+    return this.menu.reveal();
+
+};
+
+/**
+ * Hide the menu.
+ * @method hide
+ */
+tadpole.SettingsMenu.prototype.hide = function(  ) {
+
+    return this.menu.hide();
+
+};
+
+/**
+ * Add an item to the settings menu.
+ * @method add
+ */
+tadpole.SettingsMenu.prototype.add = function( id, label, callback, icon, hidden ) {
+    
+    var menu = this;
+    
+    var tab = this.menu.add(
+        'settings', id,
+        label, function( event ) {
+            callback( event );
+        }, icon, hidden
+    );
+    
+    return tab;
+
+};

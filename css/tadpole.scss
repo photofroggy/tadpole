@@ -151,9 +151,12 @@ div.tadpole {
     
         div.section {
             font-size: 16px;
-            padding: 10px;
+            padding: 10px 45px;
             &.border {
                 border-bottom: 1px dotted #94A3CF;
+            }
+            &.title, &.topic {
+                padding: 10px;
             }
         }
         
