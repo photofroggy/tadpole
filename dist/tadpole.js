@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.9.23';
+tadpole.VERSION = '0.10.24';
 tadpole.STATE = 'beta';
 
 
@@ -992,27 +992,8 @@ tadpole.MainMenu = function( ui ) {
 tadpole.MainMenu.prototype.build = function(  ) {
 
     // Create the main menu.
-    /*
-    this.overlay.view.append('<nav class="menu">'
-        +'<ul>'
-        +'  <li><a class="head" href="#"><span class="icon-doc"></span>Topic/Title</a></li>'
-        +'  <li><a class="users" href="#"><span class="icon-user"></span>Users</a></li>'
-        +'  <li><a class="channels" href="#"><span class="icon-comment"></span>Channels</a></li>'
-        +'  <li><a class="commands" href="#"><span class="icon-plus"></span>Commands</a>'
-        +'      <ul>'
-        +'          <li><a class="e-join" href="#">Join Channel</a></li>'
-        +'          <li><a class="e-join" href="#">Leave Channel</a></li>'
-        +'      </ul>'
-        +'  </li>'
-        +'  <li><a class="settings" href="#"><span class="icon-cog"></span>Settings</a></li>'
-        +'</ul></nav>');
-    */
-    
-    this.menu = new tadpole.Menu( this.manager, this.manager.view, 'main' );
-    
-    
-    // Handle events.
     var menu = this;
+    this.menu = new tadpole.Menu( this.manager, this.manager.view, 'main' );
     
     this.button_head = this.menu.add( 'head', '', 'Title/Topic', function( event ) {
     
@@ -1032,11 +1013,7 @@ tadpole.MainMenu.prototype.build = function(  ) {
     
     }, 'comment' );
     
-    
     this.commands = this.menu.add_nested( 'commands', '', 'Commands', function( event ) {}, 'plus' );
-    //this.commands.add( 'join', 'Join Channel', function( event ) {} );
-    //this.commands.add( 'part', 'Leave Channel', function( event ) {} );
-    
     
     this.button_settings = this.menu.add( 'settings', '', 'Settings', function( event ) {
     
@@ -1044,12 +1021,51 @@ tadpole.MainMenu.prototype.build = function(  ) {
     
     }, 'cog' );
     
+    this.button_about = this.menu.add( 'about', '', 'About', function( event ) {
+    
+        menu.show_about();
+    
+    }, 'info-alt' );
+    
     // Create sub-menus.
     this.channel = new tadpole.ChannelMenu( this.manager, this.manager.view );
     this.heads = new tadpole.HeadArray( this.manager, this, this.manager.view, 'head', 'h' );
     this.users = new tadpole.UsersArray( this.manager, this, this.manager.view, 'userlist', 'u' );
     this.commanditems = new tadpole.MenuItemArray( this.manager, this, this.manager.view, 'command', 'mcom' );
     //this.settings = new tadpole.SettingsOverlay( this.manager );
+    this.about = new tadpole.Overlay( this.manager.view, 'about' );
+    
+    // Build the about page.
+    this.about.view.append(
+        '<nav><ul><li>'
+        +'  <a href="#" class="button"><span class="icon-left-open"></span>About</a>'
+        +'</li></nav>'
+        +'<div class="section border">'
+        +'  <p>Currently using wsc ' + wsc.VERSION + ' and'
+        +'  tadpole ' + this.manager.VERSION + '. Tadpole is a mobile GUI for'
+        +'  wsc.</p><p>Tadpole and wsc work using HTML, CSS, and javascript.'
+        +'  </p><p>Created by'
+        +'  <a href="http://photofroggy.deviantart.com">photofroggy</a>.</p>'
+        +'</div>'
+        +'<div class="section">'
+        +'  <p><strong>Chat Agent:</strong></p>'
+        +'  <p><code>' + this.manager.client.settings.agent
+        +'      </code></p>'
+        +'  <p><strong>User Agent:</strong></p>'
+        +'  <p><code>' + navigator.userAgent + '</code></p>'
+        +'</div>'
+    );
+    
+    var about = this.about;
+    
+    this.button_about = this.about.view.find('a.button');
+    this.button_about.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        about.hide();
+    
+    } );
 
 };
 
@@ -1082,6 +1098,8 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.users.hide();
         this.menu.hide();
         this.commanditems.hide();
+        //this.settings.hide();
+        this.about.hide();
         this.manager.top.inactive();
         return this.menu.overlay.visible;
     }
@@ -1134,6 +1152,16 @@ tadpole.MainMenu.prototype.show_channels = function(  ) {
  * @method show_settings
  */
 tadpole.MainMenu.prototype.show_settings = function(  ) {};
+
+/**
+ * Show the about page.
+ * @method show_about
+ */
+tadpole.MainMenu.prototype.show_about = function(  ) {
+
+    this.about.reveal();
+
+};
 
 
 /**
