@@ -219,12 +219,10 @@ tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden, p
  */
 tadpole.MenuButton.prototype.build = function(  ) {
 
-    var icon = '';
     var id = '';
+    var icon = '<span class="icon-' + ( this.icon ? this.icon : 'null' )
+        + '"></span>';
     var selector = '.button.' + replaceAll(this.cls, ' ', '.');
-    
-    if( this.icon )
-        icon = '<span class="icon-' + this.icon + '"></span>';
     
     if( this.id ) {
         selector = selector + '#' + this.id;
@@ -248,13 +246,13 @@ tadpole.MenuButton.prototype.build = function(  ) {
         cb( event );
     
     } );
-    
+    /*
     var parent = this.parent.parent().parent();
     
     if( this.pad != 0 )
         parent = parent.parent().parent();
     
-    this.button.css({'width': parent.width() - (30 + this.pad)});
+    this.button.css({'width': parent.width() - (30 + this.pad)});*/
 
 };
 

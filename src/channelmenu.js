@@ -84,7 +84,7 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
     if( ns[0] == '~' )
         return tab;
     
-    tab.view.append('<a href="#" class="button close icon-cancel"></a>');
+    tab.button.append('<span class="button right red close icon-cancel"></span>');
     var close = tab.view.find('.button.close');
     
     close.on( 'click', function( event ) {
@@ -94,8 +94,6 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
         menu.manager.client.part(raw);
     
     } );
-    
-    tab.button.css({'width': (this.manager.view.width() - 90)});
     
     return tab;
 

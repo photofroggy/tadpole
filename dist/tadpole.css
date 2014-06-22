@@ -187,6 +187,8 @@ div.tadpole {
   clear: both; }
   div.tadpole div.overlay span[class*=" icon-"], div.tadpole div.overlay span[class^="icon-"] {
     color: #31ACAC; }
+  div.tadpole div.overlay .icon-cancel {
+    color: #C71414; }
   div.tadpole * {
     margin: 0;
     padding: 0; }
@@ -253,24 +255,30 @@ div.tadpole {
         border-top: 1px dotted #94A3CF;
         border-bottom: none;
         padding-left: 30px; }
+        div.tadpole div.overlay nav li li .button span.icon-null {
+          margin-right: 0px; }
       div.tadpole div.overlay nav li.hidden {
         display: none; }
       div.tadpole div.overlay nav li a, div.tadpole div.overlay nav li span.button {
         color: #94A3CF;
         /*#7E9B89;*/
         font-size: 18px;
-        display: inline-block;
+        display: block;
         padding: 5px 15px;
-       /*
-      &:first-child {
-          width: 300px;
-      }*/ }
+        /*
+        &:first-child {
+            width: 300px;
+        }*/ }
         div.tadpole div.overlay nav li a span[class*=" icon-"], div.tadpole div.overlay nav li a span[class^="icon-"], div.tadpole div.overlay nav li span.button span[class*=" icon-"], div.tadpole div.overlay nav li span.button span[class^="icon-"] {
           margin-right: 5px; }
+        div.tadpole div.overlay nav li a span.icon-null, div.tadpole div.overlay nav li span.button span.icon-null {
+          margin-right: 26px; }
         div.tadpole div.overlay nav li a.hidden, div.tadpole div.overlay nav li span.button.hidden {
           display: none; }
-        div.tadpole div.overlay nav li a[class*=" icon-"], div.tadpole div.overlay nav li span.button[class*=" icon-"] {
+        div.tadpole div.overlay nav li a.right, div.tadpole div.overlay nav li span.button.right {
           float: right;
+          /*color: #C71414;*/ }
+        div.tadpole div.overlay nav li a.red, div.tadpole div.overlay nav li span.button.red {
           color: #C71414; }
     div.tadpole div.overlay div.section {
       font-size: 16px;

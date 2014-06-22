@@ -36,6 +36,10 @@ div.tadpole {
         color: #31ACAC;
     }
     
+    div.overlay .icon-cancel {
+        color: #C71414;
+    }
+    
     * {
         margin: 0;
         padding: 0;
@@ -120,6 +124,9 @@ div.tadpole {
                     border-top: 1px dotted #94A3CF;
                     border-bottom: none;
                     padding-left: 30px;
+                    .button span.icon-null {
+                        margin-right: 0px;
+                    }
                 }
                 
                 &.hidden {
@@ -129,18 +136,26 @@ div.tadpole {
                 a, span.button {
                     color: #94A3CF;/*#7E9B89;*/
                     font-size: 18px;
-                    display: inline-block;
+                    display: block;
                     padding: 5px 15px;
                     span[class*=" icon-"], span[class^="icon-"] {
                         margin-right: 5px;
                     }
+                    span.icon-null {
+                        margin-right: 26px;
+                    }
                     &.hidden {
                         display: none;
                     }
-                    &[class*=" icon-"] {
+                    &.right {
                         float: right;
+                        /*color: #C71414;*/
+                    }
+                    
+                    &.red { 
                         color: #C71414;
-                    }/*
+                    }
+                    /*
                     &:first-child {
                         width: 300px;
                     }*/

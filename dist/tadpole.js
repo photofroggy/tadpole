@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.11.25';
+tadpole.VERSION = '0.11.26';
 tadpole.STATE = 'beta';
 
 
@@ -918,12 +918,10 @@ tadpole.MenuButton = function( parent, cls, id, label, callback, icon, hidden, p
  */
 tadpole.MenuButton.prototype.build = function(  ) {
 
-    var icon = '';
     var id = '';
+    var icon = '<span class="icon-' + ( this.icon ? this.icon : 'null' )
+        + '"></span>';
     var selector = '.button.' + replaceAll(this.cls, ' ', '.');
-    
-    if( this.icon )
-        icon = '<span class="icon-' + this.icon + '"></span>';
     
     if( this.id ) {
         selector = selector + '#' + this.id;
@@ -947,13 +945,13 @@ tadpole.MenuButton.prototype.build = function(  ) {
         cb( event );
     
     } );
-    
+    /*
     var parent = this.parent.parent().parent();
     
     if( this.pad != 0 )
         parent = parent.parent().parent();
     
-    this.button.css({'width': parent.width() - (30 + this.pad)});
+    this.button.css({'width': parent.width() - (30 + this.pad)});*/
 
 };
 
@@ -1816,7 +1814,7 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
     if( ns[0] == '~' )
         return tab;
     
-    tab.view.append('<a href="#" class="button close icon-cancel"></a>');
+    tab.button.append('<span class="button right red close icon-cancel"></span>');
     var close = tab.view.find('.button.close');
     
     close.on( 'click', function( event ) {
@@ -1826,8 +1824,6 @@ tadpole.ChannelMenu.prototype.add = function( ns, raw, hidden ) {
         menu.manager.client.part(raw);
     
     } );
-    
-    tab.button.css({'width': (this.manager.view.width() - 90)});
     
     return tab;
 
