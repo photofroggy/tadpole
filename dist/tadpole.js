@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.9.22';
+tadpole.VERSION = '0.9.23';
 tadpole.STATE = 'beta';
 
 
@@ -316,7 +316,8 @@ tadpole.UI.prototype.packet = function( event, client ) {
         /*this.cascade(
             'log_message',
             function( data, done ) {*/
-                ui.book.log_message( msg, event );
+                try{ui.book.log_message( msg, event );}
+                catch(err) {console.log(err);}
             /*}, {
                 message: msg,
                 event: event
@@ -1112,9 +1113,9 @@ tadpole.MainMenu.prototype.show_head = function(  ) {
  * Show the users.
  * @method show_users
  */
-tadpole.MainMenu.prototype.show_users = function(  ) {
+tadpole.MainMenu.prototype.show_users = function( onselect ) {
 
-    this.users.reveal(this.manager.book.current.selector);
+    this.users.reveal(this.manager.book.current.selector, onselect);
 
 };
 
@@ -1383,7 +1384,7 @@ tadpole.Head.prototype.build = function(  ) {
         '<nav><ul><li>'
         +'  <span class="button" id="headexit"><span class="icon-left-open"></span>Title/Topic</span>'
         +'</li></ul></nav>'
-        +'<div class="title"></div><div class="topic"></div>'
+        +'<div class="section border title"></div><div class="section topic"></div>'
     );
     
     this.button_exit = this.overlay.view.find('nav ul li span.button#headexit');
@@ -1584,7 +1585,7 @@ tadpole.Users.prototype.set = function( user, noreveal ) {
     
         event.preventDefault();
         
-        ( ul.onselect || function( user ) {
+        ( ul.onselect || function( list, user ) {
             var text = control.get_text();
             
             if( text.length > 0 ) {
@@ -1597,7 +1598,7 @@ tadpole.Users.prototype.set = function( user, noreveal ) {
             }
             
             control.set_text(user.name + ': ');
-        } )( user );
+        } )( ul, user );
     
     } );
     
@@ -1615,6 +1616,7 @@ tadpole.Users.prototype.set = function( user, noreveal ) {
 tadpole.Users.prototype.set_users = function( users ) {
 
     for( var i in users ) {
+        this.remove_user( users[i].name, true );
         this.set(users[i], true);
     }
     
@@ -2408,14 +2410,14 @@ tadpole.Channel.prototype.scroll = function( ) {
  */
 tadpole.Channel.prototype.reveal = function(  ) {
 
-    if( !this.visible )
+    if( this.visible )
         return;
     
-    if( this.background )
+    if( this.hidden )
         return;
     
     this.view.css({'display': 'block'});
-    this.visible = false;
+    this.visible = true;
     this.manager.top.set_label(this.ns);
     this.scroll();
 
@@ -2428,11 +2430,11 @@ tadpole.Channel.prototype.reveal = function(  ) {
  */
 tadpole.Channel.prototype.hide = function(  ) {
 
-    if( this.visible )
+    if( !this.visible )
         return;
     
     this.view.css({'display': 'none'});
-    this.visible = true;
+    this.visible = false;
 
 };
 
@@ -2560,7 +2562,7 @@ tadpole.Channel.prototype.pkt_property = function( event, client ) {
             this.users.set_pcs( c.info.pc, c.info.pc_order.slice(0) );
             break;
         case "members":
-            this.set_users(e);
+            //this.users.set_users(event.users);
             break;
         default:
             // this.server_message("Received unknown property " + prop + " received in " + this.info["namespace"] + '.');
@@ -2941,10 +2943,36 @@ tadpole.Commands = function( client, ui ) {
             cmdarr.reveal('joinchannel');
         
         } );
+        
+        ui.menu.commands.add( 'kick', 'kickuser', 'Kick User', function( event ) {
+        
+            ui.menu.show_users(
+                function( list, user ) {
+                
+                    client.kick(ui.book.current.raw, user.name);
+                    ui.menu.toggle();
+                
+                }
+            );
+        
+        } );
+        
+        ui.menu.commands.add( 'ban', 'banuser', 'Ban User', function( event ) {
+        
+            ui.menu.show_users(
+                function( list, user ) {
+                
+                    client.ban(ui.book.current.raw, user.name);
+                    ui.menu.toggle();
+                
+                }
+            );
+        
+        } );
     };
     
     var cmdarr = ui.menu.commanditems;
-    var join_command = tadpole.Commands.JoinChannel( client, ui, cmdarr );
+    tadpole.Commands.JoinChannel( client, ui, cmdarr );
     
     init();
     
@@ -2961,13 +2989,45 @@ tadpole.Commands = function( client, ui ) {
 tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
 
     var item = cmd_array.add( 'joinchannel' );
-    item.overlay.view.append('<p>Some stuff can be done here...</p>');
+    var view = item.overlay.view;
+    view.append(
+        '<nav><ul><li>'
+        +'<a href="#" class="button">'
+        +'  <span class="icon-left-open"></span> Join Channel'
+        +'  </a>'
+        +'</li></ul></nav><div class="section">'
+        +'  <p>Enter the name of a channel to join using the field below.</p>'
+        +'  <form><input class="join" type="text" /></form></div>'
+    );
     
-    return function(  ) {
+    var back = view.find('nav ul li a.button');
     
-        console.log('join a channel?');
+    back.on( 'click', function( event ) {
     
-    };
+        event.preventDefault();
+        event.stopPropagation();
+        cmd_array.hide('joinchannel');
+    
+    } );
+    
+    var field = view.find('input.join');
+    var form = view.find('form');
+    form.submit( function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        var chan = field.val();
+        chan = chan.split(' ');
+        
+        for( var i in chan ) {
+            client.join(chan[i]);
+        }
+        
+        cmd_array.hide('joinchannel');
+        ui.menu.toggle();
+        field.val('');
+    
+    } );
 
 };
 

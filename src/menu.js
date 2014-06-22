@@ -414,9 +414,9 @@ tadpole.MainMenu.prototype.show_head = function(  ) {
  * Show the users.
  * @method show_users
  */
-tadpole.MainMenu.prototype.show_users = function(  ) {
+tadpole.MainMenu.prototype.show_users = function( onselect ) {
 
-    this.users.reveal(this.manager.book.current.selector);
+    this.users.reveal(this.manager.book.current.selector, onselect);
 
 };
 

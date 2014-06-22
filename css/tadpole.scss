@@ -149,12 +149,18 @@ div.tadpole {
         
         }
     
-    }
+        div.section {
+            font-size: 16px;
+            padding: 10px;
+            &.border {
+                border-bottom: 1px dotted #94A3CF;
+            }
+        }
+        
+        p {
+            padding-bottom: 10px;
+        }
     
-    div.head div {
-        font-size: 16px;
-        padding: 10px;
-        border-bottom: 1px dotted #94A3CF;
     }
     
     div.userlist {

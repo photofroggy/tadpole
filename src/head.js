@@ -20,7 +20,7 @@ tadpole.Head.prototype.build = function(  ) {
         '<nav><ul><li>'
         +'  <span class="button" id="headexit"><span class="icon-left-open"></span>Title/Topic</span>'
         +'</li></ul></nav>'
-        +'<div class="title"></div><div class="topic"></div>'
+        +'<div class="section border title"></div><div class="section topic"></div>'
     );
     
     this.button_exit = this.overlay.view.find('nav ul li span.button#headexit');

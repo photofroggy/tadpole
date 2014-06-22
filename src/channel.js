@@ -74,14 +74,14 @@ tadpole.Channel.prototype.scroll = function( ) {
  */
 tadpole.Channel.prototype.reveal = function(  ) {
 
-    if( !this.visible )
+    if( this.visible )
         return;
     
-    if( this.background )
+    if( this.hidden )
         return;
     
     this.view.css({'display': 'block'});
-    this.visible = false;
+    this.visible = true;
     this.manager.top.set_label(this.ns);
     this.scroll();
 
@@ -94,11 +94,11 @@ tadpole.Channel.prototype.reveal = function(  ) {
  */
 tadpole.Channel.prototype.hide = function(  ) {
 
-    if( this.visible )
+    if( !this.visible )
         return;
     
     this.view.css({'display': 'none'});
-    this.visible = true;
+    this.visible = false;
 
 };
 
@@ -226,7 +226,7 @@ tadpole.Channel.prototype.pkt_property = function( event, client ) {
             this.users.set_pcs( c.info.pc, c.info.pc_order.slice(0) );
             break;
         case "members":
-            this.set_users(e);
+            //this.users.set_users(event.users);
             break;
         default:
             // this.server_message("Received unknown property " + prop + " received in " + this.info["namespace"] + '.');

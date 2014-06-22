@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.9.22';
+tadpole.VERSION = '0.9.23';
 tadpole.STATE = 'beta';
 
 
@@ -316,7 +316,8 @@ tadpole.UI.prototype.packet = function( event, client ) {
         /*this.cascade(
             'log_message',
             function( data, done ) {*/
-                ui.book.log_message( msg, event );
+                try{ui.book.log_message( msg, event );}
+                catch(err) {console.log(err);}
             /*}, {
                 message: msg,
                 event: event
