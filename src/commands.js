@@ -78,12 +78,21 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
         +'<a href="#" class="button">'
         +'  <span class="icon-left-open"></span>Join Channel'
         +'  </a>'
-        +'</li></ul></nav><div class="section">'
-        +'  <p>Enter the name of a channel to join using the field below.</p>'
-        +'  <form><input class="join" type="text" /></form></div>'
+        +'</li></ul></nav><div class="section border">'
+        +'  <p>Enter the name of a channel to join.</p>'
+        +'  <form><input class="join" type="text" /></form>'
+        +'  <p>Or tap a channel from the list below.</p></div>'
+        +'<nav class="channels"><ul>'
+        +'  <li><a href="#" class="button cltitle">'
+        +'      <span class="icon-comment"></span>Channels</a></li>'
+        +'</ul></nav>'
     );
     
     var back = view.find('nav ul li a.button');
+    var field = view.find('input.join');
+    var form = view.find('form');
+    var ul = view.find('nav.channels ul');
+    var ult = ul.find('.button.cltitle');
     
     back.on( 'click', function( event ) {
     
@@ -93,8 +102,6 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
     
     } );
     
-    var field = view.find('input.join');
-    var form = view.find('form');
     form.submit( function( event ) {
     
         event.preventDefault();
@@ -111,6 +118,90 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
         field.val('');
     
     } );
+    
+    var channels = [];
+    
+    var api = {
+    
+        add: function( channel ) {
+        
+            var chan = new tadpole.MenuButton( ul, 'channel',
+                replaceAll(client.format_ns(channel.chatname), ':', '-'),
+                channel.chatname,
+                function( event ) {
+                
+                    client.join(channel.chatname);
+                
+                });
+    
+            chan.button.append(
+                ' <span class="faint">'
+                +channel.usercount + ' users</span>'
+                +'<span class="button right green join icon-plus"></span>'
+                +'<p>' + channel.description + '</p>'
+            );
+            
+            channels.push(chan);
+            return chan;
+        
+        },
+        
+        clear: function(  ) {
+        
+            for( var i in channels ) {
+            
+                channels[i].remove();
+            
+            }
+        
+        },
+        
+        update: function(  ) {
+        
+            api.clear();
+            
+            $.getJSON( 'http://sunya.co.nz/stasher/chats', function( data ) {
+            
+                console.log(data);
+            
+            } );
+            
+            /*
+            for( var i in client.ext.defaults.autojoin.channel ) {
+            
+                api.add(client.ext.defaults.autojoin.channel[i]);
+            
+            }*/
+        
+        }
+    
+    };
+    
+    //api.update();
+    api.add({
+        usercount: '#',
+        chatname: '#devart',
+        owner: 'spyed',
+        description: 'deviantART\'s Official General Chatroom! Join us and meet fellow deviants!'
+    });
+    api.add({
+        usercount: '#',
+        chatname: '#help',
+        owner: 'help',
+        description: 'Official deviantART Help Channel - for assistance with chatroom, forum, and dA-related issues only.'
+    });
+    api.add({
+        usercount: '#',
+        chatname: '#ShareZone',
+        owner: 'zio-san',
+        description: '? Art Channel on deviantArt! ? SHARE your THUMBS and ART HERE! ? Free TALK and HINTS on technical &amp; artistic stuff ? ANIME &amp; MANGA MAKING with PRO USERS LiveSteams and Critics ? PAINT TOOL SAI HEAVEN !'
+    });
+    api.add({
+        usercount: '#',
+        chatname: '#TheNightOwlsChat',
+        owner: 'LombaxFan',
+        description: "We like to stay up late. Sometimes even all night! So come in and chat about anything you want, or just have fun. Anyone can join - even if you don't stay up late on a regular basis, you are still welcome to come and chat with us. :)"
+    });
 
 };
 
@@ -166,7 +257,6 @@ tadpole.Commands.Autojoin = function( client, ui, pages ) {
         event.stopPropagation();
         client.ext.defaults.autojoin.on = !client.ext.defaults.autojoin.on;
         client.ext.defaults.autojoin.save();
-        console.log(client.ext.defaults.autojoin.on);
         api.update_toggle();
     
     };
@@ -247,15 +337,14 @@ tadpole.Commands.Autojoin = function( client, ui, pages ) {
         
         update_toggle: function(  ) {
         
-            console.log('switching button');
             if( client.ext.defaults.autojoin.on ) {
                 button.toggle.html(
-                    '<span class="icon-ok"></span>On <span class="faint">'
+                    '<span class="green icon-ok"></span>On <span class="faint">'
                     +'tap to turn off</span>'
                 );
             } else {
                 button.toggle.html(
-                    '<span class="icon-cancel"></span>Off <span class="faint">'
+                    '<span class="red icon-cancel"></span>Off <span class="faint">'
                     +'tap to turn on</span>'
                 );
             }

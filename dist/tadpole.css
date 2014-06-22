@@ -290,8 +290,13 @@ div.tadpole {
         div.tadpole div.overlay nav li a.right, div.tadpole div.overlay nav li span.button.right {
           float: right;
           /*color: #C71414;*/ }
-        div.tadpole div.overlay nav li a.red, div.tadpole div.overlay nav li span.button.red {
+        div.tadpole div.overlay nav li a.red, div.tadpole div.overlay nav li a .red, div.tadpole div.overlay nav li span.button.red, div.tadpole div.overlay nav li span.button .red {
           color: #C71414; }
+        div.tadpole div.overlay nav li a.green, div.tadpole div.overlay nav li a .green, div.tadpole div.overlay nav li span.button.green, div.tadpole div.overlay nav li span.button .green {
+          color: #2C912C; }
+        div.tadpole div.overlay nav li a p, div.tadpole div.overlay nav li span.button p {
+          padding: 5px 30px;
+          font-size: 14px; }
       div.tadpole div.overlay nav li .faint {
         color: #647199; }
       div.tadpole div.overlay nav li.highlight {
@@ -305,8 +310,10 @@ div.tadpole {
         border-bottom: 1px dotted #94A3CF; }
       div.tadpole div.overlay div.section.title, div.tadpole div.overlay div.section.topic {
         padding: 10px; }
-    div.tadpole div.overlay p {
-      padding-bottom: 10px; }
+      div.tadpole div.overlay div.section p, div.tadpole div.overlay div.section form {
+        padding-bottom: 10px; }
+      div.tadpole div.overlay div.section p:last-child, div.tadpole div.overlay div.section form:last-child {
+        padding-bottom: 0px; }
   div.tadpole div.userlist .pc .user em {
     color: #B63636; }
   div.tadpole div.book {

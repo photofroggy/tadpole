@@ -166,13 +166,22 @@ div.tadpole {
                         /*color: #C71414;*/
                     }
                     
-                    &.red { 
+                    &.red, .red { 
                         color: #C71414;
+                    }
+                    
+                    &.green, .green {
+                        color: #2C912C;
                     }
                     /*
                     &:first-child {
                         width: 300px;
                     }*/
+                    
+                    p {
+                        padding: 5px 30px;
+                        font-size: 14px;
+                    }
                 }
                 
                 .faint {
@@ -199,10 +208,14 @@ div.tadpole {
             &.title, &.topic {
                 padding: 10px;
             }
-        }
         
-        p {
-            padding-bottom: 10px;
+            p, form {
+                padding-bottom: 10px;
+            }
+            
+            p:last-child, form:last-child {
+                padding-bottom: 0px;
+            }
         }
     
     }
