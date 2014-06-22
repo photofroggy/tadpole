@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.12.27';
+tadpole.VERSION = '0.13.28';
 tadpole.STATE = 'beta';
 
 
@@ -3063,6 +3063,8 @@ tadpole.Commands = function( client, ui ) {
     var api = {};
     
     var init = function(  ) {
+        
+        // MENU COMMANDS
         ui.menu.commands.add( 'join', 'joinchannel', 'Join Channel', function( event ) {
         
             cmdarr.reveal('joinchannel');
@@ -3094,10 +3096,20 @@ tadpole.Commands = function( client, ui ) {
             );
         
         } );
+        
+        // SETTINGS PAGES
+        ui.menu.settings.add( 'aj', 'Autojoin', function( event ) {
+        
+            autojoin.update();
+            settings_page.reveal('aj');
+        
+        } );
     };
     
     var cmdarr = ui.menu.commanditems;
+    var settings_page = ui.menu.settings.page;
     tadpole.Commands.JoinChannel( client, ui, cmdarr );
+    var autojoin = tadpole.Commands.Autojoin( client, ui, settings_page );
     
     init();
     
@@ -3118,7 +3130,7 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
     view.append(
         '<nav><ul><li>'
         +'<a href="#" class="button">'
-        +'  <span class="icon-left-open"></span> Join Channel'
+        +'  <span class="icon-left-open"></span>Join Channel'
         +'  </a>'
         +'</li></ul></nav><div class="section">'
         +'  <p>Enter the name of a channel to join using the field below.</p>'
@@ -3131,7 +3143,7 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
     
         event.preventDefault();
         event.stopPropagation();
-        cmd_array.hide('joinchannel');
+        item.overlay.hide();
     
     } );
     
@@ -3156,6 +3168,174 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
 
 };
 
+
+/**
+ * Construct a settings page for autojoin.
+ */
+tadpole.Commands.Autojoin = function( client, ui, pages ) {
+
+    var page = pages.add('aj');
+    var view = page.overlay.view;
+    
+    view.append(
+        '<nav><ul><li>'
+        +'<a href="#" class="button back">'
+        +'  <span class="icon-left-open"></span>Autojoin'
+        +'  </a>'
+        +'</li><li><a href="#" class="button switch off">'
+        +'  <span class="icon-cancel"></span>Off'
+        +'  </a>'
+        +'</li></ul></nav><div class="section border">'
+        +'  <p>Add channels to your autojoin list.</p>'
+        +'  <form><input class="join" type="text" /></form></div>'
+        +'<nav class="channels"><ul><li>'
+        +'<a href="#" class="button ajtitle">'
+        +'  <span class="icon-comment"></span>Channels'
+        +'  </a>'
+        +'</li></ul></nav>'
+    );
+    
+    var button = {
+        back: view.find('.button.back'),
+        toggle: view.find('.button.switch'),
+        ajtitle: view.find('.button.ajtitle')
+    }
+    
+    var form = view.find('form');
+    var field = form.find('input');
+    var ul = view.find('nav.channels ul');
+    var channels = [];
+    
+    button.back.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        page.overlay.hide();
+    
+    } );
+    
+    var tcb = function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        client.ext.defaults.autojoin.on = !client.ext.defaults.autojoin.on;
+        client.ext.defaults.autojoin.save();
+        console.log(client.ext.defaults.autojoin.on);
+        api.update_toggle();
+    
+    };
+    
+    button.toggle.on( 'click', tcb );
+    
+    button.ajtitle.on( 'click', function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+    
+    } );
+    
+    form.submit( function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        
+        var data = field.val();
+        field.val('');
+        
+        data = data.split(' ');
+        
+        for( var i in data ) {
+        
+            client.ext.defaults.autojoin.add(
+                client.deform_ns(data[i]).toLowerCase());
+        
+        }
+        
+        client.ext.defaults.autojoin.save();
+        api.update_list();
+    
+    } );
+    
+    var api = {
+    
+        add: function( ns ) {
+        
+            var chan = new tadpole.MenuButton( ul, 'channel',
+                replaceAll(client.format_ns(ns), ':', '-'), ns,
+                function( event ) {});
+    
+            chan.button.append('<span class="button right red close icon-cancel"></span>');
+            var close = chan.view.find('.button.close');
+            
+            close.on( 'click', function( event ) {
+            
+                event.preventDefault();
+                event.stopPropagation();
+                client.ext.defaults.autojoin.remove(ns);
+                client.ext.defaults.autojoin.save();
+                chan.remove();
+            
+            } );
+            
+            channels.push(chan);
+            return chan;
+        
+        },
+        
+        clear: function(  ) {
+        
+            for( var i in channels ) {
+            
+                channels[i].remove();
+            
+            }
+        
+        },
+        
+        update: function(  ) {
+        
+            api.update_toggle();
+            api.update_list();
+        
+        },
+        
+        update_toggle: function(  ) {
+        
+            console.log('switching button');
+            if( client.ext.defaults.autojoin.on ) {
+                button.toggle.html(
+                    '<span class="icon-ok"></span>On <span class="faint">'
+                    +'tap to turn off</span>'
+                );
+            } else {
+                button.toggle.html(
+                    '<span class="icon-cancel"></span>Off <span class="faint">'
+                    +'tap to turn on</span>'
+                );
+            }
+        
+        },
+        
+        update_list: function(  ) {
+        
+            api.clear();
+            
+            for( var i in client.ext.defaults.autojoin.channel ) {
+            
+                api.add(client.ext.defaults.autojoin.channel[i]);
+            
+            }
+        
+        }
+    
+    };
+    
+    api.update();
+    
+    return api;
+
+};
+
 ;
 /**
  * Settings menu.
@@ -3168,6 +3348,7 @@ tadpole.SettingsMenu = function( ui, parentview ) {
     this.manager = ui;
     this.parentview = parentview;
     this.menu = null;
+    this.page = null;
     this.build();
 
 };
@@ -3181,6 +3362,7 @@ tadpole.SettingsMenu.prototype.build = function(  ) {
 
     // Create the channel menu.
     this.menu = new tadpole.Menu(this.manager, this.parentview, 'settings');
+    this.page = new tadpole.MenuItemArray( this.manager, this.menu, this.manager.view, 'settings', 'config' );
     
     var menu = this;
     
@@ -3189,8 +3371,6 @@ tadpole.SettingsMenu.prototype.build = function(  ) {
         menu.hide();
     
     }, 'left-open' );
-    
-    this.add( 'comingsoon', 'Coming Soon...', function( event ) {} );
 
 };
 
@@ -3220,6 +3400,7 @@ tadpole.SettingsMenu.prototype.reveal = function(  ) {
  */
 tadpole.SettingsMenu.prototype.hide = function(  ) {
 
+    this.page.hide();
     return this.menu.hide();
 
 };

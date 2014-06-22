@@ -292,6 +292,8 @@ div.tadpole {
           /*color: #C71414;*/ }
         div.tadpole div.overlay nav li a.red, div.tadpole div.overlay nav li span.button.red {
           color: #C71414; }
+      div.tadpole div.overlay nav li .faint {
+        color: #647199; }
       div.tadpole div.overlay nav li.highlight {
         background-color: #94A3CF; }
         div.tadpole div.overlay nav li.highlight a, div.tadpole div.overlay nav li.highlight span.button {

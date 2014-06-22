@@ -10,6 +10,7 @@ tadpole.SettingsMenu = function( ui, parentview ) {
     this.manager = ui;
     this.parentview = parentview;
     this.menu = null;
+    this.page = null;
     this.build();
 
 };
@@ -23,6 +24,7 @@ tadpole.SettingsMenu.prototype.build = function(  ) {
 
     // Create the channel menu.
     this.menu = new tadpole.Menu(this.manager, this.parentview, 'settings');
+    this.page = new tadpole.MenuItemArray( this.manager, this.menu, this.manager.view, 'settings', 'config' );
     
     var menu = this;
     
@@ -31,8 +33,6 @@ tadpole.SettingsMenu.prototype.build = function(  ) {
         menu.hide();
     
     }, 'left-open' );
-    
-    this.add( 'comingsoon', 'Coming Soon...', function( event ) {} );
 
 };
 
@@ -62,6 +62,7 @@ tadpole.SettingsMenu.prototype.reveal = function(  ) {
  */
 tadpole.SettingsMenu.prototype.hide = function(  ) {
 
+    this.page.hide();
     return this.menu.hide();
 
 };
