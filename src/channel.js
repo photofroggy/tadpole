@@ -110,20 +110,36 @@ tadpole.Channel.prototype.hide = function(  ) {
  * @method log
  * @param content {String} Message to display.
  */
-tadpole.Channel.prototype.log = function( content ) {
+tadpole.Channel.prototype.log = function( event ) {
 
     var date = new Date();
-    var ts = formatTime('{HH}:{mm}:{ss}', date);
-    var ms = date.getTime();
+    var chan = this;
+    var content = event.html;
     
-    this.logview.append(
-        '<li id="'+ms+'"><span class="timestamp">'+ts+
-        '</span>'+content+'</li>'
-    );
-    
-    this.scroll();
-    
-    return this.logview.find('li#'+ms).last();
+    this.manager.cascade( 'ns.log', function( data, done ) {
+        chan.logview.append(
+            '<li id="'+data.ms+'"><span class="timestamp">'+data.ts+
+            '</span>'+data.content+'</li>'
+        );
+        
+        chan.scroll();
+        
+        var item = chan.logview.find('li#'+data.ms).last();
+        
+        chan.manager.emit('ns.log.after', {
+            channel: chan,
+            item: item,
+            data: data,
+            event: data.event
+        });
+    }, {
+        channel: this,
+        date: date,
+        ts: formatTime('{HH}:{mm}:{ss}', date),
+        ms: date.getTime(),
+        content: content,
+        event: event
+    } );
 
 };
 

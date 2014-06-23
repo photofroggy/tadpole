@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.17.36';
+tadpole.VERSION = '0.18.37';
 tadpole.STATE = 'beta';
 
 
@@ -139,6 +139,9 @@ tadpole.UI = function( view, client, options, mozilla ) {
     
     this.protocol = new tadpole.Protocol();
     
+    this.mw = new wsc.Middleware();
+    this.evt = new EventEmitter();
+    
     this.ext = {};
 
 };
@@ -232,6 +235,49 @@ tadpole.UI.prototype.build = function(  ) {
         }
     );
     
+    this.on( 'ns.log.after', function( data ) {
+    
+        var mbox = data.item;
+        
+        if( !data.event.hasOwnProperty( 'user' )
+            || data.event.user.toLowerCase() == ui.lusername )
+            return;
+        
+        if( data.event.name == 'recv_msg' ||
+            data.event.name == 'recv_action' ) {
+            if( data.event.message.toLowerCase().indexOf( ui.lusername ) != -1 ) {
+                mbox.addClass('highlight');
+                try {
+                    ui.book.channel( data.event.ns ).highlight();
+                } catch(err) {}
+            }
+        }
+        
+        var user = data.event.user;
+        var control = ui.control;
+        
+        mbox.on( 'click', function( event ) {
+        
+            event.preventDefault();
+            event.stopPropagation();
+            
+            var text = control.get_text();
+            
+            if( text.length > 0 ) {
+                control.set_text(
+                    text
+                    + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
+                    + user
+                );
+                return;
+            }
+            
+            control.set_text(user + ': ');
+        
+        } );
+    
+    } );
+    
     this.ext.default = tadpole.Commands( this.client, this );
 
 };
@@ -284,6 +330,55 @@ tadpole.UI.prototype.channel_add = function( ns, raw, hidden ) {
 };
 
 /**
+ * Register some middleware with the thing.
+ * @method middle
+ * @param event {String} Event to insert middleware for.
+ * @param callback {Function} Middleware callback.
+ */
+tadpole.UI.prototype.middle = function( event, callback ) {
+
+    this.mw.add( event, callback );
+
+};
+
+/**
+ * Run a method with middleware.
+ * @method cascade
+ * @param event {String} Event to run middleware for.
+ * @param callback {Function} Eventual callback to run.
+ * @param data {Object} Input data for the callback.
+ */
+tadpole.UI.prototype.cascade = function( event, callback, data ) {
+
+    this.mw.run( event, callback, data );
+
+};
+
+/**
+ * Bind an event listener.
+ * @method on
+ * @param event {String} Event to listen for.
+ * @param callback {Function} Event handler.
+ */
+tadpole.UI.prototype.on = function( event, callback ) {
+
+    this.evt.addListener( event, callback );
+
+};
+
+/**
+ * Fire an event.
+ * @method emit
+ * @param event {String} Event to fire.
+ * @param data {Object} Event data.
+ */
+tadpole.UI.prototype.emit = function( event, data ) {
+
+    this.evt.emit( event, data, this );
+
+};
+
+/**
  * Handle a packet being received.
  * @method packet
  * @param event {Object} Event data
@@ -320,16 +415,16 @@ tadpole.UI.prototype.packet = function( event, client ) {
         
         event.html = msg.html();
         
-        /*this.cascade(
+        this.cascade(
             'log_message',
-            function( data, done ) {*/
-                try{ui.book.log_message( msg, event );}
+            function( data, done ) {
+                try{ui.book.log_message( data.message, data.event );}
                 catch(err) {console.log(err);}
-            /*}, {
+            }, {
                 message: msg,
                 event: event
             }
-        );*/
+        );
     
     }
     

@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.17.36';
+tadpole.VERSION = '0.18.37';
 tadpole.STATE = 'beta';
 
 
@@ -139,6 +139,9 @@ tadpole.UI = function( view, client, options, mozilla ) {
     
     this.protocol = new tadpole.Protocol();
     
+    this.mw = new wsc.Middleware();
+    this.evt = new EventEmitter();
+    
     this.ext = {};
 
 };
@@ -232,6 +235,49 @@ tadpole.UI.prototype.build = function(  ) {
         }
     );
     
+    this.on( 'ns.log.after', function( data ) {
+    
+        var mbox = data.item;
+        
+        if( !data.event.hasOwnProperty( 'user' )
+            || data.event.user.toLowerCase() == ui.lusername )
+            return;
+        
+        if( data.event.name == 'recv_msg' ||
+            data.event.name == 'recv_action' ) {
+            if( data.event.message.toLowerCase().indexOf( ui.lusername ) != -1 ) {
+                mbox.addClass('highlight');
+                try {
+                    ui.book.channel( data.event.ns ).highlight();
+                } catch(err) {}
+            }
+        }
+        
+        var user = data.event.user;
+        var control = ui.control;
+        
+        mbox.on( 'click', function( event ) {
+        
+            event.preventDefault();
+            event.stopPropagation();
+            
+            var text = control.get_text();
+            
+            if( text.length > 0 ) {
+                control.set_text(
+                    text
+                    + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
+                    + user
+                );
+                return;
+            }
+            
+            control.set_text(user + ': ');
+        
+        } );
+    
+    } );
+    
     this.ext.default = tadpole.Commands( this.client, this );
 
 };
@@ -284,6 +330,55 @@ tadpole.UI.prototype.channel_add = function( ns, raw, hidden ) {
 };
 
 /**
+ * Register some middleware with the thing.
+ * @method middle
+ * @param event {String} Event to insert middleware for.
+ * @param callback {Function} Middleware callback.
+ */
+tadpole.UI.prototype.middle = function( event, callback ) {
+
+    this.mw.add( event, callback );
+
+};
+
+/**
+ * Run a method with middleware.
+ * @method cascade
+ * @param event {String} Event to run middleware for.
+ * @param callback {Function} Eventual callback to run.
+ * @param data {Object} Input data for the callback.
+ */
+tadpole.UI.prototype.cascade = function( event, callback, data ) {
+
+    this.mw.run( event, callback, data );
+
+};
+
+/**
+ * Bind an event listener.
+ * @method on
+ * @param event {String} Event to listen for.
+ * @param callback {Function} Event handler.
+ */
+tadpole.UI.prototype.on = function( event, callback ) {
+
+    this.evt.addListener( event, callback );
+
+};
+
+/**
+ * Fire an event.
+ * @method emit
+ * @param event {String} Event to fire.
+ * @param data {Object} Event data.
+ */
+tadpole.UI.prototype.emit = function( event, data ) {
+
+    this.evt.emit( event, data, this );
+
+};
+
+/**
  * Handle a packet being received.
  * @method packet
  * @param event {Object} Event data
@@ -320,16 +415,16 @@ tadpole.UI.prototype.packet = function( event, client ) {
         
         event.html = msg.html();
         
-        /*this.cascade(
+        this.cascade(
             'log_message',
-            function( data, done ) {*/
-                try{ui.book.log_message( msg, event );}
+            function( data, done ) {
+                try{ui.book.log_message( data.message, data.event );}
                 catch(err) {console.log(err);}
-            /*}, {
+            }, {
                 message: msg,
                 event: event
             }
-        );*/
+        );
     
     }
     
@@ -2418,15 +2513,48 @@ tadpole.Book.prototype.previous = function(  ) {
 };
 
 /**
+ * Get the namespace for the channel appearing after the current channel.
+ * 
+ * @method next
+ */
+tadpole.Book.prototype.next = function(  ) {
+
+    var ns = this.current.raw;
+    var index = this.chans.indexOf(ns.toLowerCase());
+    
+    if( index < 0 )
+        return ns;
+    
+    var nc = null;
+    while( true ) {
+        try {
+            nc = this.channel(this.chans[++index]);
+        } catch( err ) {
+            index = 0;
+            nc = this.channel(this.chans[index]);
+        }
+        
+        if( !nc.hidden )
+            break;
+        
+        //if( this.manager.settings.developer )
+        //    break;
+    }
+    
+    return nc.raw;
+
+};
+
+/**
  * Display a log item across all open channels.
  * 
  * @method log
  * @param msg {String} Message to display.
  */
-tadpole.Book.prototype.log = function( msg ) {
+tadpole.Book.prototype.log = function( event ) {
 
     for( ns in this.clist ) {
-        this.clist[ns].log(msg);
+        this.clist[ns].log(event);
     }
 
 };
@@ -2444,12 +2572,12 @@ tadpole.Book.prototype.log_message = function( message, event ) {
     try {
         if( !message.global ) {
             if( !message.monitor ) {
-                mbox = this.channel( event.ns ).log( event.html );
+                mbox = this.channel( event.ns ).log( event );
             } else {
-                mbox = this.manager.log( event.html );
+                mbox = this.manager.log( event );
             }
         } else {
-            mbox = this.log( event.html );
+            mbox = this.log( event );
         }
     } catch( err ) {
         try {
@@ -2460,43 +2588,6 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( err );
         }
     }
-    
-    if( !event.hasOwnProperty( 'user' )
-        || event.user.toLowerCase() == this.manager.lusername )
-        return;
-    
-    if( event.name == 'recv_msg' ||
-        event.name == 'recv_action' ) {
-        if( event.message.toLowerCase().indexOf( this.manager.lusername ) != -1 ) {
-            mbox.addClass('highlight');
-            try {
-                this.channel( event.ns ).highlight();
-            } catch(err) {}
-        }
-    }
-    
-    var user = event.user;
-    var control = this.manager.control;
-    
-    mbox.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        event.stopPropagation();
-        
-        var text = control.get_text();
-        
-        if( text.length > 0 ) {
-            control.set_text(
-                text
-                + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
-                + user
-            );
-            return;
-        }
-        
-        control.set_text(user + ': ');
-    
-    } );
 
 };
 
@@ -2634,20 +2725,36 @@ tadpole.Channel.prototype.hide = function(  ) {
  * @method log
  * @param content {String} Message to display.
  */
-tadpole.Channel.prototype.log = function( content ) {
+tadpole.Channel.prototype.log = function( event ) {
 
     var date = new Date();
-    var ts = formatTime('{HH}:{mm}:{ss}', date);
-    var ms = date.getTime();
+    var chan = this;
+    var content = event.html;
     
-    this.logview.append(
-        '<li id="'+ms+'"><span class="timestamp">'+ts+
-        '</span>'+content+'</li>'
-    );
-    
-    this.scroll();
-    
-    return this.logview.find('li#'+ms).last();
+    this.manager.cascade( 'ns.log', function( data, done ) {
+        chan.logview.append(
+            '<li id="'+data.ms+'"><span class="timestamp">'+data.ts+
+            '</span>'+data.content+'</li>'
+        );
+        
+        chan.scroll();
+        
+        var item = chan.logview.find('li#'+data.ms).last();
+        
+        chan.manager.emit('ns.log.after', {
+            channel: chan,
+            item: item,
+            data: data,
+            event: data.event
+        });
+    }, {
+        channel: this,
+        date: date,
+        ts: formatTime('{HH}:{mm}:{ss}', date),
+        ms: date.getTime(),
+        content: content,
+        event: event
+    } );
 
 };
 

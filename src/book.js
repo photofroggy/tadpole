@@ -213,15 +213,48 @@ tadpole.Book.prototype.previous = function(  ) {
 };
 
 /**
+ * Get the namespace for the channel appearing after the current channel.
+ * 
+ * @method next
+ */
+tadpole.Book.prototype.next = function(  ) {
+
+    var ns = this.current.raw;
+    var index = this.chans.indexOf(ns.toLowerCase());
+    
+    if( index < 0 )
+        return ns;
+    
+    var nc = null;
+    while( true ) {
+        try {
+            nc = this.channel(this.chans[++index]);
+        } catch( err ) {
+            index = 0;
+            nc = this.channel(this.chans[index]);
+        }
+        
+        if( !nc.hidden )
+            break;
+        
+        //if( this.manager.settings.developer )
+        //    break;
+    }
+    
+    return nc.raw;
+
+};
+
+/**
  * Display a log item across all open channels.
  * 
  * @method log
  * @param msg {String} Message to display.
  */
-tadpole.Book.prototype.log = function( msg ) {
+tadpole.Book.prototype.log = function( event ) {
 
     for( ns in this.clist ) {
-        this.clist[ns].log(msg);
+        this.clist[ns].log(event);
     }
 
 };
@@ -239,12 +272,12 @@ tadpole.Book.prototype.log_message = function( message, event ) {
     try {
         if( !message.global ) {
             if( !message.monitor ) {
-                mbox = this.channel( event.ns ).log( event.html );
+                mbox = this.channel( event.ns ).log( event );
             } else {
-                mbox = this.manager.log( event.html );
+                mbox = this.manager.log( event );
             }
         } else {
-            mbox = this.log( event.html );
+            mbox = this.log( event );
         }
     } catch( err ) {
         try {
@@ -255,43 +288,6 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( err );
         }
     }
-    
-    if( !event.hasOwnProperty( 'user' )
-        || event.user.toLowerCase() == this.manager.lusername )
-        return;
-    
-    if( event.name == 'recv_msg' ||
-        event.name == 'recv_action' ) {
-        if( event.message.toLowerCase().indexOf( this.manager.lusername ) != -1 ) {
-            mbox.addClass('highlight');
-            try {
-                this.channel( event.ns ).highlight();
-            } catch(err) {}
-        }
-    }
-    
-    var user = event.user;
-    var control = this.manager.control;
-    
-    mbox.on( 'click', function( event ) {
-    
-        event.preventDefault();
-        event.stopPropagation();
-        
-        var text = control.get_text();
-        
-        if( text.length > 0 ) {
-            control.set_text(
-                text
-                + ( text[text.length - 1] == ' ' ? '' : ' ' ) 
-                + user
-            );
-            return;
-        }
-        
-        control.set_text(user + ': ');
-    
-    } );
 
 };
 
