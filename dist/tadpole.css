@@ -295,8 +295,9 @@ div.tadpole {
           color: #C71414; }
         div.tadpole div.overlay nav li a.green, div.tadpole div.overlay nav li a .green, div.tadpole div.overlay nav li span.button.green, div.tadpole div.overlay nav li span.button .green {
           color: #2C912C; }
+        div.tadpole div.overlay nav li a p, div.tadpole div.overlay nav li a form, div.tadpole div.overlay nav li span.button p, div.tadpole div.overlay nav li span.button form {
+          padding: 5px 30px; }
         div.tadpole div.overlay nav li a p, div.tadpole div.overlay nav li span.button p {
-          padding: 5px 30px;
           font-size: 14px; }
       div.tadpole div.overlay nav li .faint {
         color: #647199; }

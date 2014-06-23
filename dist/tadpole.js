@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.15.33';
+tadpole.VERSION = '0.16.34';
 tadpole.STATE = 'beta';
 
 
@@ -3134,6 +3134,7 @@ tadpole.Protocol.LogMessage.prototype.render = function( format ) {
 tadpole.Commands = function( client, ui ) {
 
     var api = {};
+    api.away = {};
     
     var init = function(  ) {
         
@@ -3141,6 +3142,18 @@ tadpole.Commands = function( client, ui ) {
         ui.menu.commands.add( 'join', 'joinchannel', 'Join Channel', function( event ) {
         
             cmdarr.reveal('joinchannel');
+        
+        } );
+        
+        api.away.button = ui.menu.commands.add( 'away', 'away', 'Set Away', function( event ) {
+        
+            if( !client.ext.defaults.away.on ) {
+                cmdarr.reveal('set-away');
+                return;
+            }
+            
+            client.ext.defaults.away.back();
+            api.away.button.button.text('Set Away');
         
         } );
         
@@ -3183,6 +3196,7 @@ tadpole.Commands = function( client, ui ) {
     var settings_page = ui.menu.settings.page;
     tadpole.Commands.JoinChannel( client, ui, cmdarr );
     var autojoin = tadpole.Commands.Autojoin( client, ui, settings_page );
+    var away = tadpole.Commands.Away( client, ui, cmdarr, api );
     
     init();
     
@@ -3472,6 +3486,58 @@ tadpole.Commands.Autojoin = function( client, ui, pages ) {
     api.update();
     
     return api;
+
+};
+
+
+/**
+ * Away command overlay.
+ * @class tadpole.Commands.Away
+ * @constructor
+ */
+tadpole.Commands.Away = function( client, ui, cmd_array, api ) {
+
+    var item = cmd_array.add( 'set-away' );
+    var view = item.overlay.view;
+    view.append(
+        '<nav><ul></ul></nav>'
+    );
+    
+    var ul = view.find('nav ul');
+    
+    new tadpole.MenuButton( ul, 'back', '', 'Set Away', function( event ) {
+        item.overlay.hide();
+    }, 'left-open' );
+    
+    new tadpole.MenuButton( ul, 'silent', '', 'Silent Away', function( event ) {
+        client.ext.defaults.away.away();
+        api.away.button.button.text('Set Back');
+        ui.menu.toggle();
+    } );
+    
+    var away = new tadpole.MenuButton( ul, 'awayr', '', 'Reason',
+        function( event ) {} );
+    
+    away.button.append(
+        '<p>Leave a message to show people who try and talk to you while'
+        +'you\'re away.</p>'
+        +'<form><input class="reason" type="text" /></form>'
+    );
+    
+    var form = away.view.find('form');
+    var field = form.find('input');
+    
+    form.submit( function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        var r = field.val();
+        client.ext.defaults.away.away(r);
+        api.away.button.button.text('Set Back');
+        ui.menu.toggle();
+        field.val('');
+    
+    } );
 
 };
 
