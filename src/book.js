@@ -27,7 +27,7 @@ tadpole.Book.prototype.build = function(  ) {
     this.view = this.manager.view.find('div.book');
     
     var clh = $(window).height();
-    this.view.height( clh - 72 );
+    this.view.height( clh - 80 );
 
 };
 
@@ -38,7 +38,7 @@ tadpole.Book.prototype.build = function(  ) {
 tadpole.Book.prototype.resize = function(  ) {
 
     var clh = $(window).height();
-    this.view.height( clh - 72 );
+    this.view.height( clh - 80 );
     this.current.scroll();
 
 };

@@ -257,10 +257,11 @@ div.tadpole {
     top: 45px;
     left: 0px;
     width: 100%;
-    background-color: rgba(23, 37, 78, 0.85);
-    /*#17254E;/*#3B573B;*/
+    background-color: #17254E;
+    /*rgba(23, 37, 78, 0.85); /*#17254E;/*#3B573B;*/
     color: #94A3CF;
-    /*#7E9B89;*/ }
+    /*#7E9B89;*/
+    border-bottom: 1px solid #94A3CF; }
     div.tadpole div.overlay nav li {
       border-bottom: 1px dotted #94A3CF; }
       div.tadpole div.overlay nav li li {
