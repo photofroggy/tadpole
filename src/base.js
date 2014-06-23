@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.16.34';
+tadpole.VERSION = '0.17.35';
 tadpole.STATE = 'beta';
 
 
@@ -309,6 +309,13 @@ tadpole.UI.prototype.packet = function( event, client ) {
         if( event.hasOwnProperty( 's' ) && event.s == '0' ) {
             this.book.handle( event, client );
             return;
+        }
+        
+        if( event.hasOwnProperty('user')
+            && client.ext.defaults.ignore.ignored.indexOf(
+                event.user.toLowerCase() ) != -1 ) {
+                    this.book.handle(event, client);
+                    return;
         }
         
         event.html = msg.html();

@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.16.34';
+tadpole.VERSION = '0.17.35';
 tadpole.STATE = 'beta';
 
 
@@ -309,6 +309,13 @@ tadpole.UI.prototype.packet = function( event, client ) {
         if( event.hasOwnProperty( 's' ) && event.s == '0' ) {
             this.book.handle( event, client );
             return;
+        }
+        
+        if( event.hasOwnProperty('user')
+            && client.ext.defaults.ignore.ignored.indexOf(
+                event.user.toLowerCase() ) != -1 ) {
+                    this.book.handle(event, client);
+                    return;
         }
         
         event.html = msg.html();
@@ -3157,6 +3164,19 @@ tadpole.Commands = function( client, ui ) {
         
         } );
         
+        ui.menu.commands.add( 'ignore', 'ignoreuser', 'Ignore User', function( event ) {
+        
+            ui.menu.show_users(
+                function( list, user ) {
+                
+                    client.ext.defaults.ignore.add(user.name, true);
+                    ui.menu.toggle();
+                
+                }
+            );
+        
+        } );
+        
         ui.menu.commands.add( 'kick', 'kickuser', 'Kick User', function( event ) {
         
             ui.menu.show_users(
@@ -3190,6 +3210,13 @@ tadpole.Commands = function( client, ui ) {
             settings_page.reveal('aj');
         
         } );
+        
+        ui.menu.settings.add( 'ignore', 'Ignores', function( event ) {
+        
+            ignore.update();
+            settings_page.reveal('ignore');
+        
+        } );
     };
     
     var cmdarr = ui.menu.commanditems;
@@ -3197,6 +3224,7 @@ tadpole.Commands = function( client, ui ) {
     tadpole.Commands.JoinChannel( client, ui, cmdarr );
     var autojoin = tadpole.Commands.Autojoin( client, ui, settings_page );
     var away = tadpole.Commands.Away( client, ui, cmdarr, api );
+    var ignore = tadpole.Commands.Ignore( client, ui, settings_page );
     
     init();
     
@@ -3507,6 +3535,7 @@ tadpole.Commands.Away = function( client, ui, cmd_array, api ) {
     
     new tadpole.MenuButton( ul, 'back', '', 'Set Away', function( event ) {
         item.overlay.hide();
+        item.hide();
     }, 'left-open' );
     
     new tadpole.MenuButton( ul, 'silent', '', 'Silent Away', function( event ) {
@@ -3538,6 +3567,124 @@ tadpole.Commands.Away = function( client, ui, cmd_array, api ) {
         field.val('');
     
     } );
+
+};
+
+
+/**
+ * Construct a settings page for ignore.
+ */
+tadpole.Commands.Ignore = function( client, ui, pages ) {
+
+    var page = pages.add('ignore');
+    var view = page.overlay.view;
+    
+    view.append(
+        '<nav class="ignores"><ul></ul></nav>'
+    );
+    
+    var ul = view.find('nav.ignores ul');
+    
+    new tadpole.MenuButton( ul, 'back', '', 'Ignore', function( event ) {
+        page.overlay.hide();
+        page.hide();
+    }, 'left-open' );
+    
+    var additem = new tadpole.MenuButton( ul, 'add', '', 'Add User', function( event ) {
+        ui.menu.show_users(
+            function( list, user ) {
+                client.ext.defaults.ignore.add(user.name, true);
+                ui.menu.users.hide();
+            }
+        );
+    }, 'plus' );
+    
+    additem.button.append(
+        '<p>Click the button above or enter a username below.</p>'
+        +'<form><input type="text" /></form>'
+    );
+    
+    var form = additem.button.find('form');
+    var field = form.find('input');
+    
+    new tadpole.MenuButton( ul, 'ilist', '', 'Ignored Users',
+        function( event ) {}, 'user' );
+    
+    var users = [];
+    
+    form.submit( function( event ) {
+    
+        event.preventDefault();
+        event.stopPropagation();
+        var u = field.val();
+        field.val('');
+        u = u.split(' ');
+        
+        for( var i in u ) {
+            client.ext.defaults.ignore.add(u[i]);
+        };
+    
+    } );
+    
+    form.on( 'click', function( event ) {
+        event.preventDefault();
+        event.stopPropagation();
+    } );
+    
+    var api = {
+    
+        add: function( username ) {
+        
+            var user = new tadpole.MenuButton( ul, 'user',
+                username, username,
+                function( event ) {});
+    
+            user.button.append('<span class="button right red close icon-cancel"></span>');
+            var close = user.view.find('.button.close');
+            
+            close.on( 'click', function( event ) {
+            
+                event.preventDefault();
+                event.stopPropagation();
+                client.ext.defaults.ignore.remove(username);
+            
+            } );
+            
+            users.push(user);
+            return user;
+        
+        },
+        
+        clear: function(  ) {
+        
+            for( var i in users ) {
+            
+                users[i].remove();
+            
+            }
+        
+        },
+        
+        update: function(  ) {
+        
+            api.clear();
+            
+            for( var i in client.ext.defaults.ignore.ignored ) {
+            
+                api.add(client.ext.defaults.ignore.ignored[i]);
+            
+            }
+        
+        }
+    
+    };
+    
+    api.update();
+    client.bind('ignore.load', api.update);
+    client.bind('ignore.add', api.update);
+    client.bind('ignore.remove', api.update);
+    
+    return api;
 
 };
 
