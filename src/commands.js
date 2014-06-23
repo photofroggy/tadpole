@@ -466,7 +466,7 @@ tadpole.Commands.Ignore = function( client, ui, pages ) {
     }, 'plus' );
     
     additem.button.append(
-        '<p>Click the button above or enter a username below.</p>'
+        '<p>Select "Add User" or enter a username below.</p>'
         +'<form><input type="text" /></form>'
     );
     
