@@ -34,7 +34,7 @@ tadpole.Overlay.prototype.build = function(  ) {
     this.view = this.parentview.find(this.selector);
     
     var clh = $(window).height();
-    this.view.height( clh - 80 );
+    this.view.height( clh - 45 );
 
 };
 
@@ -45,7 +45,7 @@ tadpole.Overlay.prototype.build = function(  ) {
 tadpole.Overlay.prototype.resize = function(  ) {
 
     var clh = $(window).height();
-    this.view.height( clh - 80 );
+    this.view.height( clh - 45 );
 
 };
 

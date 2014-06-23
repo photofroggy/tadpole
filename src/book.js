@@ -269,7 +269,7 @@ tadpole.Book.prototype.log_message = function( message, event ) {
 
     var mbox = null;
     
-    try {
+    //try {
         if( !message.global ) {
             if( !message.monitor ) {
                 mbox = this.channel( event.ns ).log( event );
@@ -279,7 +279,7 @@ tadpole.Book.prototype.log_message = function( message, event ) {
         } else {
             mbox = this.log( event );
         }
-    } catch( err ) {
+    /*} catch( err ) {
         try {
             this.manager.log( 'Failed to log for', event.sns, event.html );
         } catch( err ) {
@@ -287,7 +287,7 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( '>>', event.html );
             console.log( err );
         }
-    }
+    }*/
 
 };
 

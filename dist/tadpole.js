@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.18.37';
+tadpole.VERSION = '0.18.38';
 tadpole.STATE = 'beta';
 
 
@@ -418,8 +418,9 @@ tadpole.UI.prototype.packet = function( event, client ) {
         this.cascade(
             'log_message',
             function( data, done ) {
-                try{ui.book.log_message( data.message, data.event );}
-                catch(err) {console.log(err);}
+                //try{
+                    ui.book.log_message( data.message, data.event );
+                //} catch(err) {console.log(err);}
             }, {
                 message: msg,
                 event: event
@@ -617,7 +618,7 @@ tadpole.Overlay.prototype.build = function(  ) {
     this.view = this.parentview.find(this.selector);
     
     var clh = $(window).height();
-    this.view.height( clh - 80 );
+    this.view.height( clh - 45 );
 
 };
 
@@ -628,7 +629,7 @@ tadpole.Overlay.prototype.build = function(  ) {
 tadpole.Overlay.prototype.resize = function(  ) {
 
     var clh = $(window).height();
-    this.view.height( clh - 80 );
+    this.view.height( clh - 45 );
 
 };
 
@@ -2569,7 +2570,7 @@ tadpole.Book.prototype.log_message = function( message, event ) {
 
     var mbox = null;
     
-    try {
+    //try {
         if( !message.global ) {
             if( !message.monitor ) {
                 mbox = this.channel( event.ns ).log( event );
@@ -2579,7 +2580,7 @@ tadpole.Book.prototype.log_message = function( message, event ) {
         } else {
             mbox = this.log( event );
         }
-    } catch( err ) {
+    /*} catch( err ) {
         try {
             this.manager.log( 'Failed to log for', event.sns, event.html );
         } catch( err ) {
@@ -2587,7 +2588,7 @@ tadpole.Book.prototype.log_message = function( message, event ) {
             console.log( '>>', event.html );
             console.log( err );
         }
-    }
+    }*/
 
 };
 
