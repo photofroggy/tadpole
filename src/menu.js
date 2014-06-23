@@ -403,6 +403,65 @@ tadpole.MainMenu.prototype.resize = function(  ) {
 };
 
 /**
+ * Go back in the menu.
+ * @method back
+ */
+tadpole.MainMenu.prototype.back = function(  ) {
+
+    if( this.channel.menu.overlay.visible ) {
+        this.channel.hide();
+        return;
+    }
+    
+    var backed = false;
+    
+    var backfunc = function( id, item ) {
+    
+        if( !item.overlay.visible )
+            return;
+        
+        item.overlay.hide();
+        item.hide();
+        backed = true;
+        return;
+    
+    };
+    
+    this.heads.each( backfunc );
+    
+    if( backed )
+        return;
+    
+    this.users.each( backfunc );
+    
+    if( backed )
+        return;
+    
+    this.commanditems.each( backfunc );
+    
+    if( backed )
+        return;
+    
+    this.settings.page.each( backfunc );
+    
+    if( backed )
+        return;
+    
+    if( this.settings.menu.overlay.visible ) {
+        this.settings.hide();
+        return;
+    }
+    
+    if( this.about.visible ) {
+        this.about.hide();
+        return;
+    }
+    
+    this.toggle();
+
+};
+
+/**
  * Toggle the menu.
  * @method toggle
  */
@@ -420,8 +479,21 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         this.manager.top.inactive();
         this.menu.hide();
         this.manager.book.current.unhighlight();
+        
+        window.onhashchange = function(  ) {};
+        history.back();
+        
         return this.menu.overlay.visible;
     }
+    
+    history.pushState(null, '', '#menu');
+    
+    var menu = this;
+    
+    window.onhashchange = function(  ) {
+        history.pushState(null, '', '#menu');
+        menu.back();
+    };
     
     this.menu.reveal();
     this.manager.top.active();
@@ -611,7 +683,8 @@ tadpole.MenuItemArray.prototype.each = function( callback ) {
     for( var id in this.items ) {
         if( !this.items.hasOwnProperty(id) )
             continue;
-        callback(id, this.items[id]);
+        if( callback(id, this.items[id]) )
+            return;
     }
 
 };
