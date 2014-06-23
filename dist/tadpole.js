@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.13.29';
+tadpole.VERSION = '0.14.30';
 tadpole.STATE = 'beta';
 
 
@@ -3214,48 +3214,24 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
         
             api.clear();
             
-            $.getJSON( 'http://sunya.co.nz/stasher/chats', function( data ) {
+            $.getJSON( window.location.origin + '/api/chat/channels', function( data ) {
             
-                console.log(data);
+                data = data.chats.slice(0, 50);
+                for( var i in data ) {
+                
+                    api.add( data[i] );
+                
+                }
             
             } );
             
-            /*
-            for( var i in client.ext.defaults.autojoin.channel ) {
-            
-                api.add(client.ext.defaults.autojoin.channel[i]);
-            
-            }*/
+            setTimeout( api.update, 330000 );
         
         }
     
     };
     
-    //api.update();
-    api.add({
-        usercount: '#',
-        chatname: '#devart',
-        owner: 'spyed',
-        description: 'deviantART\'s Official General Chatroom! Join us and meet fellow deviants!'
-    });
-    api.add({
-        usercount: '#',
-        chatname: '#help',
-        owner: 'help',
-        description: 'Official deviantART Help Channel - for assistance with chatroom, forum, and dA-related issues only.'
-    });
-    api.add({
-        usercount: '#',
-        chatname: '#ShareZone',
-        owner: 'zio-san',
-        description: '? Art Channel on deviantArt! ? SHARE your THUMBS and ART HERE! ? Free TALK and HINTS on technical &amp; artistic stuff ? ANIME &amp; MANGA MAKING with PRO USERS LiveSteams and Critics ? PAINT TOOL SAI HEAVEN !'
-    });
-    api.add({
-        usercount: '#',
-        chatname: '#TheNightOwlsChat',
-        owner: 'LombaxFan',
-        description: "We like to stay up late. Sometimes even all night! So come in and chat about anything you want, or just have fun. Anyone can join - even if you don't stay up late on a regular basis, you are still welcome to come and chat with us. :)"
-    });
+    api.update();
 
 };
 
