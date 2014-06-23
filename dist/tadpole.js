@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.14.30';
+tadpole.VERSION = '0.14.31';
 tadpole.STATE = 'beta';
 
 
@@ -3185,6 +3185,7 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
                 function( event ) {
                 
                     client.join(channel.chatname);
+                    ui.menu.toggle();
                 
                 });
     

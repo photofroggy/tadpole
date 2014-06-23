@@ -131,6 +131,7 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
                 function( event ) {
                 
                     client.join(channel.chatname);
+                    ui.menu.toggle();
                 
                 });
     
