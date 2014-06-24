@@ -62,17 +62,17 @@ div.tadpole {
         height: 45px;
         background-color: #17254E;/*#3B573B;*/
         color: #94A3CF;/*#7E9B89;*/
-        transition: background-color 300ms, color 300ms;
-        -webkit-transition: background-color 300ms, 300ms;
+        transition: background-color 600ms, color 600ms;
+        -webkit-transition: background-color 600ms, color 600ms;
         
         &.active {
             background-color: #4C5D91;
-            transition: background-color 300ms, color 300ms;
-            -webkit-transition: background-color 300ms, color 300ms;
+            transition: background-color 600ms, color 600ms;
+            -webkit-transition: background-color 600ms, color 600ms;
             color: #17254E;
             a.menubutton {
-                transition: background-color 300ms, color 300ms;
-                -webkit-transition: background-color 300ms, color 300ms;
+                transition: background-color 600ms, color 600ms;
+                -webkit-transition: background-color 600ms, color 600ms;
                 color: #17254E;
             }
         }
@@ -108,8 +108,8 @@ div.tadpole {
             border: 1px solid #202C20;
             color: #1959B9;*/
             color: #94A3CF;/*#7E9B89;*/
-            transition: background-color 300ms, color 300ms;
-            -webkit-transition: background-color 300ms, color 300ms;
+            transition: background-color 600ms, color 600ms;
+            -webkit-transition: background-color 600ms, color 600ms;
         
         }
         

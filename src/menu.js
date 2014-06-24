@@ -495,9 +495,14 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         menu.back();
     };
     
-    this.menu.reveal();
+    this.manager.control.input.blur();
     this.manager.top.active();
-    return this.menu.overlay.visible;
+    
+    setTimeout( function(  ) {
+        menu.menu.reveal();
+    }, 500 );
+    
+    return true;
 
 };
 

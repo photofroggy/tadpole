@@ -205,16 +205,16 @@ div.tadpole {
     /*#3B573B;*/
     color: #94A3CF;
     /*#7E9B89;*/
-    transition: background-color 300ms, color 300ms;
-    -webkit-transition: background-color 300ms, 300ms; }
+    transition: background-color 600ms, color 600ms;
+    -webkit-transition: background-color 600ms, color 600ms; }
     div.tadpole div.top.active {
       background-color: #4C5D91;
-      transition: background-color 300ms, color 300ms;
-      -webkit-transition: background-color 300ms, color 300ms;
+      transition: background-color 600ms, color 600ms;
+      -webkit-transition: background-color 600ms, color 600ms;
       color: #17254E; }
       div.tadpole div.top.active a.menubutton {
-        transition: background-color 300ms, color 300ms;
-        -webkit-transition: background-color 300ms, color 300ms;
+        transition: background-color 600ms, color 600ms;
+        -webkit-transition: background-color 600ms, color 600ms;
         color: #17254E; }
     div.tadpole div.top span.control {
       position: absolute;
@@ -244,8 +244,8 @@ div.tadpole {
       color: #1959B9;*/
       color: #94A3CF;
       /*#7E9B89;*/
-      transition: background-color 300ms, color 300ms;
-      -webkit-transition: background-color 300ms, color 300ms; }
+      transition: background-color 600ms, color 600ms;
+      -webkit-transition: background-color 600ms, color 600ms; }
     div.tadpole div.top span {
       margin-left: 5px;
       position: relative;

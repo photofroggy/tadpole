@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.18.38';
+tadpole.VERSION = '0.18.39';
 tadpole.STATE = 'beta';
 
 
@@ -1354,9 +1354,14 @@ tadpole.MainMenu.prototype.toggle = function(  ) {
         menu.back();
     };
     
-    this.menu.reveal();
+    this.manager.control.input.blur();
     this.manager.top.active();
-    return this.menu.overlay.visible;
+    
+    setTimeout( function(  ) {
+        menu.menu.reveal();
+    }, 500 );
+    
+    return true;
 
 };
 
