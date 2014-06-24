@@ -184,9 +184,9 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
         
         clear: function(  ) {
         
-            for( var i in channels ) {
+            while( channels.length > 0 ) {
             
-                channels[i].remove();
+                channels.pop().remove();
             
             }
         
@@ -332,9 +332,9 @@ tadpole.Commands.Autojoin = function( client, ui, pages ) {
         
         clear: function(  ) {
         
-            for( var i in channels ) {
+            while( channels.length > 0 ) {
             
-                channels[i].remove();
+                channels.pop().remove();
             
             }
         
@@ -523,9 +523,9 @@ tadpole.Commands.Ignore = function( client, ui, pages ) {
         
         clear: function(  ) {
         
-            for( var i in users ) {
+            while( users.length > 0 ) {
             
-                users[i].remove();
+                users.pop().remove();
             
             }
         

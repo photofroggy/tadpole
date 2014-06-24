@@ -437,12 +437,12 @@ tadpole.MainMenu.prototype.back = function(  ) {
     if( backed )
         return;
     
-    this.commanditems.each( backfunc );
+    this.settings.page.each( backfunc );
     
     if( backed )
         return;
     
-    this.settings.page.each( backfunc );
+    this.commanditems.each( backfunc );
     
     if( backed )
         return;

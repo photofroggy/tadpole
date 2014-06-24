@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.18.39';
+tadpole.VERSION = '0.18.40';
 tadpole.STATE = 'beta';
 
 
@@ -1296,12 +1296,12 @@ tadpole.MainMenu.prototype.back = function(  ) {
     if( backed )
         return;
     
-    this.commanditems.each( backfunc );
+    this.settings.page.each( backfunc );
     
     if( backed )
         return;
     
-    this.settings.page.each( backfunc );
+    this.commanditems.each( backfunc );
     
     if( backed )
         return;
@@ -3431,9 +3431,9 @@ tadpole.Commands.JoinChannel = function( client, ui, cmd_array ) {
         
         clear: function(  ) {
         
-            for( var i in channels ) {
+            while( channels.length > 0 ) {
             
-                channels[i].remove();
+                channels.pop().remove();
             
             }
         
@@ -3579,9 +3579,9 @@ tadpole.Commands.Autojoin = function( client, ui, pages ) {
         
         clear: function(  ) {
         
-            for( var i in channels ) {
+            while( channels.length > 0 ) {
             
-                channels[i].remove();
+                channels.pop().remove();
             
             }
         
@@ -3770,9 +3770,9 @@ tadpole.Commands.Ignore = function( client, ui, pages ) {
         
         clear: function(  ) {
         
-            for( var i in users ) {
+            while( users.length > 0 ) {
             
-                users[i].remove();
+                users.pop().remove();
             
             }
         
