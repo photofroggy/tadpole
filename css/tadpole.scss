@@ -26,6 +26,7 @@
 @import "theme_template";
 */
 @import "font";
+@import "theme";
 
 /* Layout */
 div.tadpole {
@@ -351,3 +352,36 @@ div.tadpole {
 
 }
 /* Themes */
+
+div.tadpole.theme_blue {
+    @include tp-theme();
+}
+
+div.tadpole.theme_dagr {
+    @include tp-theme(
+        $icon: #E8F1E5,
+        /*$ac: ,*/
+        /*$cancel: ,*/
+        $topbg: #12240D,
+        $topc: #B1B8B2,
+        /*$tophl: ,
+        $tophlc: ,*/
+        $olbg: #12240D,
+        $olc: #B1B8B2,
+        $olf: #69756B,
+        /*$olgreen: ,*/
+        /*$olred: ,*/
+        $bookbg: #E3E9E4,
+        $bookb: #919993,
+        $logbd: #D3D3D3,
+        $logbg: #E3E9E4,
+        $logc: #525C54,
+        $logs: #3D493F,
+        $logf: #939693,
+        /*$loghbg: ,*/
+        $loghc: #525C54,
+        $loghs: #3D493F,
+        $loghf: #939693,
+        $ulem: #E8F1E5
+    );
+}

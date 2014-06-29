@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.18.40';
+tadpole.VERSION = '0.19.41';
 tadpole.STATE = 'beta';
 
 
@@ -116,7 +116,12 @@ tadpole.UI = function( view, client, options, mozilla ) {
 
     this.client = client;
     this.options = Object.extend({
-        'monitor': ['~Monitor', true]
+        'monitor': ['~Monitor', true],
+        default_theme: 'Blue',
+        themes: {
+            Blue: 'theme_blue',
+            'DeviantArt Green': 'theme_dagr'
+        }
     }, options || {});
     
     this.mozilla = mozilla;

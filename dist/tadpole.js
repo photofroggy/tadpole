@@ -4,7 +4,7 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.18.40';
+tadpole.VERSION = '0.19.41';
 tadpole.STATE = 'beta';
 
 
@@ -116,7 +116,12 @@ tadpole.UI = function( view, client, options, mozilla ) {
 
     this.client = client;
     this.options = Object.extend({
-        'monitor': ['~Monitor', true]
+        'monitor': ['~Monitor', true],
+        default_theme: 'Blue',
+        themes: {
+            Blue: 'theme_blue',
+            'DeviantArt Green': 'theme_dagr'
+        }
     }, options || {});
     
     this.mozilla = mozilla;
@@ -3254,7 +3259,25 @@ tadpole.Protocol.LogMessage.prototype.render = function( format ) {
 tadpole.Commands = function( client, ui ) {
 
     var api = {};
+    var settings = {};
     api.away = {};
+    ui.storage = client.storage.folder( 'tadpole' );
+    api.storage = ui.storage;
+    settings.theme = ui.options.default_theme;
+    
+    api.save = function(  ) {
+    
+        api.storage.set( 'theme', settings.theme );
+    
+    };
+    
+    api.load = function(  ) {
+    
+        settings.theme = api.storage.get( 'theme', settings.theme );
+    
+    };
+    
+    api.load();
     
     var init = function(  ) {
         
@@ -3317,6 +3340,12 @@ tadpole.Commands = function( client, ui ) {
         } );
         
         // SETTINGS PAGES
+        ui.menu.settings.add( 'themes', 'Theme', function( event ) {
+        
+            settings_page.reveal('theme');
+        
+        } );
+        
         ui.menu.settings.add( 'aj', 'Autojoin', function( event ) {
         
             autojoin.update();
@@ -3338,10 +3367,91 @@ tadpole.Commands = function( client, ui ) {
     var autojoin = tadpole.Commands.Autojoin( client, ui, settings_page );
     var away = tadpole.Commands.Away( client, ui, cmdarr, api );
     var ignore = tadpole.Commands.Ignore( client, ui, settings_page );
+    tadpole.Commands.Theme( client, ui, settings_page, api, settings );
     
     init();
     
     return api;
+
+};
+
+
+/**
+ * Theme selection overlay.
+ */
+tadpole.Commands.Theme = function( client, ui, pages, api, settings ) {
+
+    api.theme = {};
+    
+    var page = pages.add('theme');
+    var view = page.overlay.view;
+    var themeb = {};
+    
+    view.append(
+        '<nav><ul></ul></nav>'
+    );
+    
+    var ul = view.find('ul');
+    
+    new tadpole.MenuButton( ul, 'back', '', 'Ignore', function( event ) {
+        page.overlay.hide();
+        page.hide();
+    }, 'left-open' );
+    
+    api.theme.add = function( name, selector ) {
+        
+        if( !ui.options.themes.hasOwnProperty( name ) )
+            ui.options.themes[name] = selector;
+        
+        var item = new tadpole.MenuButton( ul, 'theme', selector, name, function( event ) {
+            api.theme.select( name );
+        }, 'left-open' );
+        
+        themeb[name] = item;
+        
+    };
+    
+    api.theme.deselect = function( name ) {
+    
+        if( !themeb.hasOwnProperty( name ) )
+            return;
+        
+        themeb[name].unhighlight();
+        
+        if( ui.view.hasClass( ui.options.themes[name] ) ) {
+            ui.view.removeClass( ui.options.themes[name] );
+        }
+        
+        settings.theme = '';
+    
+    };
+    
+    api.theme.select = function( name ) {
+    
+        if( !themeb.hasOwnProperty( name ) )
+            return;
+        
+        api.theme.deselect( settings.theme );
+        themeb[name].highlight();
+        
+        if( !ui.view.hasClass( ui.options.themes[name] ) )
+            ui.view.addClass( ui.options.themes[name] );
+        
+        settings.theme = name;
+        api.save();
+    
+    };
+    
+    for( var name in ui.options.themes ) {
+    
+        if( !ui.options.themes.hasOwnProperty( name ) )
+            continue;
+        
+        api.theme.add( name, ui.options.themes[name] );
+    
+    }
+    
+    api.theme.select( settings.theme );
 
 };
 

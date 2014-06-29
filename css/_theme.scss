@@ -1,0 +1,188 @@
+
+@mixin tp-theme(
+    $icon: #31ACAC,
+    $ac: #3C87F8,
+    $cancel: #C71414,
+    $topbg: #17254E,
+    $topc: #94A3CF,
+    $tophl: #C71414,
+    $tophlc: white,
+    $olbg: #17254E,
+    $olc: #94A3CF,
+    $olf: #647199,
+    $olgreen: #2C912C,
+    $olred: #C71414,
+    $bookbg: #ECECFF,
+    $bookb: #CDD9FF,
+    $logbd: #D9D9EE,
+    $logbg: #ECECFF,
+    $logc: #54567E,
+    $logs: #1F2264,
+    $logf: #A0B2CC,
+    $loghbg: white,
+    $loghc: #54567E,
+    $loghs: #1F2264,
+    $loghf: #A0B2CC,
+    $ulem: #31ACAC
+) {
+
+    div.overlay span[class*=" icon-"], div.overlay span[class^="icon-"] {
+        color: $icon;
+    }
+    
+    div.overlay .icon-cancel {
+        color: $cancel;
+    }
+    
+    a {
+        color: $ac;
+    }
+    
+    div.top {
+        background-color: $topbg;/*#3B573B;*/
+        color: $topc;/*#7E9B89;*/
+        
+        &.active {
+            background-color: $topc;
+            color: $topbg;
+            a.menubutton {
+                color: $topbg;
+            }
+        }
+        
+        span.control {
+            span.highlights {
+                color: $tophl;
+                span.count {
+                    color: $tophlc;
+                }
+            }
+        }
+        
+        a.menubutton {
+            color: $topc;/*#7E9B89;*/
+        
+        }
+    }
+    
+    div.overlay {
+    
+        background-color: $olbg; /*rgba(23, 37, 78, 0.85); /*#17254E;/*#3B573B;*/
+        color: $olc;/*#7E9B89;*/
+        border-color: $olc;
+        
+        nav {
+            li {
+                border-color: $olc;
+                li {
+                    border-color: $olc;
+                }
+            
+                a, span.button {
+                    color: $olc;/*#7E9B89;*/
+                    
+                    &.red, .red { 
+                        color: $olred;
+                    }
+                    
+                    &.green, .green {
+                        color: $olgreen;
+                    }
+                }
+                
+                .faint {
+                    color: $olf;
+                }
+                
+                &.highlight {
+                    background-color: $olc;
+                    a, span.button {
+                        color: $olbg;
+                    }
+                }
+                
+            }
+        
+        }
+    
+        div.section {
+            &.border {
+                border-color: $olc;
+            }
+        }
+    
+    }
+    
+    div.userlist {
+        .pc {
+            .user {
+                em {
+                    color: #B63636;
+                }
+            }
+        }
+    }
+    
+    div.book {
+        border-color: $bookb;/*#1D3A1D;*/
+        background-color: $bookbg;/*#DAE3FF;/*#779677;*/
+    }
+    
+    div.channel {
+        
+        ul.log {
+            
+            li {
+                background-color: $logbg;
+                color: $logc;/*#4E5C8A;/*#2D4B30;*/
+                
+                h2,
+                strong.username,
+                strong.event {
+                    color: $logs;/*#3D455F;/*#1E3120;*/
+                }
+                
+                h2.background,
+                p.background,
+                p.background strong.event {
+                    color: $logf;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
+                }
+                
+                &:not(:first-child) {
+                    border-color: $logbd;/*#B3BDDA;/*#4E6F53;*/
+                }
+                
+                span.timestamp {
+                    color: $logf;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
+                }
+                
+                &.highlight {
+                
+                    background-color: $loghbg;
+                    color: $loghc;/*#4E5C8A;*/
+                
+                    h2,
+                    strong.username,
+                    strong.event {
+                        color: $loghs;/*#3D455F;/*#1E3120;*/
+                    }
+                    
+                    p.background,
+                    p.background strong.event {
+                        color: $loghf;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
+                    }
+                    
+                
+                }
+                
+            }
+            
+        }
+    
+    }
+    
+    div.control {
+        background-color: $olbg;/*#3B573B;*/
+    }
+
+}
