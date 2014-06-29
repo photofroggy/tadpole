@@ -141,7 +141,7 @@ tadpole.Commands.Theme = function( client, ui, pages, api, settings ) {
     
     var ul = view.find('ul');
     
-    new tadpole.MenuButton( ul, 'back', '', 'Ignore', function( event ) {
+    new tadpole.MenuButton( ul, 'back', '', 'Theme', function( event ) {
         page.overlay.hide();
         page.hide();
     }, 'left-open' );
