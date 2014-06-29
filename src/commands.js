@@ -153,7 +153,7 @@ tadpole.Commands.Theme = function( client, ui, pages, api, settings ) {
         
         var item = new tadpole.MenuButton( ul, 'theme', selector, name, function( event ) {
             api.theme.select( name );
-        }, 'left-open' );
+        } );
         
         themeb[name] = item;
         
@@ -520,7 +520,7 @@ tadpole.Commands.Away = function( client, ui, cmd_array, api ) {
     
     away.button.append(
         '<p>Leave a message to show people who try and talk to you while'
-        +'you\'re away.</p>'
+        +' you\'re away.</p>'
         +'<form><input class="reason" type="text" /></form>'
     );
     
