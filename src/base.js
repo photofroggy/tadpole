@@ -4,8 +4,9 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '0.19.43';
-tadpole.STATE = 'beta';
+tadpole.VERSION = '1.0.0';
+tadpole.REVISION = '65';
+tadpole.STATE = 'rc';
 
 
 // jQuery hook.
@@ -120,16 +121,19 @@ tadpole.UI = function( view, client, options, mozilla ) {
         default_theme: 'Blue',
         themes: {
             Blue: 'theme_blue',
+            Dark: 'theme_dark',
             'DeviantArt Green': 'theme_dagr'
         }
     }, options || {});
     
     this.mozilla = mozilla;
     
-    client.settings.agent = 'tadpole/' + tadpole.VERSION + ' ' + client.settings.agent;
+    client.settings.agent = 'tadpole/' + tadpole.VERSION
+        + '-r' + tadpole.REVISION + ' ' + client.settings.agent;
     
     this.LIB = 'tadpole';
     this.VERSION = tadpole.VERSION;
+    this.REVISION = tadpole.REVISION;
     this.STATE = tadpole.STATE;
     
     view.append('<div class="tadpole"></div>');

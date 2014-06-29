@@ -5,6 +5,8 @@
     $cancel: #C71414,
     $topbg: #17254E,
     $topc: #94A3CF,
+    $topac: #17254E,
+    $topabg: #94A3CF,
     $tophl: #C71414,
     $tophlc: white,
     $olbg: #17254E,
@@ -43,10 +45,10 @@
         color: $topc;/*#7E9B89;*/
         
         &.active {
-            background-color: $topc;
-            color: $topbg;
+            background-color: $topabg;
+            color: $topac;
             a.menubutton {
-                color: $topbg;
+                color: $topac;
             }
         }
         
@@ -117,7 +119,7 @@
         .pc {
             .user {
                 em {
-                    color: #B63636;
+                    color: $ulem;
                 }
             }
         }
@@ -152,7 +154,7 @@
                     border-color: $logbd;/*#B3BDDA;/*#4E6F53;*/
                 }
                 
-                span.timestamp {
+                .timestamp {
                     color: $logf;/*#A3B9D5;/*#8291BE;/*#4D6958;*/
                 }
                 
@@ -167,6 +169,7 @@
                         color: $loghs;/*#3D455F;/*#1E3120;*/
                     }
                     
+                    .timestamp,
                     p.background,
                     p.background strong.event {
                         color: $loghf;/*#A3B9D5;/*#8291BE;/*#4D6958;*/

@@ -455,7 +455,7 @@ div.tadpole.theme_blue div.overlay {
   div.tadpole.theme_blue div.overlay div.section.border {
     border-color: #94a3cf; }
 div.tadpole.theme_blue div.userlist .pc .user em {
-  color: #B63636; }
+  color: #31acac; }
 div.tadpole.theme_blue div.book {
   border-color: #cdd9ff;
   /*#1D3A1D;*/
@@ -478,7 +478,7 @@ div.tadpole.theme_blue div.channel ul.log li {
   div.tadpole.theme_blue div.channel ul.log li:not(:first-child) {
     border-color: #d9d9ee;
     /*#B3BDDA;/*#4E6F53;*/ }
-  div.tadpole.theme_blue div.channel ul.log li span.timestamp {
+  div.tadpole.theme_blue div.channel ul.log li .timestamp {
     color: #a0b2cc;
     /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
   div.tadpole.theme_blue div.channel ul.log li.highlight {
@@ -490,6 +490,7 @@ div.tadpole.theme_blue div.channel ul.log li {
     div.tadpole.theme_blue div.channel ul.log li.highlight strong.event {
       color: #1f2264;
       /*#3D455F;/*#1E3120;*/ }
+    div.tadpole.theme_blue div.channel ul.log li.highlight .timestamp,
     div.tadpole.theme_blue div.channel ul.log li.highlight p.background,
     div.tadpole.theme_blue div.channel ul.log li.highlight p.background strong.event {
       color: #a0b2cc;
@@ -547,7 +548,7 @@ div.tadpole.theme_dagr div.overlay {
   div.tadpole.theme_dagr div.overlay div.section.border {
     border-color: #b1b8b2; }
 div.tadpole.theme_dagr div.userlist .pc .user em {
-  color: #B63636; }
+  color: #e8f1e5; }
 div.tadpole.theme_dagr div.book {
   border-color: #919993;
   /*#1D3A1D;*/
@@ -570,7 +571,7 @@ div.tadpole.theme_dagr div.channel ul.log li {
   div.tadpole.theme_dagr div.channel ul.log li:not(:first-child) {
     border-color: lightgray;
     /*#B3BDDA;/*#4E6F53;*/ }
-  div.tadpole.theme_dagr div.channel ul.log li span.timestamp {
+  div.tadpole.theme_dagr div.channel ul.log li .timestamp {
     color: #939693;
     /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
   div.tadpole.theme_dagr div.channel ul.log li.highlight {
@@ -582,10 +583,104 @@ div.tadpole.theme_dagr div.channel ul.log li {
     div.tadpole.theme_dagr div.channel ul.log li.highlight strong.event {
       color: #3d493f;
       /*#3D455F;/*#1E3120;*/ }
+    div.tadpole.theme_dagr div.channel ul.log li.highlight .timestamp,
     div.tadpole.theme_dagr div.channel ul.log li.highlight p.background,
     div.tadpole.theme_dagr div.channel ul.log li.highlight p.background strong.event {
       color: #939693;
       /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
 div.tadpole.theme_dagr div.control {
   background-color: #12240d;
+  /*#3B573B;*/ }
+
+div.tadpole.theme_dark div.overlay span[class*=" icon-"], div.tadpole.theme_dark div.overlay span[class^="icon-"] {
+  color: #cacaca; }
+div.tadpole.theme_dark div.overlay .icon-cancel {
+  color: #c71414; }
+div.tadpole.theme_dark a {
+  color: #3c87f8; }
+div.tadpole.theme_dark div.top {
+  background-color: #0c0c0c;
+  /*#3B573B;*/
+  color: #adadad;
+  /*#7E9B89;*/ }
+  div.tadpole.theme_dark div.top.active {
+    background-color: #858585;
+    color: #0c0c0c; }
+    div.tadpole.theme_dark div.top.active a.menubutton {
+      color: #0c0c0c; }
+  div.tadpole.theme_dark div.top span.control span.highlights {
+    color: #c71414; }
+    div.tadpole.theme_dark div.top span.control span.highlights span.count {
+      color: white; }
+  div.tadpole.theme_dark div.top a.menubutton {
+    color: #adadad;
+    /*#7E9B89;*/ }
+div.tadpole.theme_dark div.overlay {
+  background-color: #0c0c0c;
+  /*rgba(23, 37, 78, 0.85); /*#17254E;/*#3B573B;*/
+  color: #858585;
+  /*#7E9B89;*/
+  border-color: #858585; }
+  div.tadpole.theme_dark div.overlay nav li {
+    border-color: #858585; }
+    div.tadpole.theme_dark div.overlay nav li li {
+      border-color: #858585; }
+    div.tadpole.theme_dark div.overlay nav li a, div.tadpole.theme_dark div.overlay nav li span.button {
+      color: #858585;
+      /*#7E9B89;*/ }
+      div.tadpole.theme_dark div.overlay nav li a.red, div.tadpole.theme_dark div.overlay nav li a .red, div.tadpole.theme_dark div.overlay nav li span.button.red, div.tadpole.theme_dark div.overlay nav li span.button .red {
+        color: #c71414; }
+      div.tadpole.theme_dark div.overlay nav li a.green, div.tadpole.theme_dark div.overlay nav li a .green, div.tadpole.theme_dark div.overlay nav li span.button.green, div.tadpole.theme_dark div.overlay nav li span.button .green {
+        color: #2c912c; }
+    div.tadpole.theme_dark div.overlay nav li .faint {
+      color: dimgray; }
+    div.tadpole.theme_dark div.overlay nav li.highlight {
+      background-color: #858585; }
+      div.tadpole.theme_dark div.overlay nav li.highlight a, div.tadpole.theme_dark div.overlay nav li.highlight span.button {
+        color: #0c0c0c; }
+  div.tadpole.theme_dark div.overlay div.section.border {
+    border-color: #858585; }
+div.tadpole.theme_dark div.userlist .pc .user em {
+  color: #cacaca; }
+div.tadpole.theme_dark div.book {
+  border-color: black;
+  /*#1D3A1D;*/
+  background-color: #313131;
+  /*#DAE3FF;/*#779677;*/ }
+div.tadpole.theme_dark div.channel ul.log li {
+  background-color: #313131;
+  color: #b1b1b1;
+  /*#4E5C8A;/*#2D4B30;*/ }
+  div.tadpole.theme_dark div.channel ul.log li h2,
+  div.tadpole.theme_dark div.channel ul.log li strong.username,
+  div.tadpole.theme_dark div.channel ul.log li strong.event {
+    color: #b1b1b1;
+    /*#3D455F;/*#1E3120;*/ }
+  div.tadpole.theme_dark div.channel ul.log li h2.background,
+  div.tadpole.theme_dark div.channel ul.log li p.background,
+  div.tadpole.theme_dark div.channel ul.log li p.background strong.event {
+    color: #777777;
+    /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
+  div.tadpole.theme_dark div.channel ul.log li:not(:first-child) {
+    border-color: #525252;
+    /*#B3BDDA;/*#4E6F53;*/ }
+  div.tadpole.theme_dark div.channel ul.log li .timestamp {
+    color: #777777;
+    /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
+  div.tadpole.theme_dark div.channel ul.log li.highlight {
+    background-color: #c2c2c2;
+    color: #222222;
+    /*#4E5C8A;*/ }
+    div.tadpole.theme_dark div.channel ul.log li.highlight h2,
+    div.tadpole.theme_dark div.channel ul.log li.highlight strong.username,
+    div.tadpole.theme_dark div.channel ul.log li.highlight strong.event {
+      color: #222222;
+      /*#3D455F;/*#1E3120;*/ }
+    div.tadpole.theme_dark div.channel ul.log li.highlight .timestamp,
+    div.tadpole.theme_dark div.channel ul.log li.highlight p.background,
+    div.tadpole.theme_dark div.channel ul.log li.highlight p.background strong.event {
+      color: gray;
+      /*#A3B9D5;/*#8291BE;/*#4D6958;*/ }
+div.tadpole.theme_dark div.control {
+  background-color: #0c0c0c;
   /*#3B573B;*/ }

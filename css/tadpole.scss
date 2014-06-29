@@ -364,6 +364,8 @@ div.tadpole.theme_dagr {
         /*$cancel: ,*/
         $topbg: #12240D,
         $topc: #B1B8B2,
+        $topac: #12240D,
+        $topabg: #B1B8B2,
         /*$tophl: ,
         $tophlc: ,*/
         $olbg: #12240D,
@@ -383,5 +385,36 @@ div.tadpole.theme_dagr {
         $loghs: #3D493F,
         $loghf: #939693,
         $ulem: #E8F1E5
+    );
+}
+
+div.tadpole.theme_dark {
+    @include tp-theme(
+        $icon: #CACACA,
+        /*$ac: ,*/
+        /*$cancel: ,*/
+        $topbg: #0C0C0C,
+        $topc: #ADADAD,
+        $topabg: #858585,
+        $topac: #0C0C0C,
+        /*$tophl: ,
+        $tophlc: ,*/
+        $olbg: #0C0C0C,
+        $olc: #858585,
+        $olf: #696969,
+        /*$olgreen: ,*/
+        /*$olred: ,*/
+        $bookbg: #313131,
+        $bookb: #000,
+        $logbd: #525252,
+        $logbg: #313131,
+        $logc: #B1B1B1,
+        $logs: #B1B1B1,
+        $logf: #777,
+        $loghbg: #C2C2C2,
+        $loghc: #222,
+        $loghs: #222,
+        $loghf: #808080,
+        $ulem: #CACACA
     );
 }
