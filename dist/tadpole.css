@@ -633,7 +633,7 @@ div.tadpole.theme_dark div.overlay {
       div.tadpole.theme_dark div.overlay nav li a.green, div.tadpole.theme_dark div.overlay nav li a .green, div.tadpole.theme_dark div.overlay nav li span.button.green, div.tadpole.theme_dark div.overlay nav li span.button .green {
         color: #2c912c; }
     div.tadpole.theme_dark div.overlay nav li .faint {
-      color: dimgray; }
+      color: #494949; }
     div.tadpole.theme_dark div.overlay nav li.highlight {
       background-color: #858585; }
       div.tadpole.theme_dark div.overlay nav li.highlight a, div.tadpole.theme_dark div.overlay nav li.highlight span.button {

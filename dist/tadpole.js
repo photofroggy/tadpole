@@ -4,8 +4,8 @@
  */
 var tadpole = {};
 
-tadpole.VERSION = '1.0.0';
-tadpole.REVISION = '65';
+tadpole.VERSION = '1.0.1';
+tadpole.REVISION = '66';
 tadpole.STATE = 'rc';
 
 
